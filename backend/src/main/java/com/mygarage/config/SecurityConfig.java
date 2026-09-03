@@ -49,15 +49,23 @@ public class SecurityConfig {
             .userDetailsService(userDetailsService)
             .authorizeHttpRequests(auth -> auth
                 // Public pages
-                .requestMatchers("/", "/login", "/register").permitAll()
+                .requestMatchers("/", "/login", "/register", "/access-denied").permitAll()
                 // Static resources
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Actuator health check
                 .requestMatchers("/actuator/health").permitAll()
-                // Admin only
+                // Admin only routes
                 .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                // User only routes (Garage, Service, Fuel, Maintenance tracking)
+                .requestMatchers("/dashboard/**", "/vehicles/**", "/service/**", "/fuel/**", "/maintenance/**").hasRole("NORMAL_USER")
+                .requestMatchers("/api/**").hasRole("NORMAL_USER")
+                // Profile accessible to any authenticated user
+                .requestMatchers("/profile/**").hasAnyRole("NORMAL_USER", "ADMIN")
                 // Everything else requires authentication
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/access-denied")
             )
             .formLogin(form -> form
                 .loginPage("/login")

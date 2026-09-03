@@ -114,13 +114,13 @@
                             <a th:href="@{/vehicles}" class="btn btn-sm btn-outline-primary">View All</a>
                         </div>
                         <div class="card-body">
-                            <div th:if="${user?.vehicles == null or user?.vehicles?.isEmpty()}" class="empty-state text-center py-4">
+                            <div th:if="${vehicles == null or vehicles.isEmpty()}" class="empty-state text-center py-4">
                                 <i class="bi bi-car-front-fill text-muted fs-1 mb-2 d-block"></i>
                                 <p class="text-muted mb-3">No vehicles yet. Add your first vehicle!</p>
                                 <a th:href="@{/vehicles/add}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Vehicle</a>
                             </div>
-                            <div th:if="${user?.vehicles != null and !user?.vehicles?.isEmpty()}" class="row g-2">
-                                <div th:each="vehicle : ${user.vehicles}" th:if="${vehicleStat.index < 4}" class="col-6">
+                            <div th:if="${vehicles != null and !vehicles.isEmpty()}" class="row g-2">
+                                <div th:each="vehicle : ${vehicles}" th:if="${vehicleStat.index < 4}" class="col-6">
                                     <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="text-decoration-none">
                                         <div class="vehicle-mini-card p-2 rounded border text-center">
                                             <div class="vehicle-icon mb-1" th:text="${vehicle.category?.icon}">🚗</div>

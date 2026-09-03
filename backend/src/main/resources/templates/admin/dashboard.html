@@ -112,7 +112,7 @@
                             <ul class="list-group list-group-flush">
                                 <li th:each="cat : ${categories}" class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
                                     <span><span th:text="${cat.icon}">🚗</span> <span th:text="${cat.name}">Category</span></span>
-                                    <span class="badge bg-primary-subtle text-primary" th:text="${cat.vehicles?.size() ?: 0} + ' vehicles'">0</span>
+                                    <span class="badge bg-primary-subtle text-primary">Active</span>
                                 </li>
                                 <li th:if="${categories == null or categories.isEmpty()}" class="list-group-item text-muted text-center py-3">No categories.</li>
                             </ul>

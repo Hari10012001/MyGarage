@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 2 (M2) COMPLETE & FULLY VERIFIED — Ready for M3
+**Current Phase:** MILESTONE 3 (M3) COMPLETE & FULLY VERIFIED — Ready for M4
 
 ---
 
@@ -17,27 +17,29 @@
 | MySQL Server | 8.0.43 Community Server | Active & Connected |
 | Database Name | `mygarage_db` | Created & Initialized |
 | Version Control | Git 2.45+ | Active |
-| Framework | Spring Boot 3.3.5 | Verified |
+| Framework | Spring Boot 3.3.5 / Spring Security 6.x | Verified |
 | Application Port | 8080 | Tested & Clean |
 
 ---
 
-## Milestone 2 (M2) Verification & Database Mapping Matrix
+## Milestone 3 (M3) Authentication & Access Control Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Entity Table Mappings** | All 6 entities (`User`, `VehicleCategory`, `Vehicle`, `ServiceRecord`, `FuelRecord`, `MaintenanceRecord`) mapped to exact table names | **PASS** |
-| **Primary Keys & Generated IDs** | Standardized `GenerationType.IDENTITY` on all 6 tables (`user_id`, `category_id`, `vehicle_id`, `service_id`, `fuel_id`, `maintenance_id`) | **PASS** |
-| **Unique Constraints** | `users(email)`, `vehicle_categories(name)`, `vehicles(user_id, plate_number)` | **PASS** |
-| **Indexes** | Optimized indexes on foreign keys, email, role, dates, plate number, maintenance status | **PASS** |
-| **Enum Mappings** | `EnumType.STRING` on `Role` (`users`), `FuelType` (`fuel_records`), `MaintenanceStatus` (`maintenance_records`) | **PASS** |
-| **Monetary Precision** | `BigDecimal` with `DECIMAL(10, 2)` or `DECIMAL(8, 2)` for zero rounding error | **PASS** |
-| **Temporal Data Types** | `LocalDate` for service/fuel/maintenance dates, `LocalDateTime` for audit timestamps | **PASS** |
-| **Cascade & Orphan Removal** | Vehicle deletion cascades to `ServiceRecord`, `FuelRecord`, `MaintenanceRecord` (no orphan records left) | **PASS** |
-| **Category Protection** | Category deletion blocked if vehicles are assigned (`countByCategoryCategoryId`) | **PASS** |
-| **Ownership Isolation** | Strict repository ownership queries: `findBy...AndVehicleUserUserId(..., userId)` | **PASS** |
-| **BCrypt Admin Seed** | Verified BCrypt hash for `admin@mygarage.com / Admin@123` in `data.sql` and database | **PASS** |
-| **Automated Tests** | 14 automated tests executed (`JpaRepositoryTest`, `MaintenanceServiceTest`, `PasswordEncoderTest`, `MyGarageApplicationTests`) | **PASS (14/14, 0 failures, 0 errors)** |
+| **NORMAL_USER Registration** | POST `/register` with validation, duplicate email check, BCrypt hashing, and redirect to `/login` | **PASS** |
+| **NORMAL_USER Login** | POST `/login` authenticates user, establishes session, redirects to `/dashboard` | **PASS** |
+| **ADMIN Login** | Authenticates seeded `admin@mygarage.com / Admin@123`, redirects to `/admin/dashboard` | **PASS** |
+| **BCrypt Password Hashing** | All passwords hashed with BCrypt (strength 10), zero plaintext in MySQL | **PASS** |
+| **Role-Based Authorization** | `/admin/**` restricted to `ROLE_ADMIN`; `/dashboard/**`, `/vehicles/**`, `/service/**`, etc. restricted to `ROLE_NORMAL_USER` | **PASS** |
+| **Admin Route Protection** | `NORMAL_USER` accessing `/admin/**` is blocked with HTTP 403 / forwarded to `/access-denied` | **PASS** |
+| **User Route Protection** | Unauthenticated users accessing `/dashboard`, `/vehicles`, etc. redirected to `/login` | **PASS** |
+| **Invalid Login Handling** | Incorrect credentials redirect to `/login?error=true` | **PASS** |
+| **Logout & Session Invalidation** | POST `/logout` invalidates HTTP session, flushes context, redirects to `/login?logout=true` | **PASS** |
+| **REST Role Gating** | `/api/admin/**` enforces `hasRole('ADMIN')`; `/api/**` enforces `hasRole('NORMAL_USER')` | **PASS** |
+| **Privilege Escalation Prevention** | Registration strictly assigns `Role.NORMAL_USER`, client cannot request `ADMIN` | **PASS** |
+| **Access Denied Page** | Dedicated `/access-denied` view with HTTP 403 handling | **PASS** |
+| **Automated Tests** | 27 automated tests passing (`AuthenticationAndAuthorizationTest`, `JpaRepositoryTest`, `MaintenanceServiceTest`, `PasswordEncoderTest`, `MyGarageApplicationTests`) | **PASS (27/27, 0 failures, 0 errors)** |
+| **Live End-to-End Verification** | Real HTTP requests against MySQL verified all 5 core authentication and authorization flows | **PASS** |
 
 ---
 
@@ -51,8 +53,8 @@
 | **Approval Gate 1** | Plan & Scope Approval | **APPROVED** |
 | **M1** | Project Setup, Maven, Git, DB Config, Base Architecture & Smoke QC | **COMPLETED & VERIFIED** |
 | **M2** | Database & JPA Entities (Deep Verification, Indexes, Cascades & Mappings) | **COMPLETED & VERIFIED** |
-| **M3** | Authentication & Role-Based Access Control | **NEXT** |
-| **M4** | Vehicle Module (CRUD & Ownership Protection) | PENDING |
+| **M3** | Authentication & Role-Based Access Control (Spring Security, Form Login, RBAC, BCrypt) | **COMPLETED & VERIFIED** |
+| **M4** | Vehicle Module (CRUD, Ownership Protection, Odometer Tracking, License Plate Uniqueness) | **NEXT** |
 | **M5** | Service Module (Service History & Tracking) | PENDING |
 | **M6** | Fuel Module (Fuel Logs & Estimated Mileage) | PENDING |
 | **M7** | Maintenance Module (Status Logic & Reminders) | PENDING |
@@ -65,14 +67,14 @@
 ## Architecture Inventory
 
 - **Web MVC Controllers (8):**
-  1. `AuthWebController` (Login, Register, Logout)
-  2. `DashboardWebController` (User Dashboard)
-  3. `VehicleWebController` (Vehicle List, Add, Edit, Detail, Timeline, Delete)
-  4. `ServiceWebController` (Service Log Add, Edit, Delete)
-  5. `FuelWebController` (Fuel Fill-up Log Add, Edit, Delete)
-  6. `MaintenanceWebController` (Maintenance Task Add, Edit, Complete, Delete)
-  7. `ProfileWebController` (Profile & Password Change)
-  8. `AdminWebController` (Admin Dashboard, Users, Categories, Statistics)
+  1. `AuthWebController` (Landing `/`, Login `/login`, Register `/register`, Access Denied `/access-denied`)
+  2. `DashboardWebController` (`/dashboard/**` with user-specific vehicle injection)
+  3. `VehicleWebController` (`/vehicles/**`)
+  4. `ServiceWebController` (`/service/**`)
+  5. `FuelWebController` (`/fuel/**`)
+  6. `MaintenanceWebController` (`/maintenance/**`)
+  7. `ProfileWebController` (`/profile/**`)
+  8. `AdminWebController` (`/admin/**`)
 - **REST API Controllers (5):**
   1. `VehicleApiController` (`/api/vehicles/**`)
   2. `ServiceApiController` (`/api/services/**`)
@@ -80,12 +82,13 @@
   4. `MaintenanceApiController` (`/api/maintenance/**`)
   5. `DashboardApiController` (`/api/dashboard/**`)
 - **Documentation:**
-  - `docs/REQUIREMENTS.md` (Full Specification)
+  - `docs/REQUIREMENTS.md` (Full Functional Specification)
   - `docs/DATABASE_DESIGN.md` (Full ERD, Data Dictionary, and Integrity Constraints)
+  - `docs/SECURITY_DESIGN.md` (RBAC Matrix, Security Architecture, and Test Coverage)
   - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Awaiting instruction to proceed to **M3: Authentication & Role-Based Access Control (Spring Security, BCrypt, Session Auth, Role Guarding & Ownership Verification)**.
+Awaiting instruction to proceed to **M4: Vehicle Module (Vehicle CRUD, Ownership Guarding, License Plate Uniqueness per Garage, Category Association, and Odometer Tracking)**.
