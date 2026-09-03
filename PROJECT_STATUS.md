@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 8 (M8) COMPLETE & FULLY VERIFIED — Ready for M9
+**Current Phase:** MILESTONE 9 (M9) COMPLETE & FULLY VERIFIED — Ready for M10
 
 ---
 
@@ -22,26 +22,23 @@
 
 ---
 
-## Milestone 8 (M8) Dashboard & Reporting Verification Matrix
+## Milestone 9 (M9) Admin Module Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Core Metric Counters** | Vehicles, Service Records, Fuel Records, Maintenance Tasks | **PASS** |
-| **Urgency Breakdown** | `OVERDUE`, `DUE_TODAY`, `UPCOMING`, `COMPLETED` counters & visual badges | **PASS** |
-| **Financial Spend Summary** | Fuel Spend, Service Spend, Maintenance Spend, Total Combined Garage Spend | **PASS** |
-| **Fuel Economy Analytics** | Average estimated mileage (km/L) dynamically calculated from fuel logs | **PASS** |
-| **Active Maintenance Alerts** | Urgent overdue and due today alerts rendered with deep-links | **PASS** |
-| **Vehicle-Wise Summary** | Mini-cards with make, model, year, category icon, fuel type, odometer | **PASS** |
-| **Recent Activity Feeds** | Latest 5 services and latest 5 fuel fill-ups displayed with metrics | **PASS** |
-| **Empty State Handling** | Clean, user-friendly empty states when user has zero vehicles or zero logs | **PASS** |
-| **Data & Ownership Isolation** | Strict `user.userId` scoping across all metrics; zero data leakage between users | **PASS** |
-| **ADMIN Isolation** | ADMIN role blocked (`403 Forbidden`) from user `/dashboard` & `/api/dashboard` | **PASS** |
-| **Admin System Metrics** | `/admin/dashboard` & `/api/admin/statistics` provide global counts only | **PASS** |
-| **REST Reporting APIs** | `/api/dashboard`, `/api/dashboard/summary`, `/alerts`, `/recent-services`, `/recent-fuel` | **PASS** |
-| **Unauthenticated Protection**| Unauthenticated requests redirected to `/login` | **PASS** |
-| **Jackson & Query Safety** | `JOIN FETCH` eliminates N+1 and guarantees session-safe rendering | **PASS** |
-| **Regression Test Suite** | 173 automated tests (`DashboardModuleTest` [27], `MaintenanceModuleTest` [30], `FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (173/173, 0 failures, 0 errors)** |
-| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all dashboard & reporting flows | **PASS** |
+| **Admin System Dashboard** | System overview: total users, vehicles, services, fuel, maintenance, recent signups | **PASS** |
+| **System Statistics View** | Category breakdown with vehicle counts and global statistics | **PASS** |
+| **User Listing & Search** | User management table with name/email search and active badges | **PASS** |
+| **User Status Toggle** | Activate / deactivate normal users via Web and REST | **PASS** |
+| **Primary Admin Protection** | Inviolable: admin account cannot be deactivated or deleted via Web or REST (400 Bad Request) | **PASS** |
+| **Category Management CRUD** | Add, edit, delete categories via Web and REST | **PASS** |
+| **Category Deletion Guard** | Deletion blocked if vehicles are assigned to category (referential safety) | **PASS** |
+| **Strict RBAC & Isolation** | NORMAL_USER received 403 Forbidden for all `/admin/**` and `/api/admin/**` | **PASS** |
+| **Security Matcher Order** | `/api/admin/**` verified before broad `/api/**` in SecurityFilterChain | **PASS** |
+| **Role Escalation Prevention**| NORMAL_USER cannot register as ADMIN or update role | **PASS** |
+| **CSRF Protection** | All state-changing operations protected by valid CSRF tokens | **PASS** |
+| **Regression Test Suite** | 203 automated tests (`AdminModuleTest` [30], `DashboardModuleTest` [27], `MaintenanceModuleTest` [30], `FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (203/203, 0 failures, 0 errors)** |
+| **Live End-to-End Verification**| Live Tomcat + MySQL verification passed all 9 admin operational and security flows | **PASS** |
 
 ---
 
@@ -61,29 +58,29 @@
 | **M6** | Fuel Module (Fuel Logs, Estimated Mileage, Auto Total Cost, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
 | **M7** | Maintenance Module (Status Logic & Reminders, Priority, Mark Complete, Ownership) | **COMPLETED & FULLY VERIFIED** |
 | **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation, Financial Summaries) | **COMPLETED & FULLY VERIFIED** |
-| **M9** | Admin Module (User & Category Management) | **NEXT** |
-| **M10** | Polish, Comprehensive 6-Layer QC & Documentation Finalization | PENDING |
+| **M9** | Admin Module (User & Category Management, System Analytics, Primary Admin Guard) | **COMPLETED & FULLY VERIFIED** |
+| **M10** | Polish, Comprehensive 6-Layer QC & Documentation Finalization | **NEXT** |
 
 ---
 
 ## Architecture Inventory
 
 - **Web MVC Controllers (8):**
-  1. `DashboardWebController` (`/dashboard` - Central overview, alerts, analytics, spend summary)
-  2. `MaintenanceWebController` (`/vehicles/{id}/maintenance/**` - Add, edit, complete, delete, list, detail)
-  3. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
-  4. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
-  5. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
-  6. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
-  7. `ProfileWebController` (`/profile/**`)
-  8. `AdminWebController` (`/admin/**`)
+  1. `AdminWebController` (`/admin/**` - Dashboard, statistics, users, categories)
+  2. `DashboardWebController` (`/dashboard` - User garage overview, alerts, analytics, spend summary)
+  3. `MaintenanceWebController` (`/vehicles/{id}/maintenance/**` - Add, edit, complete, delete, list, detail)
+  4. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
+  5. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
+  6. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
+  7. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
+  8. `ProfileWebController` (`/profile/**`)
 - **REST API Controllers (6):**
-  1. `DashboardApiController` (`/api/dashboard/**` - Summary, alerts, recent services, recent fuel)
-  2. `MaintenanceApiController` (`/api/vehicles/{id}/maintenance`, `/api/maintenance/{id}`)
-  3. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
-  4. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
-  5. `VehicleApiController` (`/api/vehicles/**`)
-  6. `AdminApiController` (`/api/admin/**`)
+  1. `AdminApiController` (`/api/admin/**` - Statistics, users, categories CRUD)
+  2. `DashboardApiController` (`/api/dashboard/**` - Summary, alerts, recent services, recent fuel)
+  3. `MaintenanceApiController` (`/api/vehicles/{id}/maintenance`, `/api/maintenance/{id}`)
+  4. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
+  5. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
+  6. `VehicleApiController` (`/api/vehicles/**`)
 - **Documentation:**
   - `docs/REQUIREMENTS.md` (Functional Requirements Specification)
   - `docs/DATABASE_DESIGN.md` (ERD, Data Dictionary, Cascade & Index Rules)
@@ -93,10 +90,11 @@
   - `docs/FUEL_MODULE_DESIGN.md` (Fuel Module Mileage Calculations, Total Costs, APIs)
   - `docs/MAINTENANCE_MODULE_DESIGN.md` (Maintenance Dynamic Status Logic, Alerts, APIs)
   - `docs/DASHBOARD_REPORTING_DESIGN.md` (Dashboard Metrics, Urgency & Financial Analytics, APIs)
+  - `docs/ADMIN_MODULE_DESIGN.md` (Admin Module Architecture, Security Guarding, APIs)
   - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Ready to proceed to **M9: Admin Module (User Enable/Disable Management, Category CRUD, and Administrative Controls)** upon user instruction.
+Ready to proceed to **M10: Polish, Comprehensive 6-Layer QC & Documentation Finalization** upon user instruction.

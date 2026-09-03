@@ -39,8 +39,8 @@ public class AdminApiController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAllUsers());
+    public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) String search) {
+        return ResponseEntity.ok(userService.searchUsers(search));
     }
 
     @PostMapping("/users/{userId}/toggle")
@@ -57,5 +57,34 @@ public class AdminApiController {
     @GetMapping("/categories")
     public ResponseEntity<List<VehicleCategory>> getCategories() {
         return ResponseEntity.ok(categoryService.findAll());
+    }
+
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<VehicleCategory> getCategoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.findById(id));
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<VehicleCategory> addCategory(@RequestBody Map<String, String> body) {
+        String name = body.get("name");
+        String icon = body.get("icon");
+        String description = body.get("description");
+        VehicleCategory cat = categoryService.save(name, icon, description);
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(cat);
+    }
+
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<VehicleCategory> updateCategory(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String name = body.get("name");
+        String icon = body.get("icon");
+        String description = body.get("description");
+        VehicleCategory cat = categoryService.update(id, name, icon, description);
+        return ResponseEntity.ok(cat);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public ResponseEntity<Map<String, String>> deleteCategory(@PathVariable Long id) {
+        categoryService.delete(id);
+        return ResponseEntity.ok(Map.of("message", "Category deleted successfully."));
     }
 }

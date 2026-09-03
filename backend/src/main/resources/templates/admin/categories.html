@@ -50,7 +50,10 @@
                                         <td>
                                             <button class="btn btn-sm btn-outline-primary me-1"
                                                     data-bs-toggle="modal" data-bs-target="#editModal"
-                                                    th:onclick="'openEditModal(' + ${cat.categoryId} + ', \'' + ${cat.name} + '\', \'' + ${cat.icon} + '\')'">
+                                                    th:data-id="${cat.categoryId}"
+                                                    th:data-name="${cat.name}"
+                                                    th:data-icon="${cat.icon}"
+                                                    onclick="openEditModal(this.getAttribute('data-id'), this.getAttribute('data-name'), this.getAttribute('data-icon'))">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <form th:action="@{/admin/categories/{id}/delete(id=${cat.categoryId})}" method="post" class="d-inline">

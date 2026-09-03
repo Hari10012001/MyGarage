@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface VehicleCategoryRepository extends JpaRepository<VehicleCategory, Long> {
     Optional<VehicleCategory> findByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCase(String name);
+    @Query("SELECT DISTINCT c FROM VehicleCategory c LEFT JOIN FETCH c.vehicles ORDER BY c.name ASC")
     List<VehicleCategory> findAllByOrderByNameAsc();
 
     @Query("SELECT vc, COUNT(v) FROM VehicleCategory vc LEFT JOIN vc.vehicles v GROUP BY vc ORDER BY vc.name ASC")

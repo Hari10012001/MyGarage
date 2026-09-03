@@ -36,7 +36,8 @@ public class AdminWebController {
     @GetMapping("/users")
     public String manageUsers(@RequestParam(required = false) String search, Model model) {
         model.addAttribute("user", authHelper.getCurrentUser());
-        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("search", search);
+        model.addAttribute("users", userService.searchUsers(search));
         return "admin/users";
     }
 

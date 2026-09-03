@@ -19,13 +19,23 @@ public class VehicleCategoryService {
 
     @Transactional(readOnly = true)
     public List<VehicleCategory> findAll() {
-        return categoryRepository.findAllByOrderByNameAsc();
+        List<VehicleCategory> categories = categoryRepository.findAllByOrderByNameAsc();
+        categories.forEach(c -> {
+            if (c.getVehicles() != null) {
+                c.getVehicles().size();
+            }
+        });
+        return categories;
     }
 
     @Transactional(readOnly = true)
     public VehicleCategory findById(Long id) {
-        return categoryRepository.findById(id)
+        VehicleCategory cat = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found: " + id));
+        if (cat.getVehicles() != null) {
+            cat.getVehicles().size();
+        }
+        return cat;
     }
 
     public VehicleCategory save(String name, String icon, String description) {

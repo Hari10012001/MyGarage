@@ -71,10 +71,18 @@ public class UserService {
         return userRepository.findByRole(Role.NORMAL_USER);
     }
 
+    @Transactional(readOnly = true)
+    public List<User> searchUsers(String query) {
+        if (query == null || query.isBlank()) {
+            return findAllUsers();
+        }
+        return userRepository.searchUsers(query.trim());
+    }
+
     public void toggleUserStatus(Long userId) {
         User user = findById(userId);
-        if (user.getRole() == Role.ADMIN) {
-            throw new IllegalArgumentException("Admin account cannot be disabled.");
+        if (user.getRole() == Role.ADMIN || "admin@mygarage.com".equalsIgnoreCase(user.getEmail())) {
+            throw new IllegalArgumentException("Cannot deactivate or modify the primary administrator account.");
         }
         user.setActive(!user.isActive());
         userRepository.save(user);

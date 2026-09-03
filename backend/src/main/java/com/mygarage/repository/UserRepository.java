@@ -15,4 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRole(Role role);
     List<User> findByActiveTrue();
     long countByRole(Role role);
+
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE u.role = 'NORMAL_USER' AND " +
+           "(LOWER(u.fullName) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<User> searchUsers(@org.springframework.data.repository.query.Param("query") String query);
 }

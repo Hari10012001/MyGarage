@@ -36,6 +36,16 @@
                 <span class="badge bg-primary" th:text="${users?.size() ?: 0} + ' users'">0</span>
             </div>
 
+            <!-- Search Form -->
+            <form th:action="@{/admin/users}" method="get" class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" th:value="${search}" class="form-control border-start-0 ps-0" placeholder="Search users by name or email...">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <a th:if="${search != null and !search.isBlank()}" th:href="@{/admin/users}" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </form>
+
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
                     <div class="table-responsive">
