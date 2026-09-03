@@ -31,9 +31,14 @@ public class FuelRecord {
     @Column(name = "fuel_id")
     private Long fuelId;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
+
+    public Long getVehicleId() {
+        return vehicle != null ? vehicle.getVehicleId() : null;
+    }
 
     @NotNull(message = "Fuel date is required")
     @Column(name = "fuel_date", nullable = false)

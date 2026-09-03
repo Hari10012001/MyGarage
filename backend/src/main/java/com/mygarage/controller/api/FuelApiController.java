@@ -40,6 +40,20 @@ public class FuelApiController {
                 .body(fuelRecordService.addFuelRecord(vehicleId, userId, request));
     }
 
+    @GetMapping("/fuel/{fuelId}")
+    public ResponseEntity<FuelRecord> getFuelById(@PathVariable Long fuelId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(fuelRecordService.getFuelRecord(fuelId, userId));
+    }
+
+    @GetMapping("/vehicles/{vehicleId}/fuel/{fuelId}")
+    public ResponseEntity<FuelRecord> getFuelForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long fuelId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(fuelRecordService.getFuelRecordForVehicle(fuelId, vehicleId, userId));
+    }
+
     @PutMapping("/fuel/{fuelId}")
     public ResponseEntity<FuelRecord> updateFuel(@PathVariable Long fuelId,
                                                   @Valid @RequestBody FuelRecordRequest request) {
@@ -47,10 +61,28 @@ public class FuelApiController {
         return ResponseEntity.ok(fuelRecordService.updateFuelRecord(fuelId, userId, request));
     }
 
+    @PutMapping("/vehicles/{vehicleId}/fuel/{fuelId}")
+    public ResponseEntity<FuelRecord> updateFuelForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long fuelId,
+            @Valid @RequestBody FuelRecordRequest request) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(fuelRecordService.updateFuelRecordForVehicle(fuelId, vehicleId, userId, request));
+    }
+
     @DeleteMapping("/fuel/{fuelId}")
     public ResponseEntity<Map<String, String>> deleteFuel(@PathVariable Long fuelId) {
         Long userId = authHelper.getCurrentUserId();
         fuelRecordService.deleteFuelRecord(fuelId, userId);
+        return ResponseEntity.ok(Map.of("message", "Fuel record deleted."));
+    }
+
+    @DeleteMapping("/vehicles/{vehicleId}/fuel/{fuelId}")
+    public ResponseEntity<Map<String, String>> deleteFuelForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long fuelId) {
+        Long userId = authHelper.getCurrentUserId();
+        fuelRecordService.deleteFuelRecordForVehicle(fuelId, vehicleId, userId);
         return ResponseEntity.ok(Map.of("message", "Fuel record deleted."));
     }
 }

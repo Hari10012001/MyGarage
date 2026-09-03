@@ -58,10 +58,25 @@ public class FuelWebController {
         }
     }
 
+    @GetMapping
+    public String listFuel(@PathVariable Long vehicleId) {
+        return "redirect:/vehicles/" + vehicleId + "?tab=fuel";
+    }
+
+    @GetMapping("/{fuelId}")
+    public String viewFuel(@PathVariable Long vehicleId, @PathVariable Long fuelId, Model model) {
+        Long userId = authHelper.getCurrentUserId();
+        var record = fuelRecordService.getFuelRecordForVehicle(fuelId, vehicleId, userId);
+        model.addAttribute("record", record);
+        model.addAttribute("vehicle", record.getVehicle());
+        model.addAttribute("user", authHelper.getCurrentUser());
+        return "redirect:/vehicles/" + vehicleId + "?tab=fuel";
+    }
+
     @GetMapping("/{fuelId}/edit")
     public String editForm(@PathVariable Long vehicleId, @PathVariable Long fuelId, Model model) {
         Long userId = authHelper.getCurrentUserId();
-        var record = fuelRecordService.getFuelRecord(fuelId, userId);
+        var record = fuelRecordService.getFuelRecordForVehicle(fuelId, vehicleId, userId);
         FuelRecordRequest req = new FuelRecordRequest();
         req.setFuelDate(record.getFuelDate());
         req.setFuelType(record.getFuelType());
@@ -71,7 +86,7 @@ public class FuelWebController {
         req.setNotes(record.getNotes());
         model.addAttribute("fuelRequest", req);
         model.addAttribute("fuelId", fuelId);
-        model.addAttribute("vehicle", vehicleService.getVehicleForUser(vehicleId, userId));
+        model.addAttribute("vehicle", record.getVehicle());
         model.addAttribute("fuelTypes", FuelType.values());
         model.addAttribute("user", authHelper.getCurrentUser());
         return "fuel/form";
@@ -89,7 +104,7 @@ public class FuelWebController {
             model.addAttribute("user", authHelper.getCurrentUser());
             return "fuel/form";
         }
-        fuelRecordService.updateFuelRecord(fuelId, userId, request);
+        fuelRecordService.updateFuelRecordForVehicle(fuelId, vehicleId, userId, request);
         ra.addFlashAttribute("successMsg", "Fuel record updated.");
         return "redirect:/vehicles/" + vehicleId + "?tab=fuel";
     }
@@ -98,7 +113,7 @@ public class FuelWebController {
     public String deleteFuel(@PathVariable Long vehicleId, @PathVariable Long fuelId,
                              RedirectAttributes ra) {
         Long userId = authHelper.getCurrentUserId();
-        fuelRecordService.deleteFuelRecord(fuelId, userId);
+        fuelRecordService.deleteFuelRecordForVehicle(fuelId, vehicleId, userId);
         ra.addFlashAttribute("successMsg", "Fuel record deleted.");
         return "redirect:/vehicles/" + vehicleId + "?tab=fuel";
     }

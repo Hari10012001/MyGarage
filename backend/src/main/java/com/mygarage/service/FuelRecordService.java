@@ -86,6 +86,16 @@ public class FuelRecordService {
                 .orElseThrow(() -> new IllegalArgumentException("Fuel record not found or access denied."));
     }
 
+    @Transactional(readOnly = true)
+    public FuelRecord getFuelRecordForVehicle(Long fuelId, Long vehicleId, Long userId) {
+        vehicleService.getVehicleForUser(vehicleId, userId);
+        FuelRecord record = getFuelRecord(fuelId, userId);
+        if (!record.getVehicle().getVehicleId().equals(vehicleId)) {
+            throw new IllegalArgumentException("Fuel record does not belong to the specified vehicle.");
+        }
+        return record;
+    }
+
     public FuelRecord updateFuelRecord(Long fuelId, Long userId, FuelRecordRequest request) {
         FuelRecord record = getFuelRecord(fuelId, userId);
         record.setFuelDate(request.getFuelDate());
@@ -98,12 +108,37 @@ public class FuelRecordService {
         if (request.getOdometerAtFill() != null) {
             calculateEstimatedMileage(record, record.getVehicle().getVehicleId(),
                     request.getFuelDate(), request.getOdometerAtFill());
+            if (request.getOdometerAtFill() > (record.getVehicle().getCurrentOdometer() == null ? 0 : record.getVehicle().getCurrentOdometer())) {
+                record.getVehicle().setCurrentOdometer(request.getOdometerAtFill());
+            }
+        }
+        return fuelRecordRepository.save(record);
+    }
+
+    public FuelRecord updateFuelRecordForVehicle(Long fuelId, Long vehicleId, Long userId, FuelRecordRequest request) {
+        FuelRecord record = getFuelRecordForVehicle(fuelId, vehicleId, userId);
+        record.setFuelDate(request.getFuelDate());
+        record.setFuelType(request.getFuelType());
+        record.setQuantityLitres(request.getQuantityLitres());
+        record.setCostPerLitre(request.getCostPerLitre());
+        record.setOdometerAtFill(request.getOdometerAtFill());
+        record.setNotes(request.getNotes());
+        if (request.getOdometerAtFill() != null) {
+            calculateEstimatedMileage(record, vehicleId, request.getFuelDate(), request.getOdometerAtFill());
+            if (request.getOdometerAtFill() > (record.getVehicle().getCurrentOdometer() == null ? 0 : record.getVehicle().getCurrentOdometer())) {
+                record.getVehicle().setCurrentOdometer(request.getOdometerAtFill());
+            }
         }
         return fuelRecordRepository.save(record);
     }
 
     public void deleteFuelRecord(Long fuelId, Long userId) {
         FuelRecord record = getFuelRecord(fuelId, userId);
+        fuelRecordRepository.delete(record);
+    }
+
+    public void deleteFuelRecordForVehicle(Long fuelId, Long vehicleId, Long userId) {
+        FuelRecord record = getFuelRecordForVehicle(fuelId, vehicleId, userId);
         fuelRecordRepository.delete(record);
     }
 
