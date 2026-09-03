@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 4 (M4) COMPLETE & FULLY VERIFIED — Ready for M5
+**Current Phase:** MILESTONE 5 (M5) COMPLETE & FULLY VERIFIED — Ready for M6
 
 ---
 
@@ -22,26 +22,27 @@
 
 ---
 
-## Milestone 4 (M4) Vehicle Module Verification Matrix
+## Milestone 5 (M5) Service Module Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **View My Vehicles** | Lists user vehicles with make/model, plate badge, year, color, odo, category icon | **PASS** |
-| **Empty State** | User-friendly message and CTA when garage has 0 vehicles | **PASS** |
-| **Search Filter** | Dynamic search by make, model, or plate number with clear button | **PASS** |
-| **Add Vehicle Form & Submission** | Category selection dropdown, server-side validation, uppercase plate number | **PASS** |
-| **Duplicate Plate Protection** | Duplicate plate within user's garage is rejected | **PASS** |
-| **Cross-User Plate Uniqueness** | Different users can register the same plate number in separate garages | **PASS** |
-| **View Vehicle Details & Timeline** | Displays summary statistics, quick action links, and chronological history | **PASS** |
-| **Edit Vehicle** | Pre-populated form, preserves plate or validates new plate, updates fields | **PASS** |
-| **Direct URL Access Protection** | User cannot view or edit another user's vehicle by guessing ID | **PASS** |
-| **Vehicle Deletion & Cascade** | Deleting vehicle cleanly cascades and deletes all service, fuel, maintenance records | **PASS** |
-| **Unauthorized Deletion Protection** | User cannot delete another user's vehicle | **PASS** |
-| **REST API (`/api/vehicles`)** | Full CRUD (GET, GET /id, POST, PUT, DELETE) user-scoped with JSON | **PASS** |
-| **ADMIN Garage Isolation** | ADMIN is barred from user vehicle web (`/vehicles`) and REST (`/api/vehicles`) | **PASS** |
+| **Service History Listing** | Listed on vehicle detail page ordered by `serviceDate DESC` | **PASS** |
+| **Empty State** | Clear empty state displayed when vehicle has 0 service records | **PASS** |
+| **Add Service Record** | Form validation, persists record, updates vehicle current odometer if higher | **PASS** |
+| **Validation Constraints** | Negative cost (<0) and negative odometer (<0) rejected | **PASS** |
+| **Edit Service Record** | Pre-populated form, preserves vehicle linkage, updates attributes | **PASS** |
+| **Delete Service Record** | Deletes record with CSRF verification | **PASS** |
+| **Two-Tier Ownership Check** | `User -> Vehicle -> ServiceRecord` enforced across all operations | **PASS** |
+| **Cross-User Service Access** | Blocked when User B attempts to access User A's service records | **PASS** |
+| **Cross-User Service Creation** | Blocked when User B attempts to add service to User A's vehicle | **PASS** |
+| **Cross-User Service Mutation** | Blocked when User B attempts to update User A's service record | **PASS** |
+| **Cross-User Service Deletion** | Blocked when User B attempts to delete User A's service record | **PASS** |
+| **REST API (`/api/services/**`)**| Full CRUD (GET list, GET by ID, POST, PUT, DELETE) user-scoped | **PASS** |
+| **ADMIN Service Isolation** | ADMIN role blocked (`403 Forbidden`) from user service routes | **PASS** |
 | **Unauthenticated Protection** | Unauthenticated requests redirected to `/login` | **PASS** |
-| **Regression Test Suite** | 63 automated tests (`VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (63/63, 0 failures, 0 errors)** |
-| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all 10 user/admin flows | **PASS** |
+| **Cascade Deletion** | Deleting a vehicle cleanly removes all associated service records | **PASS** |
+| **Regression Test Suite** | 88 automated tests (`ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (88/88, 0 failures, 0 errors)** |
+| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all service flows | **PASS** |
 
 ---
 
@@ -57,8 +58,8 @@
 | **M2** | Database & JPA Entities (Deep Verification, Indexes, Cascades & Mappings) | **COMPLETED & VERIFIED** |
 | **M3** | Authentication & Role-Based Access Control (SecurityFilterChain Matcher Order, REST RBAC, CSRF, BCrypt) | **COMPLETED & FULLY VERIFIED** |
 | **M4** | Vehicle Module (Vehicle CRUD, Ownership Guarding, License Plate Uniqueness, Category Association, Odometer Tracking) | **COMPLETED & FULLY VERIFIED** |
-| **M5** | Service Module (Service History, Costs & Garage Tracking) | **NEXT** |
-| **M6** | Fuel Module (Fuel Logs & Estimated Mileage) | PENDING |
+| **M5** | Service Module (Service History, Costs & Garage Tracking, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
+| **M6** | Fuel Module (Fuel Logs & Estimated Mileage) | **NEXT** |
 | **M7** | Maintenance Module (Status Logic & Reminders) | PENDING |
 | **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation) | PENDING |
 | **M9** | Admin Module (User & Category Management) | PENDING |
@@ -69,18 +70,18 @@
 ## Architecture Inventory
 
 - **Web MVC Controllers (8):**
-  1. `VehicleWebController` (`/vehicles/**` - Complete CRUD, details, timeline, search)
-  2. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
-  3. `DashboardWebController` (`/dashboard/**`)
-  4. `ServiceWebController` (`/service/**`)
+  1. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
+  2. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
+  3. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
+  4. `DashboardWebController` (`/dashboard/**`)
   5. `FuelWebController` (`/fuel/**`)
   6. `MaintenanceWebController` (`/maintenance/**`)
   7. `ProfileWebController` (`/profile/**`)
   8. `AdminWebController` (`/admin/**`)
 - **REST API Controllers (6):**
-  1. `VehicleApiController` (`/api/vehicles/**` - Full user-scoped REST CRUD)
-  2. `AdminApiController` (`/api/admin/**` - Gated strictly to `ROLE_ADMIN`)
-  3. `ServiceApiController` (`/api/services/**`)
+  1. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
+  2. `VehicleApiController` (`/api/vehicles/**`)
+  3. `AdminApiController` (`/api/admin/**`)
   4. `FuelApiController` (`/api/fuel/**`)
   5. `MaintenanceApiController` (`/api/maintenance/**`)
   6. `DashboardApiController` (`/api/dashboard/**`)
@@ -89,10 +90,11 @@
   - `docs/DATABASE_DESIGN.md` (ERD, Data Dictionary, Cascade & Index Rules)
   - `docs/SECURITY_DESIGN.md` (SecurityFilterChain Ordering, RBAC Matrix, CSRF)
   - `docs/VEHICLE_MODULE_DESIGN.md` (Vehicle Module CRUD, Ownership, Validation, APIs)
+  - `docs/SERVICE_MODULE_DESIGN.md` (Service Module Two-Tier Ownership, Odometer, APIs)
   - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Ready to proceed to **M5: Service Module (Service Record CRUD, Service History Tracking, Garage & Cost Tracking, and Vehicle Association)** upon user instruction.
+Ready to proceed to **M6: Fuel Module (Fuel Record Logging, Mileage Calculation, Cost Aggregation, and Ownership Guarding)** upon user instruction.

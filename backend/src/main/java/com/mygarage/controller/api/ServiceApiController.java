@@ -37,6 +37,20 @@ public class ServiceApiController {
                 .body(serviceRecordService.addServiceRecord(vehicleId, userId, request));
     }
 
+    @GetMapping("/services/{serviceId}")
+    public ResponseEntity<ServiceRecord> getServiceById(@PathVariable Long serviceId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(serviceRecordService.getServiceRecord(serviceId, userId));
+    }
+
+    @GetMapping("/vehicles/{vehicleId}/services/{serviceId}")
+    public ResponseEntity<ServiceRecord> getServiceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long serviceId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(serviceRecordService.getServiceRecordForVehicle(serviceId, vehicleId, userId));
+    }
+
     @PutMapping("/services/{serviceId}")
     public ResponseEntity<ServiceRecord> updateService(@PathVariable Long serviceId,
                                                         @Valid @RequestBody ServiceRecordRequest request) {
@@ -44,10 +58,28 @@ public class ServiceApiController {
         return ResponseEntity.ok(serviceRecordService.updateServiceRecord(serviceId, userId, request));
     }
 
+    @PutMapping("/vehicles/{vehicleId}/services/{serviceId}")
+    public ResponseEntity<ServiceRecord> updateServiceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long serviceId,
+            @Valid @RequestBody ServiceRecordRequest request) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(serviceRecordService.updateServiceRecordForVehicle(serviceId, vehicleId, userId, request));
+    }
+
     @DeleteMapping("/services/{serviceId}")
     public ResponseEntity<Map<String, String>> deleteService(@PathVariable Long serviceId) {
         Long userId = authHelper.getCurrentUserId();
         serviceRecordService.deleteServiceRecord(serviceId, userId);
+        return ResponseEntity.ok(Map.of("message", "Service record deleted."));
+    }
+
+    @DeleteMapping("/vehicles/{vehicleId}/services/{serviceId}")
+    public ResponseEntity<Map<String, String>> deleteServiceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long serviceId) {
+        Long userId = authHelper.getCurrentUserId();
+        serviceRecordService.deleteServiceRecordForVehicle(serviceId, vehicleId, userId);
         return ResponseEntity.ok(Map.of("message", "Service record deleted."));
     }
 }

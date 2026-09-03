@@ -61,6 +61,16 @@ public class ServiceRecordService {
         return serviceRecordRepository.searchByVehicleAndKeyword(vehicleId, keyword.trim());
     }
 
+    @Transactional(readOnly = true)
+    public ServiceRecord getServiceRecordForVehicle(Long serviceId, Long vehicleId, Long userId) {
+        vehicleService.getVehicleForUser(vehicleId, userId); // verify vehicle ownership
+        ServiceRecord record = getServiceRecord(serviceId, userId); // verify service record ownership
+        if (!record.getVehicle().getVehicleId().equals(vehicleId)) {
+            throw new IllegalArgumentException("Service record does not belong to the specified vehicle.");
+        }
+        return record;
+    }
+
     public ServiceRecord updateServiceRecord(Long serviceId, Long userId, ServiceRecordRequest request) {
         ServiceRecord record = getServiceRecord(serviceId, userId);
         record.setServiceDate(request.getServiceDate());
@@ -71,11 +81,37 @@ public class ServiceRecordService {
         record.setOdometerAtService(request.getOdometerAtService());
         record.setNextServiceDueDate(request.getNextServiceDueDate());
         record.setNotes(request.getNotes());
+        if (request.getOdometerAtService() != null
+                && request.getOdometerAtService() > (record.getVehicle().getCurrentOdometer() == null ? 0 : record.getVehicle().getCurrentOdometer())) {
+            record.getVehicle().setCurrentOdometer(request.getOdometerAtService());
+        }
+        return serviceRecordRepository.save(record);
+    }
+
+    public ServiceRecord updateServiceRecordForVehicle(Long serviceId, Long vehicleId, Long userId, ServiceRecordRequest request) {
+        ServiceRecord record = getServiceRecordForVehicle(serviceId, vehicleId, userId);
+        record.setServiceDate(request.getServiceDate());
+        record.setServiceType(request.getServiceType().trim());
+        record.setDescription(request.getDescription());
+        record.setGarageName(request.getGarageName());
+        record.setCost(request.getCost());
+        record.setOdometerAtService(request.getOdometerAtService());
+        record.setNextServiceDueDate(request.getNextServiceDueDate());
+        record.setNotes(request.getNotes());
+        if (request.getOdometerAtService() != null
+                && request.getOdometerAtService() > (record.getVehicle().getCurrentOdometer() == null ? 0 : record.getVehicle().getCurrentOdometer())) {
+            record.getVehicle().setCurrentOdometer(request.getOdometerAtService());
+        }
         return serviceRecordRepository.save(record);
     }
 
     public void deleteServiceRecord(Long serviceId, Long userId) {
         ServiceRecord record = getServiceRecord(serviceId, userId);
+        serviceRecordRepository.delete(record);
+    }
+
+    public void deleteServiceRecordForVehicle(Long serviceId, Long vehicleId, Long userId) {
+        ServiceRecord record = getServiceRecordForVehicle(serviceId, vehicleId, userId);
         serviceRecordRepository.delete(record);
     }
 

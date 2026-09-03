@@ -54,10 +54,25 @@ public class ServiceWebController {
         }
     }
 
+    @GetMapping
+    public String listServices(@PathVariable Long vehicleId) {
+        return "redirect:/vehicles/" + vehicleId + "?tab=service";
+    }
+
+    @GetMapping("/{serviceId}")
+    public String viewService(@PathVariable Long vehicleId, @PathVariable Long serviceId, Model model) {
+        Long userId = authHelper.getCurrentUserId();
+        var record = serviceRecordService.getServiceRecordForVehicle(serviceId, vehicleId, userId);
+        model.addAttribute("record", record);
+        model.addAttribute("vehicle", record.getVehicle());
+        model.addAttribute("user", authHelper.getCurrentUser());
+        return "redirect:/vehicles/" + vehicleId + "?tab=service";
+    }
+
     @GetMapping("/{serviceId}/edit")
     public String editForm(@PathVariable Long vehicleId, @PathVariable Long serviceId, Model model) {
         Long userId = authHelper.getCurrentUserId();
-        var record = serviceRecordService.getServiceRecord(serviceId, userId);
+        var record = serviceRecordService.getServiceRecordForVehicle(serviceId, vehicleId, userId);
         ServiceRecordRequest req = new ServiceRecordRequest();
         req.setServiceDate(record.getServiceDate());
         req.setServiceType(record.getServiceType());
@@ -69,7 +84,7 @@ public class ServiceWebController {
         req.setNotes(record.getNotes());
         model.addAttribute("serviceRequest", req);
         model.addAttribute("serviceId", serviceId);
-        model.addAttribute("vehicle", vehicleService.getVehicleForUser(vehicleId, userId));
+        model.addAttribute("vehicle", record.getVehicle());
         model.addAttribute("user", authHelper.getCurrentUser());
         return "service/form";
     }
@@ -85,7 +100,7 @@ public class ServiceWebController {
             model.addAttribute("user", authHelper.getCurrentUser());
             return "service/form";
         }
-        serviceRecordService.updateServiceRecord(serviceId, userId, request);
+        serviceRecordService.updateServiceRecordForVehicle(serviceId, vehicleId, userId, request);
         ra.addFlashAttribute("successMsg", "Service record updated.");
         return "redirect:/vehicles/" + vehicleId + "?tab=service";
     }
@@ -94,7 +109,7 @@ public class ServiceWebController {
     public String deleteService(@PathVariable Long vehicleId, @PathVariable Long serviceId,
                                 RedirectAttributes ra) {
         Long userId = authHelper.getCurrentUserId();
-        serviceRecordService.deleteServiceRecord(serviceId, userId);
+        serviceRecordService.deleteServiceRecordForVehicle(serviceId, vehicleId, userId);
         ra.addFlashAttribute("successMsg", "Service record deleted.");
         return "redirect:/vehicles/" + vehicleId + "?tab=service";
     }

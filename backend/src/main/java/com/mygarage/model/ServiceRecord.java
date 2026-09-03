@@ -29,9 +29,14 @@ public class ServiceRecord {
     @Column(name = "service_id")
     private Long serviceId;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
+
+    public Long getVehicleId() {
+        return vehicle != null ? vehicle.getVehicleId() : null;
+    }
 
     @NotNull(message = "Service date is required")
     @Column(name = "service_date", nullable = false)
