@@ -80,8 +80,30 @@ public class MaintenanceService {
                 .orElseThrow(() -> new IllegalArgumentException("Maintenance record not found or access denied."));
     }
 
+    @Transactional(readOnly = true)
+    public MaintenanceRecord getMaintenanceRecordForVehicle(Long maintenanceId, Long vehicleId, Long userId) {
+        vehicleService.getVehicleForUser(vehicleId, userId);
+        MaintenanceRecord record = getMaintenanceRecord(maintenanceId, userId);
+        if (!record.getVehicle().getVehicleId().equals(vehicleId)) {
+            throw new IllegalArgumentException("Maintenance record does not belong to the specified vehicle.");
+        }
+        return record;
+    }
+
     public MaintenanceRecord updateMaintenanceRecord(Long maintenanceId, Long userId, MaintenanceRequest request) {
         MaintenanceRecord record = getMaintenanceRecord(maintenanceId, userId);
+        record.setTitle(request.getTitle().trim());
+        record.setDescription(request.getDescription());
+        record.setScheduledDate(request.getScheduledDate());
+        record.setCompletedDate(request.getCompletedDate());
+        record.setCost(request.getCost());
+        record.setNotes(request.getNotes());
+        record.setStatus(computeStatus(request.getScheduledDate(), request.getCompletedDate()));
+        return maintenanceRecordRepository.save(record);
+    }
+
+    public MaintenanceRecord updateMaintenanceRecordForVehicle(Long maintenanceId, Long vehicleId, Long userId, MaintenanceRequest request) {
+        MaintenanceRecord record = getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
         record.setTitle(request.getTitle().trim());
         record.setDescription(request.getDescription());
         record.setScheduledDate(request.getScheduledDate());
@@ -99,8 +121,20 @@ public class MaintenanceService {
         return maintenanceRecordRepository.save(record);
     }
 
+    public MaintenanceRecord markCompletedForVehicle(Long maintenanceId, Long vehicleId, Long userId, LocalDate completedDate) {
+        MaintenanceRecord record = getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
+        record.setCompletedDate(completedDate != null ? completedDate : LocalDate.now());
+        record.setStatus(MaintenanceStatus.COMPLETED);
+        return maintenanceRecordRepository.save(record);
+    }
+
     public void deleteMaintenanceRecord(Long maintenanceId, Long userId) {
         MaintenanceRecord record = getMaintenanceRecord(maintenanceId, userId);
+        maintenanceRecordRepository.delete(record);
+    }
+
+    public void deleteMaintenanceRecordForVehicle(Long maintenanceId, Long vehicleId, Long userId) {
+        MaintenanceRecord record = getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
         maintenanceRecordRepository.delete(record);
     }
 

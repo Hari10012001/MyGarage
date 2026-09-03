@@ -37,6 +37,20 @@ public class MaintenanceApiController {
                 .body(maintenanceService.addMaintenanceRecord(vehicleId, userId, request));
     }
 
+    @GetMapping("/maintenance/{maintenanceId}")
+    public ResponseEntity<MaintenanceRecord> getMaintenanceById(@PathVariable Long maintenanceId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.getMaintenanceRecord(maintenanceId, userId));
+    }
+
+    @GetMapping("/vehicles/{vehicleId}/maintenance/{maintenanceId}")
+    public ResponseEntity<MaintenanceRecord> getMaintenanceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long maintenanceId) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId));
+    }
+
     @PutMapping("/maintenance/{maintenanceId}")
     public ResponseEntity<MaintenanceRecord> updateMaintenance(@PathVariable Long maintenanceId,
                                                                 @Valid @RequestBody MaintenanceRequest request) {
@@ -44,18 +58,62 @@ public class MaintenanceApiController {
         return ResponseEntity.ok(maintenanceService.updateMaintenanceRecord(maintenanceId, userId, request));
     }
 
+    @PutMapping("/vehicles/{vehicleId}/maintenance/{maintenanceId}")
+    public ResponseEntity<MaintenanceRecord> updateMaintenanceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long maintenanceId,
+            @Valid @RequestBody MaintenanceRequest request) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.updateMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId, request));
+    }
+
     @PatchMapping("/maintenance/{maintenanceId}/complete")
-    public ResponseEntity<MaintenanceRecord> markCompleted(
+    public ResponseEntity<MaintenanceRecord> patchMarkCompleted(
             @PathVariable Long maintenanceId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate completedDate) {
         Long userId = authHelper.getCurrentUserId();
         return ResponseEntity.ok(maintenanceService.markCompleted(maintenanceId, userId, completedDate));
     }
 
+    @PostMapping("/maintenance/{maintenanceId}/complete")
+    public ResponseEntity<MaintenanceRecord> postMarkCompleted(
+            @PathVariable Long maintenanceId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate completedDate) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.markCompleted(maintenanceId, userId, completedDate));
+    }
+
+    @PatchMapping("/vehicles/{vehicleId}/maintenance/{maintenanceId}/complete")
+    public ResponseEntity<MaintenanceRecord> patchMarkCompletedForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long maintenanceId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate completedDate) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.markCompletedForVehicle(maintenanceId, vehicleId, userId, completedDate));
+    }
+
+    @PostMapping("/vehicles/{vehicleId}/maintenance/{maintenanceId}/complete")
+    public ResponseEntity<MaintenanceRecord> postMarkCompletedForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long maintenanceId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate completedDate) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.markCompletedForVehicle(maintenanceId, vehicleId, userId, completedDate));
+    }
+
     @DeleteMapping("/maintenance/{maintenanceId}")
     public ResponseEntity<Map<String, String>> deleteMaintenance(@PathVariable Long maintenanceId) {
         Long userId = authHelper.getCurrentUserId();
         maintenanceService.deleteMaintenanceRecord(maintenanceId, userId);
+        return ResponseEntity.ok(Map.of("message", "Maintenance record deleted."));
+    }
+
+    @DeleteMapping("/vehicles/{vehicleId}/maintenance/{maintenanceId}")
+    public ResponseEntity<Map<String, String>> deleteMaintenanceForVehicle(
+            @PathVariable Long vehicleId,
+            @PathVariable Long maintenanceId) {
+        Long userId = authHelper.getCurrentUserId();
+        maintenanceService.deleteMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
         return ResponseEntity.ok(Map.of("message", "Maintenance record deleted."));
     }
 }

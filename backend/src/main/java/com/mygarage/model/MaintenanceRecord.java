@@ -37,9 +37,14 @@ public class MaintenanceRecord {
     @Column(name = "maintenance_id")
     private Long maintenanceId;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
+
+    public Long getVehicleId() {
+        return vehicle != null ? vehicle.getVehicleId() : null;
+    }
 
     @NotBlank(message = "Task title is required")
     @Size(max = 100)

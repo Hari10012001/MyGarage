@@ -58,10 +58,25 @@ public class MaintenanceWebController {
         }
     }
 
+    @GetMapping
+    public String listMaintenance(@PathVariable Long vehicleId) {
+        return "redirect:/vehicles/" + vehicleId + "?tab=maintenance";
+    }
+
+    @GetMapping("/{maintenanceId}")
+    public String viewMaintenance(@PathVariable Long vehicleId, @PathVariable Long maintenanceId, Model model) {
+        Long userId = authHelper.getCurrentUserId();
+        var record = maintenanceService.getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
+        model.addAttribute("record", record);
+        model.addAttribute("vehicle", record.getVehicle());
+        model.addAttribute("user", authHelper.getCurrentUser());
+        return "redirect:/vehicles/" + vehicleId + "?tab=maintenance";
+    }
+
     @GetMapping("/{maintenanceId}/edit")
     public String editForm(@PathVariable Long vehicleId, @PathVariable Long maintenanceId, Model model) {
         Long userId = authHelper.getCurrentUserId();
-        var record = maintenanceService.getMaintenanceRecord(maintenanceId, userId);
+        var record = maintenanceService.getMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
         MaintenanceRequest req = new MaintenanceRequest();
         req.setTitle(record.getTitle());
         req.setDescription(record.getDescription());
@@ -71,7 +86,7 @@ public class MaintenanceWebController {
         req.setNotes(record.getNotes());
         model.addAttribute("maintenanceRequest", req);
         model.addAttribute("maintenanceId", maintenanceId);
-        model.addAttribute("vehicle", vehicleService.getVehicleForUser(vehicleId, userId));
+        model.addAttribute("vehicle", record.getVehicle());
         model.addAttribute("user", authHelper.getCurrentUser());
         return "maintenance/form";
     }
@@ -87,7 +102,7 @@ public class MaintenanceWebController {
             model.addAttribute("user", authHelper.getCurrentUser());
             return "maintenance/form";
         }
-        maintenanceService.updateMaintenanceRecord(maintenanceId, userId, request);
+        maintenanceService.updateMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId, request);
         ra.addFlashAttribute("successMsg", "Maintenance task updated.");
         return "redirect:/vehicles/" + vehicleId + "?tab=maintenance";
     }
@@ -97,7 +112,7 @@ public class MaintenanceWebController {
                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate completedDate,
                                 RedirectAttributes ra) {
         Long userId = authHelper.getCurrentUserId();
-        maintenanceService.markCompleted(maintenanceId, userId, completedDate);
+        maintenanceService.markCompletedForVehicle(maintenanceId, vehicleId, userId, completedDate);
         ra.addFlashAttribute("successMsg", "Maintenance marked as completed.");
         return "redirect:/vehicles/" + vehicleId + "?tab=maintenance";
     }
@@ -106,7 +121,7 @@ public class MaintenanceWebController {
     public String deleteMaintenance(@PathVariable Long vehicleId, @PathVariable Long maintenanceId,
                                     RedirectAttributes ra) {
         Long userId = authHelper.getCurrentUserId();
-        maintenanceService.deleteMaintenanceRecord(maintenanceId, userId);
+        maintenanceService.deleteMaintenanceRecordForVehicle(maintenanceId, vehicleId, userId);
         ra.addFlashAttribute("successMsg", "Maintenance task deleted.");
         return "redirect:/vehicles/" + vehicleId + "?tab=maintenance";
     }

@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 6 (M6) COMPLETE & FULLY VERIFIED — Ready for M7
+**Current Phase:** MILESTONE 7 (M7) COMPLETE & FULLY VERIFIED — Ready for M8
 
 ---
 
@@ -22,29 +22,30 @@
 
 ---
 
-## Milestone 6 (M6) Fuel Module Verification Matrix
+## Milestone 7 (M7) Maintenance Module Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Fuel History Listing** | Listed on vehicle detail page ordered by `fuelDate DESC` | **PASS** |
-| **Empty State** | Clear empty state displayed when vehicle has 0 fuel records | **PASS** |
-| **Add Fuel Record** | Form validation, persists record, updates vehicle current odometer if higher | **PASS** |
-| **Validation Constraints** | Negative quantity (<0), negative rate (<0), negative odometer (<0) rejected | **PASS** |
-| **Total Cost Computation** | Computed automatically on persist/update ($Qty \times Rate$) and live JS | **PASS** |
-| **Estimated Mileage** | Dynamically computed ($\Delta \text{Distance} / \text{Litres}$) and displayed as `km/L (est.)` | **PASS** |
-| **Edit Fuel Record** | Pre-populated form, preserves vehicle linkage, updates attributes | **PASS** |
-| **Delete Fuel Record** | Deletes record with CSRF verification | **PASS** |
-| **Two-Tier Ownership Check** | `User -> Vehicle -> FuelRecord` enforced across all operations | **PASS** |
-| **Cross-User Fuel Access** | Blocked when User B attempts to access User A's fuel records | **PASS** |
-| **Cross-User Fuel Creation** | Blocked when User B attempts to add fuel to User A's vehicle | **PASS** |
-| **Cross-User Fuel Mutation** | Blocked when User B attempts to update User A's fuel record | **PASS** |
-| **Cross-User Fuel Deletion** | Blocked when User B attempts to delete User A's fuel record | **PASS** |
-| **REST API (`/api/fuel/**`)** | Full CRUD (GET list, GET by ID, POST, PUT, DELETE) user-scoped | **PASS** |
-| **ADMIN Fuel Isolation** | ADMIN role blocked (`403 Forbidden`) from user fuel routes | **PASS** |
+| **Maintenance Task Listing** | Listed on vehicle detail page ordered by `scheduledDate ASC` | **PASS** |
+| **Empty State** | Clear empty state displayed when vehicle has 0 maintenance tasks | **PASS** |
+| **Add Maintenance Task** | Form validation, persists task, evaluates dynamic status | **PASS** |
+| **Validation Constraints** | Required title/scheduledDate enforced; negative cost (<0) rejected | **PASS** |
+| **Dynamic Status Logic** | `OVERDUE` (past), `DUE_TODAY` (today), `UPCOMING` (future), `COMPLETED` | **PASS** |
+| **Mark Task Completed** | One-click complete button sets completed date & `COMPLETED` status | **PASS** |
+| **Edit Maintenance Task** | Pre-populated form, preserves vehicle linkage, updates attributes | **PASS** |
+| **Delete Maintenance Task** | Deletes task with CSRF verification | **PASS** |
+| **Two-Tier Ownership Check** | `User -> Vehicle -> MaintenanceRecord` enforced across all operations | **PASS** |
+| **Cross-User Access Blocked** | Blocked when User B attempts to access User A's maintenance tasks | **PASS** |
+| **Cross-User Creation Blocked**| Blocked when User B attempts to add task to User A's vehicle | **PASS** |
+| **Cross-User Update Blocked** | Blocked when User B attempts to edit User A's maintenance task | **PASS** |
+| **Cross-User Complete Blocked**| Blocked when User B attempts to mark User A's task complete | **PASS** |
+| **Cross-User Deletion Blocked**| Blocked when User B attempts to delete User A's maintenance task | **PASS** |
+| **REST API (`/api/maintenance/**`)** | Full CRUD + `/complete` endpoint (PATCH & POST) user-scoped | **PASS** |
+| **ADMIN Maintenance Isolation**| ADMIN role blocked (`403 Forbidden`) from user maintenance routes | **PASS** |
 | **Unauthenticated Protection**| Unauthenticated requests redirected to `/login` | **PASS** |
-| **Cascade Deletion** | Deleting a vehicle cleanly removes all associated fuel records | **PASS** |
-| **Regression Test Suite** | 116 automated tests (`FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (116/116, 0 failures, 0 errors)** |
-| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all fuel flows | **PASS** |
+| **Cascade Deletion** | Deleting a vehicle cleanly removes all associated maintenance tasks | **PASS** |
+| **Regression Test Suite** | 146 automated tests (`MaintenanceModuleTest` [30], `FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (146/146, 0 failures, 0 errors)** |
+| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all maintenance flows | **PASS** |
 
 ---
 
@@ -62,8 +63,8 @@
 | **M4** | Vehicle Module (Vehicle CRUD, Ownership Guarding, License Plate Uniqueness, Category Association, Odometer Tracking) | **COMPLETED & FULLY VERIFIED** |
 | **M5** | Service Module (Service History, Costs & Garage Tracking, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
 | **M6** | Fuel Module (Fuel Logs, Estimated Mileage, Auto Total Cost, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
-| **M7** | Maintenance Module (Status Logic & Reminders) | **NEXT** |
-| **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation) | PENDING |
+| **M7** | Maintenance Module (Status Logic & Reminders, Priority, Mark Complete, Ownership) | **COMPLETED & FULLY VERIFIED** |
+| **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation) | **NEXT** |
 | **M9** | Admin Module (User & Category Management) | PENDING |
 | **M10** | Polish, Comprehensive 6-Layer QC & Documentation Finalization | PENDING |
 
@@ -72,20 +73,20 @@
 ## Architecture Inventory
 
 - **Web MVC Controllers (8):**
-  1. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
-  2. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
-  3. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
-  4. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
-  5. `DashboardWebController` (`/dashboard/**`)
-  6. `MaintenanceWebController` (`/maintenance/**`)
+  1. `MaintenanceWebController` (`/vehicles/{id}/maintenance/**` - Add, edit, complete, delete, list, detail)
+  2. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
+  3. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
+  4. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
+  5. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
+  6. `DashboardWebController` (`/dashboard/**`)
   7. `ProfileWebController` (`/profile/**`)
   8. `AdminWebController` (`/admin/**`)
 - **REST API Controllers (6):**
-  1. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
-  2. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
-  3. `VehicleApiController` (`/api/vehicles/**`)
-  4. `AdminApiController` (`/api/admin/**`)
-  5. `MaintenanceApiController` (`/api/maintenance/**`)
+  1. `MaintenanceApiController` (`/api/vehicles/{id}/maintenance`, `/api/maintenance/{id}`)
+  2. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
+  3. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
+  4. `VehicleApiController` (`/api/vehicles/**`)
+  5. `AdminApiController` (`/api/admin/**`)
   6. `DashboardApiController` (`/api/dashboard/**`)
 - **Documentation:**
   - `docs/REQUIREMENTS.md` (Functional Requirements Specification)
@@ -94,10 +95,11 @@
   - `docs/VEHICLE_MODULE_DESIGN.md` (Vehicle Module CRUD, Ownership, Validation, APIs)
   - `docs/SERVICE_MODULE_DESIGN.md` (Service Module Two-Tier Ownership, Odometer, APIs)
   - `docs/FUEL_MODULE_DESIGN.md` (Fuel Module Mileage Calculations, Total Costs, APIs)
+  - `docs/MAINTENANCE_MODULE_DESIGN.md` (Maintenance Dynamic Status Logic, Alerts, APIs)
   - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Ready to proceed to **M7: Maintenance Module (Status Logic, Scheduled vs Completed Tasks, Priority Logic, and Reminders)** upon user instruction.
+Ready to proceed to **M8: Dashboard & Reports (Real Analytics, Alert Aggregation, and Export Capabilities)** upon user instruction.
