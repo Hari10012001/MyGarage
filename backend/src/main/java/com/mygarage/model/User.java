@@ -43,6 +43,7 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @NotBlank(message = "Password is required")
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -65,6 +66,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     // One user can own many vehicles
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Vehicle> vehicles = new ArrayList<>();
 

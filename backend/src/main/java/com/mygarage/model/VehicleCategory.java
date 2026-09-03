@@ -38,6 +38,7 @@ public class VehicleCategory {
     @Column(name = "description", length = 200)
     private String description;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Vehicle> vehicles = new ArrayList<>();
 

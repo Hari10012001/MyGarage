@@ -50,17 +50,15 @@ class AuthenticationAndAuthorizationTest {
 
     @BeforeEach
     void setUp() {
-        // Ensure standard test user exists
-        if (!userRepository.existsByEmail("john@example.com")) {
-            User user = new User();
-            user.setFullName("John Doe");
-            user.setEmail("john@example.com");
-            user.setPasswordHash(passwordEncoder.encode("Secret@123"));
-            user.setPhone("9876543210");
-            user.setRole(Role.NORMAL_USER);
-            user.setActive(true);
-            userRepository.save(user);
-        }
+        // Ensure standard test user exists and is active
+        User user = userRepository.findByEmail("john@example.com").orElseGet(User::new);
+        user.setFullName("John Doe");
+        user.setEmail("john@example.com");
+        user.setPasswordHash(passwordEncoder.encode("Secret@123"));
+        user.setPhone("9876543210");
+        user.setRole(Role.NORMAL_USER);
+        user.setActive(true);
+        userRepository.save(user);
 
         // Ensure default admin exists
         if (!userRepository.existsByEmail("admin@mygarage.com")) {
@@ -217,16 +215,107 @@ class AuthenticationAndAuthorizationTest {
     }
 
     @Test
-    @DisplayName("11. Role Enforcement on REST Endpoints")
+    @DisplayName("11a. Unauthenticated Access to /api/vehicles is Blocked")
+    void testUnauthenticatedCannotAccessApiVehicles() throws Exception {
+        mockMvc.perform(get("/api/vehicles"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    @DisplayName("11b. NORMAL_USER Allowed on /api/vehicles")
     @WithMockUser(username = "john@example.com", roles = {"NORMAL_USER"})
-    void testRoleEnforcementOnRest() throws Exception {
-        // NORMAL_USER accessing user REST API
+    void testNormalUserCanAccessApiVehicles() throws Exception {
         mockMvc.perform(get("/api/vehicles"))
                 .andExpect(status().isOk());
+    }
 
-        // NORMAL_USER accessing admin REST endpoint is forbidden
+    @Test
+    @DisplayName("11c. ADMIN Forbidden from /api/vehicles (Defined Isolation)")
+    @WithMockUser(username = "admin@mygarage.com", roles = {"ADMIN"})
+    void testAdminCannotAccessApiVehicles() throws Exception {
+        mockMvc.perform(get("/api/vehicles"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("11d. NORMAL_USER Forbidden from /api/admin/statistics")
+    @WithMockUser(username = "john@example.com", roles = {"NORMAL_USER"})
+    void testNormalUserForbiddenFromApiAdminStatistics() throws Exception {
         mockMvc.perform(get("/api/admin/statistics"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("11e. ADMIN Allowed on /api/admin/statistics")
+    @WithMockUser(username = "admin@mygarage.com", roles = {"ADMIN"})
+    void testAdminCanAccessApiAdminStatistics() throws Exception {
+        mockMvc.perform(get("/api/admin/statistics"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("11f. NORMAL_USER Forbidden from /api/admin/** (categories & users)")
+    @WithMockUser(username = "john@example.com", roles = {"NORMAL_USER"})
+    void testNormalUserForbiddenFromApiAdminEndpoints() throws Exception {
+        mockMvc.perform(get("/api/admin/users"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/admin/categories"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("11g. ADMIN Allowed on /api/admin/** (categories & users)")
+    @WithMockUser(username = "admin@mygarage.com", roles = {"ADMIN"})
+    void testAdminCanAccessApiAdminEndpoints() throws Exception {
+        mockMvc.perform(get("/api/admin/users"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/admin/categories"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("11h. State-Changing REST: Unauthenticated POST /api/vehicles Blocked")
+    void testStateChangingUnauthenticatedBlocked() throws Exception {
+        mockMvc.perform(post("/api/vehicles")
+                .contentType("application/json")
+                .content("{\"make\":\"Toyota\",\"model\":\"Corolla\"}"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    @DisplayName("11i. State-Changing REST: ADMIN Forbidden from POST /api/vehicles")
+    @WithMockUser(username = "admin@mygarage.com", roles = {"ADMIN"})
+    void testStateChangingAdminForbiddenFromVehiclesPost() throws Exception {
+        mockMvc.perform(post("/api/vehicles")
+                .contentType("application/json")
+                .content("{\"make\":\"Toyota\",\"model\":\"Corolla\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("11j. State-Changing REST: NORMAL_USER Forbidden from POST /api/admin/**")
+    @WithMockUser(username = "john@example.com", roles = {"NORMAL_USER"})
+    void testStateChangingNormalUserForbiddenFromAdminPost() throws Exception {
+        mockMvc.perform(post("/api/admin/users/1/toggle"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("11k. State-Changing REST: ADMIN Allowed on POST /api/admin/**")
+    @WithMockUser(username = "admin@mygarage.com", roles = {"ADMIN"})
+    void testStateChangingAdminAllowedToggle() throws Exception {
+        User toggleUser = new User();
+        toggleUser.setFullName("Toggle Test");
+        toggleUser.setEmail("toggle_target@example.com");
+        toggleUser.setPasswordHash(passwordEncoder.encode("Pass@123"));
+        toggleUser.setRole(Role.NORMAL_USER);
+        toggleUser.setActive(true);
+        toggleUser = userRepository.save(toggleUser);
+
+        mockMvc.perform(post("/api/admin/users/" + toggleUser.getUserId() + "/toggle"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("User status updated successfully."));
     }
 
     @Test

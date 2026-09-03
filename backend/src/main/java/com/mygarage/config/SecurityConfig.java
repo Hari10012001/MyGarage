@@ -54,10 +54,12 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Actuator health check
                 .requestMatchers("/actuator/health").permitAll()
-                // Admin only routes
-                .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
-                // User only routes (Garage, Service, Fuel, Maintenance tracking)
+                // Admin routes (Web & REST) - MUST BE EVALUATED BEFORE broad /api/** rule
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // User Web routes
                 .requestMatchers("/dashboard/**", "/vehicles/**", "/service/**", "/fuel/**", "/maintenance/**").hasRole("NORMAL_USER")
+                // User REST APIs - EVALUATED AFTER specific /api/admin/**
                 .requestMatchers("/api/**").hasRole("NORMAL_USER")
                 // Profile accessible to any authenticated user
                 .requestMatchers("/profile/**").hasAnyRole("NORMAL_USER", "ADMIN")

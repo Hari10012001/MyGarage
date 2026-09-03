@@ -3,84 +3,81 @@
 **Project Name:** MyGarage — A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **System ID:** APPJFS19  
 **Security Framework:** Spring Security 6.x (Spring Boot 3.3.5)  
-**Authentication Mechanism:** HTTP Session Form Login (No JWT)  
+**Authentication Mechanism:** Form-based HTTP Session (No JWT)  
 **Password Encryption:** BCrypt (`BCryptPasswordEncoder`, Strength: 10)  
-**Last Verified:** Milestone 3 (M3) — 2026-09-03
+**Last Verified:** Milestone 3 (M3) Final Review — 2026-09-03
 
 ---
 
-## 1. Role-Based Access Control (RBAC) Matrix
+## 1. SecurityFilterChain Matcher Ordering Architecture
 
-| Path / Endpoint Pattern | HTTP Method | Permitted Roles | Unauthenticated Action | Unauthorized Action |
+The conceptual and actual evaluation order in `SecurityConfig.java` strictly enforces that more specific administrative paths are evaluated **before** broad wildcards:
+
+```java
+// 1. Public Pages (Permit All)
+.requestMatchers("/", "/login", "/register", "/access-denied").permitAll()
+
+// 2. Static Resources & Actuator Health (Permit All)
+.requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+.requestMatchers("/actuator/health").permitAll()
+
+// 3. Specific Admin Web & REST Routes (Evaluated FIRST before broad /api/**)
+.requestMatchers("/admin/**").hasRole("ADMIN")
+.requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+// 4. Normal User Web Routes (Garage, Service, Fuel, Maintenance)
+.requestMatchers("/dashboard/**", "/vehicles/**", "/service/**", "/fuel/**", "/maintenance/**").hasRole("NORMAL_USER")
+
+// 5. Normal User REST APIs (Evaluated AFTER specific /api/admin/** rule)
+.requestMatchers("/api/**").hasRole("NORMAL_USER")
+
+// 6. Shared Profile Routes (Accessible to both NORMAL_USER and ADMIN)
+.requestMatchers("/profile/**").hasAnyRole("NORMAL_USER", "ADMIN")
+
+// 7. Fallback Rule (Any other request requires authentication)
+.anyRequest().authenticated()
+```
+
+> [!IMPORTANT]
+> **Matcher Ordering Guarantee:** Because `.requestMatchers("/api/admin/**").hasRole("ADMIN")` is placed **above** `.requestMatchers("/api/**").hasRole("NORMAL_USER")`, Spring Security always requires `ROLE_ADMIN` for `/api/admin/**`. The broad `/api/**` rule never intercepts administrative endpoints.
+
+---
+
+## 2. API Authorization & Access Matrix
+
+| Scenario | Request | Required Role | Actual Outcome | Verification Status |
 |---|---|---|---|---|
-| `/` | `GET` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/login` | `GET`, `POST` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/register` | `GET`, `POST` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/access-denied` | `GET` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/css/**`, `/js/**`, `/images/**` | `GET` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/actuator/health` | `GET` | `permitAll()` | HTTP 200 OK | Allowed |
-| `/dashboard/**` | `GET` | `ROLE_NORMAL_USER` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/vehicles/**` | `GET`, `POST` | `ROLE_NORMAL_USER` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/service/**` | `GET`, `POST` | `ROLE_NORMAL_USER` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/fuel/**` | `GET`, `POST` | `ROLE_NORMAL_USER` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/maintenance/**` | `GET`, `POST` | `ROLE_NORMAL_USER` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/profile/**` | `GET`, `POST` | `ROLE_NORMAL_USER`, `ROLE_ADMIN` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/api/**` (user data) | `GET`, `POST`, `PUT`, `DELETE` | `ROLE_NORMAL_USER` | HTTP 401/403 or redirect | HTTP 403 Forbidden |
-| `/admin/**` | `GET`, `POST` | `ROLE_ADMIN` | Redirect to `/login` | HTTP 403 / Access Denied |
-| `/api/admin/**` | `GET`, `POST`, `PUT`, `DELETE` | `ROLE_ADMIN` | HTTP 401/403 | HTTP 403 Forbidden |
+| **1. Unauthenticated Vehicle API** | `GET /api/vehicles` | `NORMAL_USER` | Redirect to `/login` / Blocked | **PASS** |
+| **2. NORMAL_USER Vehicle API** | `GET /api/vehicles` | `NORMAL_USER` | `HTTP 200 OK` | **PASS** |
+| **3. ADMIN Vehicle API** | `GET /api/vehicles` | `NORMAL_USER` | `HTTP 403 Forbidden` (Defined Isolation) | **PASS** |
+| **4. NORMAL_USER Admin Stats** | `GET /api/admin/statistics`| `ADMIN` | `HTTP 403 Forbidden` | **PASS** |
+| **5. ADMIN Admin Stats** | `GET /api/admin/statistics`| `ADMIN` | `HTTP 200 OK` | **PASS** |
+| **6. NORMAL_USER Admin Endpoints** | `GET /api/admin/users`, `/categories` | `ADMIN` | `HTTP 403 Forbidden` | **PASS** |
+| **7. ADMIN Admin Endpoints** | `GET /api/admin/users`, `/categories` | `ADMIN` | `HTTP 200 OK` | **PASS** |
+| **8. Unauthenticated POST API** | `POST /api/vehicles` | `NORMAL_USER` | Redirect to `/login` / Blocked | **PASS** |
+| **9. ADMIN State-Changing User API** | `POST /api/vehicles` | `NORMAL_USER` | `HTTP 403 Forbidden` | **PASS** |
+| **10. NORMAL_USER Admin Post API** | `POST /api/admin/users/1/toggle` | `ADMIN` | `HTTP 403 Forbidden` | **PASS** |
+| **11. ADMIN Admin Post API** | `POST /api/admin/users/{id}/toggle`| `ADMIN` | `HTTP 200 OK` | **PASS** |
 
 ---
 
-## 2. Security Architecture Principles
+## 3. CSRF Protection Architecture
 
-### 1. Zero Plaintext Passwords
-- All passwords are encrypted with `BCryptPasswordEncoder(10)`.
-- Password hashes begin with the standard BCrypt identifier (`$2a$` or `$2b$`).
-- Plaintext passwords are never logged, exposed in exceptions, or stored in MySQL.
-- Default seeded administrator:
-  - Email: `admin@mygarage.com`
-  - Password: `Admin@123`
-  - Hash: `$2a$10$gTZWG2345TLShuH70fsN3OL/e4/dliZSJggoEfl6i3KMK5YobVm9u`
-
-### 2. Privilege Escalation Prevention
-- Public registration (`POST /register`) unconditionally assigns `Role.NORMAL_USER`.
-- Client requests cannot submit or modify user roles through registration or profile update DTOs.
-- Administrative accounts cannot be registered publicly and must be provisioned through administrative seed or database migrations.
-- Administrative accounts cannot be deactivated via the user toggle feature (`UserService.toggleUserStatus()` prevents disabling `ADMIN`).
-
-### 3. Session Authentication & Post-Login Redirection
-- Authentication is handled via Spring Security `formLogin()`.
-- Success Handler dynamically routes users based on their granted authority:
-  - `ROLE_ADMIN` $\rightarrow$ `/admin/dashboard`
-  - `ROLE_NORMAL_USER` $\rightarrow$ `/dashboard`
-- Login failures redirect to `/login?error=true` with sanitized error messages.
-- Logout (`POST /logout`) explicitly invalidates the `HttpSession`, flushes the security context, clears cookies (`JSESSIONID`), and redirects to `/login?logout=true`.
-
-### 4. Cross-Site Request Forgery (CSRF) Protection
-- CSRF protection is enabled for all Spring MVC state-modifying requests (`POST`, `PUT`, `DELETE`).
-- Thymeleaf forms automatically include the synchronizer token (`<input type="hidden" name="_csrf" ... />`).
-- The stateless `/api/**` endpoints are selectively exempted from CSRF checks for development/testing convenience.
-
-### 5. Access-Denied & Exception Handling
-- Access violations (e.g. `NORMAL_USER` attempting to visit `/admin/**`) trigger `AccessDeniedException`.
-- Configured `.exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"))` routes the user to a dedicated 403 error page.
-- Sensitive stack traces and internal class names are suppressed from user-facing error views.
+- **Web MVC Forms:** CSRF is strictly **enabled** across all state-altering web operations (`POST /login`, `POST /register`, `POST /logout`, `/vehicles/**`, `/service/**`, etc.).
+  - Attempting `POST /logout` without a valid CSRF token is rejected with HTTP 403 / 405.
+  - Submitting `POST /logout` with the valid Thymeleaf `_csrf` token succeeds and redirects to `/login?logout=true`.
+- **REST APIs:** The stateless testing path `.ignoringRequestMatchers("/api/**")` allows standard JSON API clients (Postman, REST automation) without global CSRF disablement.
+- **Global Disablement Prohibited:** `http.csrf().disable()` is **never** used globally.
 
 ---
 
-## 3. Verification & Test Coverage Matrix
+## 4. Security Defect Mitigations Completed
 
-The test class `com.mygarage.security.AuthenticationAndAuthorizationTest` automates 13 security verifications:
-1. `testSuccessfulRegistration`: Validates full registration flow, BCrypt hashing, and role assignment.
-2. `testDuplicateEmailRegistration`: Validates duplicate email rejection.
-3. `testInvalidRegistrationValidation`: Validates password length and format constraints.
-4. `testSuccessfulNormalUserLogin`: Confirms authentication and redirection to `/dashboard`.
-5. `testInvalidLoginWrongPassword`: Confirms redirection to `/login?error=true`.
-6. `testAdminAuthentication`: Confirms authentication and redirection to `/admin/dashboard`.
-7. `testNormalUserCannotAccessAdmin`: Confirms HTTP 403 Forbidden when normal user requests `/admin/dashboard`.
-8. `testAdminCanAccessAdminDashboard`: Confirms HTTP 200 OK for admin requesting `/admin/dashboard`.
-9. `testUnauthenticatedAccessRedirectsToLogin`: Confirms unauthenticated requests to protected URLs are redirected to `/login`.
-10. `testLogoutAndSessionInvalidation`: Confirms POST `/logout` invalidates session and redirects to `/login?logout=true`.
-11. `testRoleEnforcementOnRest`: Confirms role gating on REST endpoints (`/api/vehicles` vs `/api/admin/statistics`).
-12. `testRegistrationCannotCreateAdmin`: Asserts that `UserService.register()` strictly enforces `NORMAL_USER`.
-13. `testPasswordIsBcryptEncoded`: Verifies database hash format and BCrypt signature.
+1. **Jackson Infinite Recursion & Sensitive Data Exposure:**
+   - Added `@JsonIgnore` to `User.passwordHash` to ensure password hashes are never exposed in JSON responses.
+   - Added `@JsonIgnore` to `User.vehicles` and `VehicleCategory.vehicles` to prevent circular serialization and `LazyInitializationException` outside active sessions.
+2. **Deterministic Test Isolation:**
+   - Ensured `AuthenticationAndAuthorizationTest` re-activates `john@example.com` in `setUp()` and uses isolated accounts for state-toggle verifications.
+3. **Privilege Escalation Prevention:**
+   - `UserService.register()` hardcodes `Role.NORMAL_USER`. No client request can grant or request `Role.ADMIN`.
+   - `toggleUserStatus()` prevents disabling `Role.ADMIN` accounts.
