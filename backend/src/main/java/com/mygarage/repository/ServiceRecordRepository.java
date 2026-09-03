@@ -24,8 +24,11 @@ public interface ServiceRecordRepository extends JpaRepository<ServiceRecord, Lo
     List<ServiceRecord> searchByVehicleAndKeyword(@Param("vehicleId") Long vehicleId, @Param("keyword") String keyword);
 
     // For dashboard - recent records for user
-    @Query("SELECT s FROM ServiceRecord s WHERE s.vehicle.user.userId = :userId ORDER BY s.serviceDate DESC")
+    @Query("SELECT s FROM ServiceRecord s JOIN FETCH s.vehicle WHERE s.vehicle.user.userId = :userId ORDER BY s.serviceDate DESC")
     List<ServiceRecord> findRecentByUserId(@Param("userId") Long userId, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(s.cost), 0) FROM ServiceRecord s WHERE s.vehicle.user.userId = :userId")
+    java.math.BigDecimal sumCostByUserId(@Param("userId") Long userId);
 
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);

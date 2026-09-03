@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 7 (M7) COMPLETE & FULLY VERIFIED — Ready for M8
+**Current Phase:** MILESTONE 8 (M8) COMPLETE & FULLY VERIFIED — Ready for M9
 
 ---
 
@@ -22,30 +22,26 @@
 
 ---
 
-## Milestone 7 (M7) Maintenance Module Verification Matrix
+## Milestone 8 (M8) Dashboard & Reporting Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Maintenance Task Listing** | Listed on vehicle detail page ordered by `scheduledDate ASC` | **PASS** |
-| **Empty State** | Clear empty state displayed when vehicle has 0 maintenance tasks | **PASS** |
-| **Add Maintenance Task** | Form validation, persists task, evaluates dynamic status | **PASS** |
-| **Validation Constraints** | Required title/scheduledDate enforced; negative cost (<0) rejected | **PASS** |
-| **Dynamic Status Logic** | `OVERDUE` (past), `DUE_TODAY` (today), `UPCOMING` (future), `COMPLETED` | **PASS** |
-| **Mark Task Completed** | One-click complete button sets completed date & `COMPLETED` status | **PASS** |
-| **Edit Maintenance Task** | Pre-populated form, preserves vehicle linkage, updates attributes | **PASS** |
-| **Delete Maintenance Task** | Deletes task with CSRF verification | **PASS** |
-| **Two-Tier Ownership Check** | `User -> Vehicle -> MaintenanceRecord` enforced across all operations | **PASS** |
-| **Cross-User Access Blocked** | Blocked when User B attempts to access User A's maintenance tasks | **PASS** |
-| **Cross-User Creation Blocked**| Blocked when User B attempts to add task to User A's vehicle | **PASS** |
-| **Cross-User Update Blocked** | Blocked when User B attempts to edit User A's maintenance task | **PASS** |
-| **Cross-User Complete Blocked**| Blocked when User B attempts to mark User A's task complete | **PASS** |
-| **Cross-User Deletion Blocked**| Blocked when User B attempts to delete User A's maintenance task | **PASS** |
-| **REST API (`/api/maintenance/**`)** | Full CRUD + `/complete` endpoint (PATCH & POST) user-scoped | **PASS** |
-| **ADMIN Maintenance Isolation**| ADMIN role blocked (`403 Forbidden`) from user maintenance routes | **PASS** |
+| **Core Metric Counters** | Vehicles, Service Records, Fuel Records, Maintenance Tasks | **PASS** |
+| **Urgency Breakdown** | `OVERDUE`, `DUE_TODAY`, `UPCOMING`, `COMPLETED` counters & visual badges | **PASS** |
+| **Financial Spend Summary** | Fuel Spend, Service Spend, Maintenance Spend, Total Combined Garage Spend | **PASS** |
+| **Fuel Economy Analytics** | Average estimated mileage (km/L) dynamically calculated from fuel logs | **PASS** |
+| **Active Maintenance Alerts** | Urgent overdue and due today alerts rendered with deep-links | **PASS** |
+| **Vehicle-Wise Summary** | Mini-cards with make, model, year, category icon, fuel type, odometer | **PASS** |
+| **Recent Activity Feeds** | Latest 5 services and latest 5 fuel fill-ups displayed with metrics | **PASS** |
+| **Empty State Handling** | Clean, user-friendly empty states when user has zero vehicles or zero logs | **PASS** |
+| **Data & Ownership Isolation** | Strict `user.userId` scoping across all metrics; zero data leakage between users | **PASS** |
+| **ADMIN Isolation** | ADMIN role blocked (`403 Forbidden`) from user `/dashboard` & `/api/dashboard` | **PASS** |
+| **Admin System Metrics** | `/admin/dashboard` & `/api/admin/statistics` provide global counts only | **PASS** |
+| **REST Reporting APIs** | `/api/dashboard`, `/api/dashboard/summary`, `/alerts`, `/recent-services`, `/recent-fuel` | **PASS** |
 | **Unauthenticated Protection**| Unauthenticated requests redirected to `/login` | **PASS** |
-| **Cascade Deletion** | Deleting a vehicle cleanly removes all associated maintenance tasks | **PASS** |
-| **Regression Test Suite** | 146 automated tests (`MaintenanceModuleTest` [30], `FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (146/146, 0 failures, 0 errors)** |
-| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all maintenance flows | **PASS** |
+| **Jackson & Query Safety** | `JOIN FETCH` eliminates N+1 and guarantees session-safe rendering | **PASS** |
+| **Regression Test Suite** | 173 automated tests (`DashboardModuleTest` [27], `MaintenanceModuleTest` [30], `FuelModuleTest` [28], `ServiceModuleTest` [25], `VehicleModuleTest` [26], `AuthenticationAndAuthorizationTest` [23], `JpaRepositoryTest` [7], `MaintenanceServiceTest` [5], `PasswordEncoderTest` [1], `MyGarageApplicationTests` [1]) | **PASS (173/173, 0 failures, 0 errors)** |
+| **Live End-to-End Verification** | Live execution against Spring Boot + MySQL verified all dashboard & reporting flows | **PASS** |
 
 ---
 
@@ -64,8 +60,8 @@
 | **M5** | Service Module (Service History, Costs & Garage Tracking, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
 | **M6** | Fuel Module (Fuel Logs, Estimated Mileage, Auto Total Cost, Two-Tier Ownership) | **COMPLETED & FULLY VERIFIED** |
 | **M7** | Maintenance Module (Status Logic & Reminders, Priority, Mark Complete, Ownership) | **COMPLETED & FULLY VERIFIED** |
-| **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation) | **NEXT** |
-| **M9** | Admin Module (User & Category Management) | PENDING |
+| **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation, Financial Summaries) | **COMPLETED & FULLY VERIFIED** |
+| **M9** | Admin Module (User & Category Management) | **NEXT** |
 | **M10** | Polish, Comprehensive 6-Layer QC & Documentation Finalization | PENDING |
 
 ---
@@ -73,21 +69,21 @@
 ## Architecture Inventory
 
 - **Web MVC Controllers (8):**
-  1. `MaintenanceWebController` (`/vehicles/{id}/maintenance/**` - Add, edit, complete, delete, list, detail)
-  2. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
-  3. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
-  4. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
-  5. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
-  6. `DashboardWebController` (`/dashboard/**`)
+  1. `DashboardWebController` (`/dashboard` - Central overview, alerts, analytics, spend summary)
+  2. `MaintenanceWebController` (`/vehicles/{id}/maintenance/**` - Add, edit, complete, delete, list, detail)
+  3. `FuelWebController` (`/vehicles/{id}/fuel/**` - Add, edit, delete, list, detail)
+  4. `ServiceWebController` (`/vehicles/{id}/services/**` - Add, edit, delete, list, detail)
+  5. `VehicleWebController` (`/vehicles/**` - CRUD, details, timeline, search)
+  6. `AuthWebController` (`/`, `/login`, `/register`, `/access-denied`)
   7. `ProfileWebController` (`/profile/**`)
   8. `AdminWebController` (`/admin/**`)
 - **REST API Controllers (6):**
-  1. `MaintenanceApiController` (`/api/vehicles/{id}/maintenance`, `/api/maintenance/{id}`)
-  2. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
-  3. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
-  4. `VehicleApiController` (`/api/vehicles/**`)
-  5. `AdminApiController` (`/api/admin/**`)
-  6. `DashboardApiController` (`/api/dashboard/**`)
+  1. `DashboardApiController` (`/api/dashboard/**` - Summary, alerts, recent services, recent fuel)
+  2. `MaintenanceApiController` (`/api/vehicles/{id}/maintenance`, `/api/maintenance/{id}`)
+  3. `FuelApiController` (`/api/vehicles/{id}/fuel`, `/api/fuel/{id}`)
+  4. `ServiceApiController` (`/api/vehicles/{id}/services`, `/api/services/{id}`)
+  5. `VehicleApiController` (`/api/vehicles/**`)
+  6. `AdminApiController` (`/api/admin/**`)
 - **Documentation:**
   - `docs/REQUIREMENTS.md` (Functional Requirements Specification)
   - `docs/DATABASE_DESIGN.md` (ERD, Data Dictionary, Cascade & Index Rules)
@@ -96,10 +92,11 @@
   - `docs/SERVICE_MODULE_DESIGN.md` (Service Module Two-Tier Ownership, Odometer, APIs)
   - `docs/FUEL_MODULE_DESIGN.md` (Fuel Module Mileage Calculations, Total Costs, APIs)
   - `docs/MAINTENANCE_MODULE_DESIGN.md` (Maintenance Dynamic Status Logic, Alerts, APIs)
+  - `docs/DASHBOARD_REPORTING_DESIGN.md` (Dashboard Metrics, Urgency & Financial Analytics, APIs)
   - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Ready to proceed to **M8: Dashboard & Reports (Real Analytics, Alert Aggregation, and Export Capabilities)** upon user instruction.
+Ready to proceed to **M9: Admin Module (User Enable/Disable Management, Category CRUD, and Administrative Controls)** upon user instruction.

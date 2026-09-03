@@ -21,9 +21,12 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     Optional<MaintenanceRecord> findByMaintenanceIdAndVehicleUserUserId(Long maintenanceId, Long userId);
 
     // Alerts for dashboard - overdue and due today for user
-    @Query("SELECT m FROM MaintenanceRecord m WHERE m.vehicle.user.userId = :userId " +
+    @Query("SELECT m FROM MaintenanceRecord m JOIN FETCH m.vehicle WHERE m.vehicle.user.userId = :userId " +
            "AND m.status IN ('OVERDUE', 'DUE_TODAY') ORDER BY m.scheduledDate ASC")
     List<MaintenanceRecord> findAlertsForUser(@Param("userId") Long userId);
+
+    @Query("SELECT COALESCE(SUM(m.cost), 0) FROM MaintenanceRecord m WHERE m.vehicle.user.userId = :userId")
+    java.math.BigDecimal sumCostByUserId(@Param("userId") Long userId);
 
     // Count by status for a user
     long countByVehicleUserUserIdAndStatus(Long userId, MaintenanceStatus status);

@@ -82,11 +82,86 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
-                    <div class="stat-card card border-0 shadow-sm h-100" th:classappend="${alertCount > 0} ? 'border-danger'">
+                    <div class="stat-card card border-0 shadow-sm h-100">
                         <div class="card-body text-center p-3">
-                            <div class="stat-icon mb-2" th:classappend="${alertCount > 0} ? 'text-danger' : 'text-muted'"><i class="bi bi-bell fs-2"></i></div>
-                            <div class="stat-number fw-bold fs-2" th:classappend="${alertCount > 0} ? 'text-danger'" th:text="${alertCount}">0</div>
-                            <div class="stat-label text-muted small">Maintenance Alerts</div>
+                            <div class="stat-icon text-info mb-2"><i class="bi bi-calendar-check fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${maintenanceCount}">0</div>
+                            <div class="stat-label text-muted small">Maintenance Tasks</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Urgency & Financial Spend Summary -->
+            <div class="row g-3 mb-4">
+                <!-- Maintenance Urgency Breakdown -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-0 pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Maintenance Urgency Status</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2 text-center">
+                                <div class="col-3">
+                                    <div class="p-2 border rounded" th:classappend="${overdueCount > 0} ? 'bg-danger-subtle border-danger'">
+                                        <div class="fs-4 fw-bold text-danger" th:text="${overdueCount}">0</div>
+                                        <div class="text-danger small fw-semibold">Overdue</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="p-2 border rounded" th:classappend="${dueTodayCount > 0} ? 'bg-warning-subtle border-warning'">
+                                        <div class="fs-4 fw-bold text-warning" th:text="${dueTodayCount}">0</div>
+                                        <div class="text-dark small fw-semibold">Due Today</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="fs-4 fw-bold text-primary" th:text="${upcomingCount}">0</div>
+                                        <div class="text-muted small fw-semibold">Upcoming</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="fs-4 fw-bold text-success" th:text="${completedCount}">0</div>
+                                        <div class="text-muted small fw-semibold">Completed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Spend Summary -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-0 pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-wallet2 me-2 text-success"></i>Garage Financial Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="small text-muted">Fuel Spend</div>
+                                        <div class="fw-bold text-dark" th:text="${totalFuelCost != null ? '₹' + totalFuelCost : '₹0'}">₹0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="small text-muted">Service Spend</div>
+                                        <div class="fw-bold text-dark" th:text="${totalServiceCost != null ? '₹' + totalServiceCost : '₹0'}">₹0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <div class="small text-muted">Total Spend</div>
+                                        <div class="fw-bold text-success" th:text="${totalGarageCost != null ? '₹' + totalGarageCost : '₹0'}">₹0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-center small text-muted">
+                                <i class="bi bi-speedometer me-1"></i>Avg. Fuel Economy: 
+                                <strong class="text-dark" th:text="${averageMileage != null ? #numbers.formatDecimal(averageMileage, 1, 2) + ' km/L' : '—'}">—</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,20 +169,21 @@
 
             <!-- Maintenance Alerts -->
             <div th:if="${maintenanceAlerts != null and !maintenanceAlerts.isEmpty()}" class="mb-4">
-                <h6 class="fw-semibold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Maintenance Alerts</h6>
-                <div th:each="alert : ${maintenanceAlerts}" class="alert-item d-flex align-items-center p-3 mb-2 rounded border">
+                <h6 class="fw-semibold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Active Maintenance Alerts</h6>
+                <div th:each="alert : ${maintenanceAlerts}" class="alert-item d-flex align-items-center p-3 mb-2 rounded border shadow-sm">
                     <span th:classappend="${alert.status.name() == 'OVERDUE'} ? 'badge bg-danger me-3' : 'badge bg-warning text-dark me-3'" th:text="${alert.status.name() == 'OVERDUE'} ? 'OVERDUE' : 'DUE TODAY'">OVERDUE</span>
                     <div class="flex-grow-1">
                         <strong th:text="${alert.title}">Task</strong>
                         <span class="text-muted small ms-2" th:text="'— ' + ${alert.vehicle?.displayName}"></span>
                     </div>
-                    <span class="text-muted small" th:text="${#temporals.format(alert.scheduledDate, 'dd MMM yyyy')}"></span>
+                    <span class="text-muted small me-3" th:text="${#temporals.format(alert.scheduledDate, 'dd MMM yyyy')}"></span>
+                    <a th:href="@{/vehicles/{id}(id=${alert.vehicle?.vehicleId}, tab='maintenance')}" class="btn btn-sm btn-outline-primary">View Task</a>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <!-- My Vehicles -->
-                <div class="col-lg-7">
+            <div class="row g-4 mb-4">
+                <!-- My Vehicles Summary -->
+                <div class="col-lg-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3">
                             <h6 class="fw-bold mb-0"><i class="bi bi-car-front me-2 text-primary"></i>My Vehicles</h6>
@@ -120,12 +196,21 @@
                                 <a th:href="@{/vehicles/add}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Vehicle</a>
                             </div>
                             <div th:if="${vehicles != null and !vehicles.isEmpty()}" class="row g-2">
-                                <div th:each="vehicle : ${vehicles}" th:if="${vehicleStat.index < 4}" class="col-6">
+                                <div th:each="vehicle : ${vehicles}" class="col-12">
                                     <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="text-decoration-none">
-                                        <div class="vehicle-mini-card p-2 rounded border text-center">
-                                            <div class="vehicle-icon mb-1" th:text="${vehicle.category?.icon}">🚗</div>
-                                            <div class="small fw-semibold text-dark" th:text="${vehicle.make + ' ' + vehicle.model}">Vehicle</div>
-                                            <div class="badge bg-secondary-subtle text-secondary small" th:text="${vehicle.plateNumber}">Plate</div>
+                                        <div class="vehicle-mini-card p-3 rounded border text-dark d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fs-3 me-3" th:text="${vehicle.category?.icon != null ? vehicle.category.icon : '🚗'}">🚗</span>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${vehicle.make + ' ' + vehicle.model + ' (' + vehicle.year + ')'}">Vehicle</div>
+                                                    <div class="badge bg-secondary-subtle text-secondary small" th:text="${vehicle.plateNumber}">Plate</div>
+                                                    <span class="badge bg-light text-muted border small ms-1" th:text="${vehicle.fuelType}">Fuel</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-semibold small text-primary" th:text="${vehicle.currentOdometer + ' km'}">0 km</div>
+                                                <div class="text-muted small">Odometer</div>
+                                            </div>
                                         </div>
                                     </a>
                                 </div>
@@ -134,11 +219,11 @@
                     </div>
                 </div>
 
-                <!-- Recent Service -->
-                <div class="col-lg-5">
+                <!-- Recent Service History -->
+                <div class="col-lg-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-white border-0 pt-3">
-                            <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-success"></i>Recent Services</h6>
+                            <h6 class="fw-bold mb-0"><i class="bi bi-tools me-2 text-success"></i>Recent Service History</h6>
                         </div>
                         <div class="card-body p-0">
                             <div th:if="${recentServices == null or recentServices.isEmpty()}" class="empty-state text-center py-4">
@@ -160,6 +245,40 @@
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Fuel Activity -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 pt-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-fuel-pump me-2 text-warning"></i>Recent Fuel Activity</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div th:if="${recentFuelRecords == null or recentFuelRecords.isEmpty()}" class="empty-state text-center py-4">
+                        <i class="bi bi-fuel-pump text-muted fs-2 mb-2 d-block"></i>
+                        <p class="text-muted small">No fuel records logged yet.</p>
+                    </div>
+                    <div th:if="${recentFuelRecords != null and !recentFuelRecords.isEmpty()}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light"><tr>
+                                <th>Vehicle</th><th>Date</th><th>Type</th><th>Quantity</th><th>Rate</th><th>Total Cost</th><th>Mileage</th>
+                            </tr></thead>
+                            <tbody>
+                            <tr th:each="f : ${recentFuelRecords}">
+                                <td class="fw-semibold" th:text="${f.vehicle?.displayName}">Vehicle</td>
+                                <td th:text="${#temporals.format(f.fuelDate, 'dd MMM yyyy')}">Date</td>
+                                <td><span class="badge bg-secondary-subtle text-secondary" th:text="${f.fuelType}">Type</span></td>
+                                <td th:text="${f.quantityLitres + ' L'}">0 L</td>
+                                <td th:text="${'₹' + f.costPerLitre + '/L'}">₹0/L</td>
+                                <td class="fw-bold text-success" th:text="${'₹' + f.totalCost}">₹0</td>
+                                <td>
+                                    <span th:if="${f.estimatedMileageKmpl != null}" class="badge bg-success" th:text="${f.estimatedMileageKmpl + ' km/L (est.)'}"></span>
+                                    <span th:if="${f.estimatedMileageKmpl == null}" class="text-muted">—</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -29,9 +29,17 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecord, Long> {
     List<FuelRecord> findByVehicleAndDateRange(@Param("vehicleId") Long vehicleId,
                                                @Param("from") LocalDate from, @Param("to") LocalDate to);
 
+    // Recent fuel records for user
+    @Query("SELECT f FROM FuelRecord f JOIN FETCH f.vehicle WHERE f.vehicle.user.userId = :userId ORDER BY f.fuelDate DESC")
+    List<FuelRecord> findRecentByUserId(@Param("userId") Long userId, org.springframework.data.domain.Pageable pageable);
+
     // Total fuel cost for user
     @Query("SELECT COALESCE(SUM(f.totalCost), 0) FROM FuelRecord f WHERE f.vehicle.user.userId = :userId")
     java.math.BigDecimal sumTotalCostByUserId(@Param("userId") Long userId);
+
+    // Average estimated mileage for user
+    @Query("SELECT AVG(f.estimatedMileageKmpl) FROM FuelRecord f WHERE f.vehicle.user.userId = :userId AND f.estimatedMileageKmpl IS NOT NULL")
+    Double avgEstimatedMileageByUserId(@Param("userId") Long userId);
 
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);

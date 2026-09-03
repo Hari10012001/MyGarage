@@ -40,21 +40,66 @@ public class DashboardService {
         return fuelRecordRepository.countByVehicleUserUserId(userId);
     }
 
+    public long getUserMaintenanceCount(Long userId) {
+        return maintenanceRecordRepository.countByVehicleUserUserId(userId);
+    }
+
     public long getUserMaintenanceAlertCount(Long userId) {
         return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.OVERDUE)
              + maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.DUE_TODAY);
+    }
+
+    public long getUserMaintenanceOverdueCount(Long userId) {
+        return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.OVERDUE);
+    }
+
+    public long getUserMaintenanceDueTodayCount(Long userId) {
+        return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.DUE_TODAY);
+    }
+
+    public long getUserMaintenanceUpcomingCount(Long userId) {
+        return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.UPCOMING);
+    }
+
+    public long getUserMaintenanceCompletedCount(Long userId) {
+        return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, MaintenanceStatus.COMPLETED);
     }
 
     public BigDecimal getUserTotalFuelCost(Long userId) {
         return fuelRecordRepository.sumTotalCostByUserId(userId);
     }
 
+    public BigDecimal getUserTotalServiceCost(Long userId) {
+        return serviceRecordRepository.sumCostByUserId(userId);
+    }
+
+    public BigDecimal getUserTotalMaintenanceCost(Long userId) {
+        return maintenanceRecordRepository.sumCostByUserId(userId);
+    }
+
+    public BigDecimal getUserTotalGarageCost(Long userId) {
+        BigDecimal fuel = getUserTotalFuelCost(userId);
+        BigDecimal svc = getUserTotalServiceCost(userId);
+        BigDecimal maint = getUserTotalMaintenanceCost(userId);
+        return fuel.add(svc).add(maint);
+    }
+
+    public Double getUserAverageMileage(Long userId) {
+        return fuelRecordRepository.avgEstimatedMileageByUserId(userId);
+    }
+
     public List<ServiceRecord> getRecentServiceRecords(Long userId) {
         return serviceRecordService.getRecentForUser(userId, 5);
     }
 
+    public List<com.mygarage.model.FuelRecord> getRecentFuelRecords(Long userId) {
+        return fuelRecordRepository.findRecentByUserId(userId, org.springframework.data.domain.PageRequest.of(0, 5));
+    }
+
     public List<MaintenanceRecord> getMaintenanceAlerts(Long userId) {
-        return maintenanceRecordRepository.findAlertsForUser(userId);
+        List<MaintenanceRecord> alerts = maintenanceRecordRepository.findAlertsForUser(userId);
+        alerts.forEach(r -> r.setStatus(MaintenanceService.computeStatus(r.getScheduledDate(), r.getCompletedDate())));
+        return alerts;
     }
 
     // ================================================================
