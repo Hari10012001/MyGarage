@@ -42,6 +42,7 @@ public class VehicleCategory {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Vehicle> vehicles = new ArrayList<>();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public long getVehicleCount() {
         return vehicles != null ? vehicles.size() : 0;
     }

@@ -33,12 +33,13 @@ public class Vehicle {
     private Long vehicleId;
 
     // Owner
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Category (e.g., Sedan, Bike)
-    @ManyToOne(fetch = FetchType.LAZY)
+    // Category (e.g., Sedan, Bike) - always loaded with vehicle
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private VehicleCategory category;
 
@@ -85,14 +86,17 @@ public class Vehicle {
     private LocalDateTime updatedAt;
 
     // Child records - cascade delete when vehicle is removed
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("serviceDate DESC")
     private List<ServiceRecord> serviceRecords = new ArrayList<>();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("fuelDate DESC")
     private List<FuelRecord> fuelRecords = new ArrayList<>();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("scheduledDate ASC")
     private List<MaintenanceRecord> maintenanceRecords = new ArrayList<>();
