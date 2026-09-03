@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body class="auth-page d-flex align-items-center justify-content-center min-vh-100 py-4">
+<div class="auth-card card shadow-lg p-4" style="width: 460px; max-width: 95vw;">
+    <!-- Brand -->
+    <div class="text-center mb-4">
+        <a href="/" class="text-decoration-none">
+            <i class="bi bi-car-front-fill fs-1 text-primary d-block mb-1"></i>
+            <h4 class="fw-bold text-primary-dark">MyGarage</h4>
+        </a>
+        <p class="text-muted small">Create your free account.</p>
+    </div>
+
+    <!-- Error -->
+    <div th:if="${errorMsg}" class="alert alert-danger py-2">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMsg}"></span>
+    </div>
+
+    <!-- Register Form -->
+    <form th:action="@{/register}" th:object="${registerRequest}" method="post" novalidate>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" th:field="*{fullName}" class="form-control"
+                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'"
+                       placeholder="Your full name" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" th:field="*{email}" class="form-control"
+                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                       placeholder="you@example.com" required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Phone Number</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                <input type="text" th:field="*{phone}" class="form-control"
+                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"
+                       placeholder="10-digit mobile number">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" id="reg_password" th:field="*{password}" class="form-control"
+                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                       placeholder="Min. 6 characters" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('reg_password', this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input type="password" id="reg_confirm" th:field="*{confirmPassword}" class="form-control"
+                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
+                       placeholder="Repeat your password" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('reg_confirm', this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+            </div>
+        </div>
+
+        <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                <i class="bi bi-person-plus me-2"></i>Create Account
+            </button>
+        </div>
+    </form>
+
+    <div class="text-center">
+        <p class="text-muted small">Already have an account?
+            <a href="/login" class="text-primary fw-semibold text-decoration-none">Login here</a>
+        </p>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

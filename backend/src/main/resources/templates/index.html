@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyGarage — Your Vehicle's Digital Logbook</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body class="landing-page">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="/">
+            <i class="bi bi-car-front-fill me-2"></i>MyGarage
+        </a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+            <a href="/register" class="btn btn-warning btn-sm fw-semibold">Register Free</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <div class="hero-icon mb-4">
+            <i class="bi bi-car-front-fill display-1"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Your Vehicle's Digital Logbook</h1>
+        <p class="lead mb-4 opacity-75">
+            Track service history, fuel expenses and maintenance reminders<br>
+            — all in one free, simple web app.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/register" class="btn btn-warning btn-lg fw-semibold px-4">
+                <i class="bi bi-plus-circle me-2"></i>Get Started Free
+            </a>
+            <a href="/login" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5 text-primary-dark">Everything Your Vehicle Needs</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-tools fs-1 text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">Service History</h5>
+                    <p class="text-muted">Log every service visit — oil changes, repairs, garage names and costs. Never forget a service again.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-fuel-pump fs-1 text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold">Fuel Tracking</h5>
+                    <p class="text-muted">Track every fuel fill-up with quantity, cost, and estimated mileage. Understand your fuel expenses.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4">
+                    <div class="feature-icon mb-3">
+                        <i class="bi bi-calendar-check fs-1 text-success"></i>
+                    </div>
+                    <h5 class="fw-bold">Maintenance Alerts</h5>
+                    <p class="text-muted">Schedule upcoming maintenance. Get alerted when tasks are overdue or due today — no surprises.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5 text-primary-dark">How It Works</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3 text-center">
+                <div class="step-number">1</div>
+                <h6 class="fw-bold mt-3">Register</h6>
+                <p class="text-muted small">Create your free account in seconds.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">2</div>
+                <h6 class="fw-bold mt-3">Add Your Vehicle</h6>
+                <p class="text-muted small">Enter your vehicle details — car, bike, or anything.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">3</div>
+                <h6 class="fw-bold mt-3">Log Records</h6>
+                <p class="text-muted small">Add service, fuel, and maintenance records.</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="step-number">4</div>
+                <h6 class="fw-bold mt-3">Track Everything</h6>
+                <p class="text-muted small">View your dashboard and vehicle history anytime.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-primary-dark text-white py-4 text-center">
+    <p class="mb-0">
+        <i class="bi bi-car-front-fill me-2"></i>
+        <strong>MyGarage</strong> &mdash; APPJFS19 &mdash; Final Year Java Full Stack Project &copy; 2026
+    </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

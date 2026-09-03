@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Dashboard</span>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+
+        <div class="page-content px-4 pb-4">
+            <!-- Flash messages -->
+            <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show mt-3"><i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+
+            <!-- Welcome -->
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+                <div>
+                    <h4 class="fw-bold mb-0">Welcome back, <span th:text="${user?.fullName?.split(' ')[0]}">User</span>! 👋</h4>
+                    <p class="text-muted small mb-0">Here's a summary of your garage.</p>
+                </div>
+                <a th:href="@{/vehicles/add}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Add Vehicle
+                </a>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-primary mb-2"><i class="bi bi-car-front fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${vehicleCount}">0</div>
+                            <div class="stat-label text-muted small">Vehicles</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-success mb-2"><i class="bi bi-tools fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${serviceCount}">0</div>
+                            <div class="stat-label text-muted small">Service Records</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-warning mb-2"><i class="bi bi-fuel-pump fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${fuelCount}">0</div>
+                            <div class="stat-label text-muted small">Fuel Records</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100" th:classappend="${alertCount > 0} ? 'border-danger'">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon mb-2" th:classappend="${alertCount > 0} ? 'text-danger' : 'text-muted'"><i class="bi bi-bell fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:classappend="${alertCount > 0} ? 'text-danger'" th:text="${alertCount}">0</div>
+                            <div class="stat-label text-muted small">Maintenance Alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Alerts -->
+            <div th:if="${maintenanceAlerts != null and !maintenanceAlerts.isEmpty()}" class="mb-4">
+                <h6 class="fw-semibold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Maintenance Alerts</h6>
+                <div th:each="alert : ${maintenanceAlerts}" class="alert-item d-flex align-items-center p-3 mb-2 rounded border">
+                    <span th:classappend="${alert.status.name() == 'OVERDUE'} ? 'badge bg-danger me-3' : 'badge bg-warning text-dark me-3'" th:text="${alert.status.name() == 'OVERDUE'} ? 'OVERDUE' : 'DUE TODAY'">OVERDUE</span>
+                    <div class="flex-grow-1">
+                        <strong th:text="${alert.title}">Task</strong>
+                        <span class="text-muted small ms-2" th:text="'— ' + ${alert.vehicle?.displayName}"></span>
+                    </div>
+                    <span class="text-muted small" th:text="${#temporals.format(alert.scheduledDate, 'dd MMM yyyy')}"></span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- My Vehicles -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-car-front me-2 text-primary"></i>My Vehicles</h6>
+                            <a th:href="@{/vehicles}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${user?.vehicles == null or user?.vehicles?.isEmpty()}" class="empty-state text-center py-4">
+                                <i class="bi bi-car-front-fill text-muted fs-1 mb-2 d-block"></i>
+                                <p class="text-muted mb-3">No vehicles yet. Add your first vehicle!</p>
+                                <a th:href="@{/vehicles/add}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Vehicle</a>
+                            </div>
+                            <div th:if="${user?.vehicles != null and !user?.vehicles?.isEmpty()}" class="row g-2">
+                                <div th:each="vehicle : ${user.vehicles}" th:if="${vehicleStat.index < 4}" class="col-6">
+                                    <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="text-decoration-none">
+                                        <div class="vehicle-mini-card p-2 rounded border text-center">
+                                            <div class="vehicle-icon mb-1" th:text="${vehicle.category?.icon}">🚗</div>
+                                            <div class="small fw-semibold text-dark" th:text="${vehicle.make + ' ' + vehicle.model}">Vehicle</div>
+                                            <div class="badge bg-secondary-subtle text-secondary small" th:text="${vehicle.plateNumber}">Plate</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Service -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-0 pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-success"></i>Recent Services</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div th:if="${recentServices == null or recentServices.isEmpty()}" class="empty-state text-center py-4">
+                                <i class="bi bi-tools text-muted fs-2 mb-2 d-block"></i>
+                                <p class="text-muted small">No service records yet.</p>
+                            </div>
+                            <ul th:if="${recentServices != null and !recentServices.isEmpty()}" class="list-group list-group-flush">
+                                <li th:each="svc : ${recentServices}" class="list-group-item px-3 py-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <div class="small fw-semibold" th:text="${svc.serviceType}">Oil Change</div>
+                                            <div class="text-muted" style="font-size:0.78rem" th:text="${svc.vehicle?.displayName}">Vehicle</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="small text-success fw-semibold" th:text="${svc.cost != null ? '₹' + svc.cost : '—'}">₹0</div>
+                                            <div class="text-muted" style="font-size:0.75rem" th:text="${#temporals.format(svc.serviceDate, 'dd MMM yy')}">Date</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

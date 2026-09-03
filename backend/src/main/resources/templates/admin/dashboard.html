@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="sidebar-section-label">ADMIN</li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/admin/dashboard}"><i class="bi bi-bar-chart-line"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/admin/users}"><i class="bi bi-people"></i> Users</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/admin/categories}"><i class="bi bi-tags"></i> Categories</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/admin/statistics}"><i class="bi bi-graph-up"></i> Statistics</a></li>
+        </ul>
+        <div class="sidebar-footer"><form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form></div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Admin Dashboard</span>
+            <div class="ms-auto"><span class="badge bg-danger me-2">ADMIN</span><i class="bi bi-person-circle me-1 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+            <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show mt-3"><i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show mt-3"><span th:text="${errorMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+
+            <h4 class="fw-bold mt-4 mb-4">System Overview</h4>
+
+            <!-- Admin Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-primary mb-2"><i class="bi bi-people fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${totalUsers}">0</div>
+                            <div class="stat-label text-muted small">Registered Users</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-success mb-2"><i class="bi bi-car-front fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${totalVehicles}">0</div>
+                            <div class="stat-label text-muted small">Total Vehicles</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-warning mb-2"><i class="bi bi-tools fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${totalServiceRecords}">0</div>
+                            <div class="stat-label text-muted small">Service Records</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-3">
+                            <div class="stat-icon text-danger mb-2"><i class="bi bi-fuel-pump fs-2"></i></div>
+                            <div class="stat-number fw-bold fs-2" th:text="${totalFuelRecords}">0</div>
+                            <div class="stat-label text-muted small">Fuel Records</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Recent users -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-people me-2 text-primary"></i>Recent Users</h6>
+                            <a th:href="@{/admin/users}" class="btn btn-sm btn-outline-primary">Manage All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light"><tr><th>Name</th><th>Email</th><th>Status</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="u : ${recentUsers}">
+                                        <td th:text="${u.fullName}">Name</td>
+                                        <td><span class="text-muted small" th:text="${u.email}">email</span></td>
+                                        <td><span th:classappend="${u.active} ? 'bg-success' : 'bg-secondary'" class="badge" th:text="${u.active ? 'Active' : 'Disabled'}">Status</span></td>
+                                    </tr>
+                                    <tr th:if="${recentUsers == null or recentUsers.isEmpty()}">
+                                        <td colspan="3" class="text-center text-muted py-3">No users yet.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories summary -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between pt-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-tags me-2 text-success"></i>Vehicle Categories</h6>
+                            <a th:href="@{/admin/categories}" class="btn btn-sm btn-outline-success">Manage</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li th:each="cat : ${categories}" class="list-group-item d-flex justify-content-between align-items-center px-3 py-2">
+                                    <span><span th:text="${cat.icon}">🚗</span> <span th:text="${cat.name}">Category</span></span>
+                                    <span class="badge bg-primary-subtle text-primary" th:text="${cat.vehicles?.size() ?: 0} + ' vehicles'">0</span>
+                                </li>
+                                <li th:if="${categories == null or categories.isEmpty()}" class="list-group-item text-muted text-center py-3">No categories.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

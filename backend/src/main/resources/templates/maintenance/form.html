@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Task — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer"><form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form></div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold" th:text="${maintenanceId != null ? 'Edit Maintenance Task' : 'Add Maintenance Task'}">Maintenance</span>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 px-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-calendar-check fs-4 text-primary"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-0" th:text="${maintenanceId != null ? 'Edit Task' : 'Add Maintenance Task'}">Task</h5>
+                                    <p class="text-muted small mb-0" th:if="${vehicle != null}" th:text="${vehicle.displayName}">Vehicle</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body px-4 pb-4">
+                            <form th:action="${maintenanceId != null ? '/vehicles/' + vehicle.vehicleId + '/maintenance/' + maintenanceId + '/edit' : '/vehicles/' + vehicle.vehicleId + '/maintenance/add'}"
+                                  th:object="${maintenanceRequest}" method="post" novalidate>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Task Title <span class="text-danger">*</span></label>
+                                        <input type="text" th:field="*{title}" class="form-control"
+                                               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
+                                               placeholder="e.g. Oil Change, Tyre Rotation, Brake Check">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Description</label>
+                                        <textarea th:field="*{description}" class="form-control" rows="2" placeholder="Details about this task..."></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Scheduled Date <span class="text-danger">*</span></label>
+                                        <input type="date" th:field="*{scheduledDate}" class="form-control" th:classappend="${#fields.hasErrors('scheduledDate')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduledDate')}" th:errors="*{scheduledDate}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Completed Date (if done)</label>
+                                        <input type="date" th:field="*{completedDate}" class="form-control">
+                                        <div class="form-text text-muted">Leave blank if not yet completed.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Cost (₹)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" th:field="*{cost}" class="form-control" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Notes</label>
+                                        <textarea th:field="*{notes}" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="alert alert-info py-2 small mb-0">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            <strong>Status is computed automatically:</strong>
+                                            <span class="badge bg-danger ms-1">OVERDUE</span> if past scheduled date &bull;
+                                            <span class="badge bg-warning text-dark ms-1">DUE TODAY</span> if today &bull;
+                                            <span class="badge bg-primary ms-1">UPCOMING</span> if future &bull;
+                                            <span class="badge bg-success ms-1">COMPLETED</span> if completed date set.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})} + '?tab=maintenance'" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-1"></i>Cancel</a>
+                                    <button type="submit" class="btn btn-primary ms-auto px-4">
+                                        <i class="bi bi-check-circle me-1"></i><span th:text="${maintenanceId != null ? 'Update Task' : 'Save Task'}">Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

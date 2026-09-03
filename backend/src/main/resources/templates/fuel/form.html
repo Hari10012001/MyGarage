@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Record — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer"><form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form></div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold" th:text="${fuelId != null ? 'Edit Fuel Record' : 'Add Fuel Record'}">Fuel</span>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+            <div th:if="${errorMsg}" class="alert alert-danger mt-3"><span th:text="${errorMsg}"></span></div>
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 px-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-fuel-pump fs-4 text-warning"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-0" th:text="${fuelId != null ? 'Edit Fuel Record' : 'Log Fuel Fill-Up'}">Fuel</h5>
+                                    <p class="text-muted small mb-0" th:if="${vehicle != null}" th:text="${vehicle.displayName}">Vehicle</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body px-4 pb-4">
+                            <form th:action="${fuelId != null ? '/vehicles/' + vehicle.vehicleId + '/fuel/' + fuelId + '/edit' : '/vehicles/' + vehicle.vehicleId + '/fuel/add'}"
+                                  th:object="${fuelRequest}" method="post" novalidate>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Fill Date <span class="text-danger">*</span></label>
+                                        <input type="date" th:field="*{fuelDate}" class="form-control" th:classappend="${#fields.hasErrors('fuelDate')} ? 'is-invalid'">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fuelDate')}" th:errors="*{fuelDate}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Fuel Type <span class="text-danger">*</span></label>
+                                        <select th:field="*{fuelType}" class="form-select" th:classappend="${#fields.hasErrors('fuelType')} ? 'is-invalid'">
+                                            <option value="">— Select —</option>
+                                            <option th:each="ft : ${fuelTypes}" th:value="${ft}" th:text="${ft}">Type</option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fuelType')}" th:errors="*{fuelType}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Quantity (Litres) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" id="quantity" th:field="*{quantityLitres}" class="form-control"
+                                                   th:classappend="${#fields.hasErrors('quantityLitres')} ? 'is-invalid'"
+                                                   step="0.01" min="0.1" placeholder="e.g. 40.50" oninput="calcTotal()">
+                                            <span class="input-group-text">L</span>
+                                        </div>
+                                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('quantityLitres')}" th:errors="*{quantityLitres}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Cost per Litre (₹) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" id="costPerLitre" th:field="*{costPerLitre}" class="form-control"
+                                                   th:classappend="${#fields.hasErrors('costPerLitre')} ? 'is-invalid'"
+                                                   step="0.01" min="0.01" placeholder="e.g. 104.00" oninput="calcTotal()">
+                                        </div>
+                                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('costPerLitre')}" th:errors="*{costPerLitre}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Total Cost (auto-calculated)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" id="totalDisplay" class="form-control bg-light" readonly placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Odometer at Fill (km)</label>
+                                        <div class="input-group">
+                                            <input type="number" th:field="*{odometerAtFill}" class="form-control" min="0" placeholder="e.g. 24500">
+                                            <span class="input-group-text">km</span>
+                                        </div>
+                                        <div class="form-text text-muted">Used to calculate estimated mileage.</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Notes</label>
+                                        <textarea th:field="*{notes}" class="form-control" rows="2" placeholder="e.g. Full tank, highway drive..."></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="alert alert-info py-2 small mb-0">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            <strong>Estimated Mileage:</strong> Calculated from odometer difference between this and the previous fuel record. This is an estimate only.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})} + '?tab=fuel'" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-1"></i>Cancel</a>
+                                    <button type="submit" class="btn btn-warning text-dark ms-auto px-4">
+                                        <i class="bi bi-check-circle me-1"></i><span th:text="${fuelId != null ? 'Update Record' : 'Save Record'}">Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

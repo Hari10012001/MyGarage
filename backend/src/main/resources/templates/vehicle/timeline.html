@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Timeline — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer"><form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form></div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Vehicle Timeline</span>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+                <div>
+                    <h4 class="fw-bold mb-1"><span th:text="${vehicle.category?.icon}">🚗</span> <span th:text="${vehicle.displayName}">Vehicle</span></h4>
+                    <span class="badge bg-primary me-2" th:text="${vehicle.plateNumber}">Plate</span>
+                    <span class="text-muted small" th:text="${vehicle.currentOdometer != null ? vehicle.currentOdometer + ' km' : ''}"></span>
+                </div>
+                <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+            </div>
+
+            <div class="timeline-container">
+                <!-- Check if any records exist -->
+                <div th:if="${(serviceRecords == null or serviceRecords.isEmpty()) and (fuelRecords == null or fuelRecords.isEmpty()) and (maintenanceRecords == null or maintenanceRecords.isEmpty())}"
+                     class="empty-state text-center py-5">
+                    <i class="bi bi-clock-history text-muted display-1 d-block mb-3"></i>
+                    <h5 class="text-muted">No history yet</h5>
+                    <p class="text-muted">Add service, fuel, or maintenance records to see your vehicle history here.</p>
+                </div>
+
+                <!-- Service Records in timeline -->
+                <div th:if="${serviceRecords != null and !serviceRecords.isEmpty()}">
+                    <h6 class="fw-bold mb-3 mt-2"><i class="bi bi-tools text-success me-2"></i>Service Records</h6>
+                    <div th:each="svc : ${serviceRecords}" class="timeline-item timeline-service mb-3">
+                        <div class="timeline-dot bg-success"></div>
+                        <div class="timeline-content card border-0 shadow-sm p-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-success-subtle text-success mb-1">🔧 Service</span>
+                                    <div class="fw-semibold" th:text="${svc.serviceType}">Type</div>
+                                    <div class="text-muted small" th:if="${svc.garageName}" th:text="${'📍 ' + svc.garageName}"></div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-muted" th:text="${#temporals.format(svc.serviceDate, 'dd MMM yyyy')}">Date</div>
+                                    <div class="fw-bold text-success" th:if="${svc.cost}" th:text="${'₹' + svc.cost}">Cost</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fuel Records in timeline -->
+                <div th:if="${fuelRecords != null and !fuelRecords.isEmpty()}">
+                    <h6 class="fw-bold mb-3 mt-4"><i class="bi bi-fuel-pump text-warning me-2"></i>Fuel Records</h6>
+                    <div th:each="fuel : ${fuelRecords}" class="timeline-item timeline-fuel mb-3">
+                        <div class="timeline-dot bg-warning"></div>
+                        <div class="timeline-content card border-0 shadow-sm p-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-warning-subtle text-warning-emphasis mb-1">⛽ Fuel</span>
+                                    <div class="fw-semibold" th:text="${fuel.fuelType + ' — ' + fuel.quantityLitres + ' L'}">Fuel</div>
+                                    <div class="text-muted small" th:if="${fuel.estimatedMileageKmpl}" th:text="${'Est. Mileage: ' + fuel.estimatedMileageKmpl + ' km/L'}"></div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-muted" th:text="${#temporals.format(fuel.fuelDate, 'dd MMM yyyy')}">Date</div>
+                                    <div class="fw-bold text-warning-emphasis" th:if="${fuel.totalCost}" th:text="${'₹' + fuel.totalCost}">Cost</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Records in timeline -->
+                <div th:if="${maintenanceRecords != null and !maintenanceRecords.isEmpty()}">
+                    <h6 class="fw-bold mb-3 mt-4"><i class="bi bi-calendar-check text-primary me-2"></i>Maintenance Tasks</h6>
+                    <div th:each="m : ${maintenanceRecords}" class="timeline-item mb-3">
+                        <div class="timeline-dot" th:classappend="${m.status.name() == 'OVERDUE'} ? 'bg-danger' : (${m.status.name() == 'COMPLETED'} ? 'bg-success' : 'bg-primary')"></div>
+                        <div class="timeline-content card border-0 shadow-sm p-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span th:switch="${m.status.name()}">
+                                        <span th:case="'OVERDUE'" class="badge bg-danger mb-1">OVERDUE</span>
+                                        <span th:case="'DUE_TODAY'" class="badge bg-warning text-dark mb-1">DUE TODAY</span>
+                                        <span th:case="'UPCOMING'" class="badge bg-primary mb-1">UPCOMING</span>
+                                        <span th:case="'COMPLETED'" class="badge bg-success mb-1">COMPLETED</span>
+                                    </span>
+                                    <div class="fw-semibold" th:text="${m.title}">Task</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-muted" th:text="${'Due: ' + #temporals.format(m.scheduledDate, 'dd MMM yyyy')}">Date</div>
+                                    <div class="small text-success" th:if="${m.completedDate}" th:text="${'Done: ' + #temporals.format(m.completedDate, 'dd MMM yyyy')}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

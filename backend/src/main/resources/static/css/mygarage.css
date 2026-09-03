@@ -1,0 +1,255 @@
+/* ============================================================
+   MyGarage Custom Stylesheet — APPJFS19
+   Color Palette:
+   Primary Dark:  #1A3C5E (Navy)
+   Accent Orange: #F97316
+   Sidebar BG:    #0F2132
+   ============================================================ */
+
+:root {
+  --mg-primary: #1A3C5E;
+  --mg-primary-dark: #0F2132;
+  --mg-accent: #F97316;
+  --mg-sidebar-width: 240px;
+  --mg-topbar-height: 56px;
+}
+
+/* ============================
+   BODY & GENERAL
+   ============================ */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #F8FAFC;
+  color: #1e293b;
+  min-height: 100vh;
+}
+
+.bg-primary-dark { background-color: var(--mg-primary-dark) !important; }
+.text-primary-dark { color: var(--mg-primary) !important; }
+
+/* ============================
+   SIDEBAR
+   ============================ */
+.sidebar {
+  width: var(--mg-sidebar-width);
+  min-height: 100vh;
+  background: var(--mg-primary-dark);
+  color: white;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-brand {
+  padding: 1.2rem 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: white;
+}
+
+.sidebar-nav {
+  padding: 0.5rem 0;
+}
+
+.sidebar-link {
+  color: rgba(255,255,255,0.75) !important;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.sidebar-link:hover {
+  color: white !important;
+  background: rgba(255,255,255,0.1);
+}
+
+.sidebar-link.active {
+  color: white !important;
+  background: var(--mg-accent);
+  border-left: 3px solid white;
+}
+
+.sidebar-section-label {
+  padding: 0.75rem 1.25rem 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: auto;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+/* ============================
+   MAIN CONTENT
+   ============================ */
+.main-content {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  height: var(--mg-topbar-height);
+  z-index: 50;
+  background: white;
+}
+
+.page-content {
+  padding-top: 1rem;
+}
+
+/* ============================
+   STAT CARDS
+   ============================ */
+.stat-card {
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important; }
+.stat-number { color: var(--mg-primary); }
+.stat-icon i { opacity: 0.9; }
+
+/* ============================
+   VEHICLE CARDS
+   ============================ */
+.vehicle-card {
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.vehicle-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
+.vehicle-card-icon { font-size: 2.5rem; }
+.vehicle-mini-card { background: #f8fafc; transition: background 0.15s; cursor: pointer; }
+.vehicle-mini-card:hover { background: #e0f2fe; }
+.vehicle-header-icon { font-size: 3rem; }
+.vehicle-stat-item { padding: 0.5rem; border-radius: 8px; background: #f8fafc; }
+
+/* ============================
+   FEATURE CARDS (Landing)
+   ============================ */
+.feature-card {
+  border-radius: 16px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-3px); }
+.feature-icon { opacity: 0.9; }
+
+/* ============================
+   HERO SECTION (Landing)
+   ============================ */
+.hero-section {
+  background: linear-gradient(135deg, var(--mg-primary-dark) 0%, var(--mg-primary) 60%, #2563eb 100%);
+  color: white;
+  padding: 5rem 2rem;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+}
+.hero-icon { opacity: 0.9; }
+.landing-page { background: #f8fafc; }
+
+/* ============================
+   STEPS (Landing)
+   ============================ */
+.step-number {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--mg-primary);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* ============================
+   AUTH PAGES
+   ============================ */
+.auth-page { background: linear-gradient(135deg, var(--mg-primary-dark) 0%, var(--mg-primary) 100%); }
+.auth-card { border-radius: 16px; border: none; }
+.brand-icon {}
+
+/* ============================
+   ALERT ITEMS (Maintenance)
+   ============================ */
+.alert-item {
+  background: white;
+  border-color: #fee2e2 !important;
+  border-left: 4px solid #ef4444 !important;
+}
+
+/* ============================
+   TIMELINE
+   ============================ */
+.timeline-container { position: relative; }
+.timeline-item { position: relative; padding-left: 1.5rem; }
+.timeline-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 1rem;
+}
+.timeline-content { border-radius: 10px; }
+
+/* ============================
+   TABLES
+   ============================ */
+.table th { font-weight: 600; font-size: 0.85rem; color: #64748b; }
+.table td { font-size: 0.9rem; vertical-align: middle; }
+
+/* ============================
+   BADGES
+   ============================ */
+.bg-primary-subtle { background-color: #dbeafe !important; }
+.bg-success-subtle { background-color: #dcfce7 !important; }
+.bg-warning-subtle { background-color: #fef3c7 !important; }
+.bg-danger-subtle { background-color: #fee2e2 !important; }
+.bg-secondary-subtle { background-color: #f1f5f9 !important; }
+
+/* ============================
+   EMPTY STATES
+   ============================ */
+.empty-state { color: #94a3b8; }
+
+/* ============================
+   RESPONSIVE — Mobile Sidebar
+   ============================ */
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    transform: translateX(-100%);
+    z-index: 200;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.show { display: block; }
+  .main-content { width: 100%; }
+}
