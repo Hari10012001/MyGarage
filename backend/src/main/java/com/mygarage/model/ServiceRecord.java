@@ -15,7 +15,11 @@ import java.time.LocalDateTime;
  * ServiceRecord entity - tracks every vehicle service visit.
  */
 @Entity
-@Table(name = "service_records")
+@Table(name = "service_records",
+        indexes = {
+            @Index(name = "idx_service_vehicle_id", columnList = "vehicle_id"),
+            @Index(name = "idx_service_date", columnList = "service_date")
+        })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class ServiceRecord {

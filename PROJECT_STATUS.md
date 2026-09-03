@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-03  
-**Current Phase:** MILESTONE 1 (M1) COMPLETE & FULLY VERIFIED — Ready for M2
+**Current Phase:** MILESTONE 2 (M2) COMPLETE & FULLY VERIFIED — Ready for M3
 
 ---
 
@@ -16,26 +16,28 @@
 | Apache Maven | 3.9.10 | Verified |
 | MySQL Server | 8.0.43 Community Server | Active & Connected |
 | Database Name | `mygarage_db` | Created & Initialized |
-| Version Control | Git 2.45+ | Initialized |
+| Version Control | Git 2.45+ | Active |
 | Framework | Spring Boot 3.3.5 | Verified |
 | Application Port | 8080 | Tested & Clean |
 
 ---
 
-## Milestone 1 (M1) Deliverables & Verification Matrix
+## Milestone 2 (M2) Verification & Database Mapping Matrix
 
-| Deliverable | Description | Verification Result |
-|-------------|-------------|---------------------|
-| Maven Configuration | `backend/pom.xml` with Java 21, Spring Boot 3.3.5, Actuator, MySQL, JPA, Security, Thymeleaf, Lombok, H2 test | PASS (`BUILD SUCCESS`) |
-| Git Repository | Initialized, `.gitignore` configured, identity set | PASS |
-| Directory Architecture | Separate `controller/web/` and `controller/api/`, `model/`, `repository/`, `service/`, `dto/`, `config/`, `exception/` | PASS |
-| MySQL Database | Connected with `Hari2025@`, `mygarage_db` created, 6 tables auto-generated | PASS (6 tables verified) |
-| Core Application | `MyGarageApplication.java` starts on port 8080 | PASS (Started in 13.7s) |
-| Health Endpoint | `http://localhost:8080/actuator/health` | PASS (`{"status":"UP"}`) |
-| Public Endpoints | `/` (Landing), `/login`, `/register` | PASS (HTTP 200) |
-| Static & Templates | Bootstrap 5, Bootstrap Icons, custom `mygarage.css`, `mygarage.js`, full Thymeleaf templates | PASS |
-| Test Suite | Unit tests (`MaintenanceServiceTest`) & context test (`MyGarageApplicationTests`) | PASS (6 tests run, 0 failures, 0 errors) |
-| Automation Scripts | `setup-db.bat`, `start.bat`, `stop.bat`, `run-tests.bat`, `health-check.bat` in `scripts/` | PASS |
+| Check / Requirement | Specification | Status |
+|---|---|---|
+| **Entity Table Mappings** | All 6 entities (`User`, `VehicleCategory`, `Vehicle`, `ServiceRecord`, `FuelRecord`, `MaintenanceRecord`) mapped to exact table names | **PASS** |
+| **Primary Keys & Generated IDs** | Standardized `GenerationType.IDENTITY` on all 6 tables (`user_id`, `category_id`, `vehicle_id`, `service_id`, `fuel_id`, `maintenance_id`) | **PASS** |
+| **Unique Constraints** | `users(email)`, `vehicle_categories(name)`, `vehicles(user_id, plate_number)` | **PASS** |
+| **Indexes** | Optimized indexes on foreign keys, email, role, dates, plate number, maintenance status | **PASS** |
+| **Enum Mappings** | `EnumType.STRING` on `Role` (`users`), `FuelType` (`fuel_records`), `MaintenanceStatus` (`maintenance_records`) | **PASS** |
+| **Monetary Precision** | `BigDecimal` with `DECIMAL(10, 2)` or `DECIMAL(8, 2)` for zero rounding error | **PASS** |
+| **Temporal Data Types** | `LocalDate` for service/fuel/maintenance dates, `LocalDateTime` for audit timestamps | **PASS** |
+| **Cascade & Orphan Removal** | Vehicle deletion cascades to `ServiceRecord`, `FuelRecord`, `MaintenanceRecord` (no orphan records left) | **PASS** |
+| **Category Protection** | Category deletion blocked if vehicles are assigned (`countByCategoryCategoryId`) | **PASS** |
+| **Ownership Isolation** | Strict repository ownership queries: `findBy...AndVehicleUserUserId(..., userId)` | **PASS** |
+| **BCrypt Admin Seed** | Verified BCrypt hash for `admin@mygarage.com / Admin@123` in `data.sql` and database | **PASS** |
+| **Automated Tests** | 14 automated tests executed (`JpaRepositoryTest`, `MaintenanceServiceTest`, `PasswordEncoderTest`, `MyGarageApplicationTests`) | **PASS (14/14, 0 failures, 0 errors)** |
 
 ---
 
@@ -48,8 +50,8 @@
 | **Phase 2** | UI/UX Specification (20 Pages) | **DONE** |
 | **Approval Gate 1** | Plan & Scope Approval | **APPROVED** |
 | **M1** | Project Setup, Maven, Git, DB Config, Base Architecture & Smoke QC | **COMPLETED & VERIFIED** |
-| **M2** | Database & JPA Entities (Verify Mappings & Constraints) | **NEXT** |
-| **M3** | Authentication & Role-Based Access Control | PENDING |
+| **M2** | Database & JPA Entities (Deep Verification, Indexes, Cascades & Mappings) | **COMPLETED & VERIFIED** |
+| **M3** | Authentication & Role-Based Access Control | **NEXT** |
 | **M4** | Vehicle Module (CRUD & Ownership Protection) | PENDING |
 | **M5** | Service Module (Service History & Tracking) | PENDING |
 | **M6** | Fuel Module (Fuel Logs & Estimated Mileage) | PENDING |
@@ -60,15 +62,30 @@
 
 ---
 
-## Technical Issues Resolved During M1
+## Architecture Inventory
 
-1. **PowerShell UTF-8 BOM Issue:** Windows PowerShell 5.1 default UTF-8 output emitted a Byte Order Mark (`\ufeff`) that prevented javac from compiling. All files were stripped of BOM, and javac now compiles with 0 errors.
-2. **MySQL Authentication:** MySQL root account password on this workstation is `Hari2025@`. Configured `application.properties` with fallback `${DB_PASSWORD:Hari2025@}` and updated `setup-db.bat`.
-3. **Actuator Dependency:** Added `spring-boot-starter-actuator` to `pom.xml` so the `/actuator/health` endpoint required by `health-check.bat` is fully operational.
-4. **Spring Security 6 Config:** Streamlined authentication provider registration in `SecurityConfig.java` to avoid duplicate `DaoAuthenticationProvider` bean warnings.
+- **Web MVC Controllers (8):**
+  1. `AuthWebController` (Login, Register, Logout)
+  2. `DashboardWebController` (User Dashboard)
+  3. `VehicleWebController` (Vehicle List, Add, Edit, Detail, Timeline, Delete)
+  4. `ServiceWebController` (Service Log Add, Edit, Delete)
+  5. `FuelWebController` (Fuel Fill-up Log Add, Edit, Delete)
+  6. `MaintenanceWebController` (Maintenance Task Add, Edit, Complete, Delete)
+  7. `ProfileWebController` (Profile & Password Change)
+  8. `AdminWebController` (Admin Dashboard, Users, Categories, Statistics)
+- **REST API Controllers (5):**
+  1. `VehicleApiController` (`/api/vehicles/**`)
+  2. `ServiceApiController` (`/api/services/**`)
+  3. `FuelApiController` (`/api/fuel/**`)
+  4. `MaintenanceApiController` (`/api/maintenance/**`)
+  5. `DashboardApiController` (`/api/dashboard/**`)
+- **Documentation:**
+  - `docs/REQUIREMENTS.md` (Full Specification)
+  - `docs/DATABASE_DESIGN.md` (Full ERD, Data Dictionary, and Integrity Constraints)
+  - `PROJECT_STATUS.md` (Milestone Tracker)
 
 ---
 
 ## Next Action
 
-Awaiting instruction to begin **M2: Database & JPA Entities (Deep Verification of Mappings, Cascade Rules, and Constraints)**.
+Awaiting instruction to proceed to **M3: Authentication & Role-Based Access Control (Spring Security, BCrypt, Session Auth, Role Guarding & Ownership Verification)**.

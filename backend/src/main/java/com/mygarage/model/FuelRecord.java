@@ -17,7 +17,11 @@ import java.time.LocalDateTime;
  * Mileage is presented as ESTIMATED based on odometer difference.
  */
 @Entity
-@Table(name = "fuel_records")
+@Table(name = "fuel_records",
+        indexes = {
+            @Index(name = "idx_fuel_vehicle_id", columnList = "vehicle_id"),
+            @Index(name = "idx_fuel_date", columnList = "fuel_date")
+        })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class FuelRecord {

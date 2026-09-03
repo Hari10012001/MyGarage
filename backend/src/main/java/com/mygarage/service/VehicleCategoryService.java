@@ -53,9 +53,7 @@ public class VehicleCategoryService {
 
     public void delete(Long id) {
         VehicleCategory cat = findById(id);
-        long vehicleCount = vehicleRepository.findAll().stream()
-                .filter(v -> v.getCategory() != null && v.getCategory().getCategoryId().equals(id))
-                .count();
+        long vehicleCount = vehicleRepository.countByCategoryCategoryId(id);
         if (vehicleCount > 0) {
             throw new IllegalArgumentException(
                     "Cannot delete category '" + cat.getName() + "' — it has " + vehicleCount + " vehicle(s) assigned.");

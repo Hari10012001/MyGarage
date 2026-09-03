@@ -16,7 +16,13 @@ import java.util.List;
  * A user can own multiple vehicles.
  */
 @Entity
-@Table(name = "vehicles")
+@Table(name = "vehicles",
+        uniqueConstraints = @UniqueConstraint(name = "uk_vehicle_user_plate", columnNames = {"user_id", "plate_number"}),
+        indexes = {
+            @Index(name = "idx_vehicles_user_id", columnList = "user_id"),
+            @Index(name = "idx_vehicles_category_id", columnList = "category_id"),
+            @Index(name = "idx_vehicles_plate", columnList = "plate_number")
+        })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Vehicle {
@@ -53,7 +59,7 @@ public class Vehicle {
 
     @Min(value = 1900, message = "Year must be after 1900")
     @Max(value = 2030, message = "Year must be realistic")
-    @Column(name = "year", nullable = false)
+    @Column(name = "\"year\"", nullable = false)
     private Integer year;
 
     @Size(max = 30)
@@ -104,5 +110,20 @@ public class Vehicle {
 
     public String getDisplayName() {
         return make + " " + model + " (" + year + ")";
+    }
+
+    public void addServiceRecord(ServiceRecord record) {
+        serviceRecords.add(record);
+        record.setVehicle(this);
+    }
+
+    public void addFuelRecord(FuelRecord record) {
+        fuelRecords.add(record);
+        record.setVehicle(this);
+    }
+
+    public void addMaintenanceRecord(MaintenanceRecord record) {
+        maintenanceRecords.add(record);
+        record.setVehicle(this);
     }
 }

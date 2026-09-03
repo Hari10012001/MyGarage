@@ -11,7 +11,7 @@ INSERT IGNORE INTO users (full_name, email, password_hash, phone, role, is_activ
 VALUES (
     'MyGarage Admin',
     'admin@mygarage.com',
-    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.',
+    '$2a$10$gTZWG2345TLShuH70fsN3OL/e4/dliZSJggoEfl6i3KMK5YobVm9u',
     '9999999999',
     'ADMIN',
     true,

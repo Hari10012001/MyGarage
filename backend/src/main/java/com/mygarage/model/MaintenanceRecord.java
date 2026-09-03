@@ -22,7 +22,12 @@ import java.time.LocalDateTime;
  *   scheduledDate > today         -> UPCOMING
  */
 @Entity
-@Table(name = "maintenance_records")
+@Table(name = "maintenance_records",
+        indexes = {
+            @Index(name = "idx_maint_vehicle_id", columnList = "vehicle_id"),
+            @Index(name = "idx_maint_status", columnList = "status"),
+            @Index(name = "idx_maint_scheduled", columnList = "scheduled_date")
+        })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class MaintenanceRecord {

@@ -19,7 +19,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users",
-        uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+        uniqueConstraints = @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+        indexes = {
+            @Index(name = "idx_users_email", columnList = "email"),
+            @Index(name = "idx_users_role", columnList = "role")
+        })
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class User {
