@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface ServiceRecordRepository extends JpaRepository<ServiceRecord, Long> {
 
     List<ServiceRecord> findByVehicleVehicleIdOrderByServiceDateDesc(Long vehicleId);
+    List<ServiceRecord> findByVehicleVehicleIdOrderByServiceDateAsc(Long vehicleId);
 
     // Ownership check
     Optional<ServiceRecord> findByServiceIdAndVehicleUserUserId(Long serviceId, Long userId);

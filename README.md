@@ -6,7 +6,8 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-338%2F338%20PASS-success.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-388%2F388%20PASS-success.svg)]()
+[![Playwright QC](https://img.shields.io/badge/Playwright%20QC-46%2F46%20PASS-brightgreen.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -18,13 +19,17 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, fuel efficiency intelligence & price analytics, vehicle reliability engineering (VRI, MDBF, subsystem failure taxonomy, chronic defect detection), and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
 ## 2. Key Architecture & Features
 
 ### 👤 Normal User Features
+- **Vehicle Reliability Engineering & Chronic Defect Engine (`/vehicles/{id}/reliability`, `/vehicles/reliability`):** Retrospective component reliability intelligence, computing Mean Distance Between Failures (MDBF), Mean Time Between Services (MTBS), Subsystem Failure Taxonomy across 6 domains, Corrective Service Ratio (CSR %), chronic recurrence defect clustering (<180d / <5,000 km), and composite 0–100 Vehicle Reliability Index (VRI).
+- **Workshop Quality & Mean Return Interval (MRI) Analytics:** Tracks service center visit frequencies, total expenditures, and average days elapsed before a vehicle requires another service visit after leaving each workshop.
+- **Garage Fleet Reliability Matrix & Leaderboard:** Cross-vehicle reliability rankings, fleet MDBF, fleet breakdown expenditures, and automated preventative maintenance recommendations.
+- **Fuel Efficiency Intelligence & Historical Price Analytics Engine (`/vehicles/{id}/fuel-analytics`, `/vehicles/fuel-analytics`):** Rolling 30-day and 90-day economy averages, monthly fuel expenditure and unit-price inflation trends, mileage standard deviation (consumption volatility), and automated driving efficiency badging.
 - **Garage Management:** Add, edit, view, and delete multiple vehicles (cars, motorcycles, scooters, trucks, EVs) with license plate uniqueness and category classification.
 - **TCO Lifecycle Modeling & Asset Valuation Advisory (`/vehicles/{id}/tco`, `/vehicles/tco`):** Econometric total cost of ownership analysis combining initial acquisition depreciation with cumulative OPEX (fuel, services, maintenance), cost per km, annualized and monthly run rates.
 - **Depreciation Valuation & Salvage Floor Engine:** Multi-year declining-balance asset depreciation modeling calibrated by vehicle category and annual mileage intensity, strictly bounded by a 10% salvage floor.

@@ -33,17 +33,20 @@
 | **M13** | Comparative Analytics & Fleet Efficiency Benchmarking | 24 | Comparison, Badging & Isolation | **ACCEPTED** |
 | **M14** | Predictive Maintenance Forecasting, Vehicle Health Scoring & Service Planner | 25 | Velocity, VHI, PMS & Duplicate Guard | **ACCEPTED** |
 | **M15** | TCO Lifecycle Modeling, Depreciation Valuation & Replacement Advisory | 25 | Econometric Curves, RRVR & Carbon ESG | **ACCEPTED** |
-| **TOTAL** | **Full System Integration & Regression** | **338** | **100% PASS** | **M15 ACCEPTED** |
+| **M16** | Fuel Efficiency Intelligence & Historical Price Analytics Engine | 25 | Rolling Windows, StdDev & Badges | **ACCEPTED** |
+| **M17** | Vehicle Reliability Engineering, Failure Risk & Chronic Defect Engine | 25 | MDBF, Subsystems, CSR, VRI (0-100) & Lemon Engine | **ACCEPTED** |
+| **TOTAL** | **Full System Integration & Regression** | **388** | **100% PASS (388/388)** | **M17 ACCEPTED** |
 
 ---
 
 ## 2. Technical Quality Metrics
 
-- **Total Automated Test Cases:** **338**
+- **Total Automated Test Cases:** **388**
 - **Failures:** **0**
 - **Errors:** **0**
 - **Skipped:** **0**
 - **Pass Rate:** **100.0%**
+- **Playwright Browser QC:** **46 / 46 PASS (100%)**
 - **Full Regression Status:** **`BUILD SUCCESS`**
 - **Code Compilation:** Zero warnings, target pinned strictly to **Java 21**.
 - **Database Schema:** 6 relational tables with verified primary keys, foreign keys, unique constraints, and indexes.

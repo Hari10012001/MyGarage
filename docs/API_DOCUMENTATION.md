@@ -621,3 +621,168 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### L. Fuel Efficiency Intelligence & Historical Price Analytics APIs (M16)
+
+#### 1. Vehicle Fuel Analytics Report
+- **Method:** `GET /api/vehicles/{id}/fuel-analytics`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN01-AB-1234",
+    "make": "Honda",
+    "model": "City",
+    "fuelType": "PETROL",
+    "currentOdometer": 15000,
+    "lifetimeFuelCost": 12500.00,
+    "lifetimeLiters": 125.00,
+    "lifetimeAvgMileageKmpl": 14.8,
+    "bestMileageKmpl": 17.5,
+    "worstMileageKmpl": 12.2,
+    "mileageStdDev": 1.45,
+    "rolling30DayAvgKmpl": 15.2,
+    "rolling90DayAvgKmpl": 14.9,
+    "monthlyBreakdowns": [
+      {
+        "yearMonth": "2025-08",
+        "totalVolumeLiters": 45.00,
+        "totalCost": 4500.00,
+        "fillUpCount": 2,
+        "averagePricePerLiter": 100.00
+      }
+    ]
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage-Wide Fleet Fuel Intelligence
+- **Method:** `GET /api/analytics/garage-fuel`
+- **Access:** `ROLE_NORMAL_USER`
+- **Response:** `200 OK`
+  ```json
+  {
+    "garageTotalFuelCost": 25000.00,
+    "garageTotalLiters": 250.00,
+    "garageAverageKmpl": 15.1,
+    "vehicles": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN01-AB-1234",
+        "make": "Honda",
+        "model": "City",
+        "averageKmpl": 14.8,
+        "efficiencyBadge": "ECO_CHAMPION"
+      }
+    ]
+  }
+  ```
+
+---
+
+### M. Vehicle Reliability Engineering, Component Failure Risk & Chronic Defect APIs (M17)
+
+#### 1. Vehicle Reliability Engineering Report
+- **Method:** `GET /api/vehicles/{id}/reliability`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN07-RELIAB01",
+    "make": "Toyota",
+    "model": "Innova",
+    "year": 2020,
+    "currentOdometer": 45000,
+    "vriScore": 92,
+    "reliabilityGrade": "EXCELLENT",
+    "totalServiceVisits": 4,
+    "totalServiceSpend": 18500.00,
+    "mdbfKm": 11250.0,
+    "mtbsDays": 120.5,
+    "unscheduledBreakdownCount": 1,
+    "unscheduledBreakdownSpend": 4500.00,
+    "correctiveServiceRatio": 24.3,
+    "routineMaintenanceCount": 3,
+    "routineMaintenanceSpend": 14000.00,
+    "subsystemBreakdowns": [
+      {
+        "subsystem": "BRAKING_TIRES",
+        "displayName": "Braking & Tires",
+        "recordCount": 1,
+        "totalCost": 4500.00,
+        "spendPercentage": 24.3,
+        "lastRepairDate": "2025-08-15"
+      },
+      {
+        "subsystem": "POWERTRAIN_ENGINE",
+        "displayName": "Powertrain & Engine",
+        "recordCount": 3,
+        "totalCost": 14000.00,
+        "spendPercentage": 75.7,
+        "lastRepairDate": "2025-06-10"
+      }
+    ],
+    "chronicDefectAlerts": [],
+    "workshops": [
+      {
+        "workshopName": "Toyota Authorized Dealership",
+        "visitCount": 3,
+        "totalSpend": 14000.00,
+        "averageCostPerVisit": 4666.67,
+        "meanReturnIntervalDays": 130.0
+      }
+    ],
+    "serviceAccelerationStatus": "STABLE",
+    "disclaimer": "Reliability classification, subsystem identification, chronic-defect detection, and VRI are deterministic rule-based analytical models derived from existing service and maintenance records, not OEM diagnostic or sensor-confirmed failure data."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage-Wide Fleet Reliability Matrix
+- **Method:** `GET /api/analytics/garage-reliability`
+- **Access:** `ROLE_NORMAL_USER`
+- **Response:** `200 OK`
+  ```json
+  {
+    "averageGarageVri": 88,
+    "fleetReliabilityGrade": "GOOD",
+    "fleetMdbfKm": 9800.5,
+    "fleetTotalBreakdownSpend": 12000.00,
+    "fleetTotalServiceVisits": 8,
+    "mostReliableVehicle": {
+      "vehicleId": 1,
+      "plateNumber": "TN07-RELIAB01",
+      "make": "Toyota",
+      "model": "Innova",
+      "year": 2020,
+      "vriScore": 92,
+      "reliabilityGrade": "EXCELLENT",
+      "totalVisits": 4,
+      "mdbfKm": 11250.0,
+      "breakdownRisk": "LOW"
+    },
+    "highestRiskVehicle": {
+      "vehicleId": 2,
+      "plateNumber": "TN07-OTHER99",
+      "make": "Hyundai",
+      "model": "Verna",
+      "year": 2021,
+      "vriScore": 65,
+      "reliabilityGrade": "MODERATE",
+      "totalVisits": 4,
+      "mdbfKm": 6200.0,
+      "breakdownRisk": "MODERATE"
+    },
+    "vehicleSummaries": [ ... ],
+    "subsystemSpendDistribution": [ ... ],
+    "recommendations": [
+      "Overall fleet reliability is in a healthy operating window. Continue scheduled preventive servicing."
+    ],
+    "disclaimer": "Reliability classification, subsystem identification, chronic-defect detection, and VRI are deterministic rule-based analytical models derived from existing service and maintenance records, not OEM diagnostic or sensor-confirmed failure data."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)

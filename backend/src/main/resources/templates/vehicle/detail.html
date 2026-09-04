@@ -15,7 +15,9 @@
         <ul class="nav flex-column sidebar-nav flex-grow-1">
             <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
             <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
             <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
             <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
         </ul>
         <div class="sidebar-footer">
@@ -51,6 +53,7 @@
                             <a th:href="@{/vehicles/{id}/report(id=${vehicle.vehicleId})}" class="btn btn-primary btn-sm"><i class="bi bi-file-earmark-text me-1"></i>Resale Dossier</a>
                             <a th:href="@{/vehicles/{id}/forecast(id=${vehicle.vehicleId})}" class="btn btn-outline-info btn-sm"><i class="bi bi-graph-up-arrow me-1"></i>Service Planner</a>
                             <a th:href="@{/vehicles/{id}/tco(id=${vehicle.vehicleId})}" class="btn btn-outline-warning btn-sm"><i class="bi bi-cash-coin me-1"></i>TCO Advisory</a>
+                            <a th:href="@{/vehicles/{id}/reliability(id=${vehicle.vehicleId})}" class="btn btn-outline-dark btn-sm"><i class="bi bi-shield-check me-1"></i>Reliability</a>
                             <a th:href="@{/vehicles/{id}/fuel-analytics(id=${vehicle.vehicleId})}" class="btn btn-outline-primary btn-sm"><i class="bi bi-fuel-pump me-1"></i>Fuel Analytics</a>
                             <a th:href="@{/vehicles/{id}/export/all/csv(id=${vehicle.vehicleId})}" class="btn btn-outline-success btn-sm"><i class="bi bi-download me-1"></i>Export CSV</a>
                             <a th:href="@{/vehicles/{id}/timeline(id=${vehicle.vehicleId})}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-clock-history me-1"></i>Timeline</a>

@@ -1209,13 +1209,87 @@ class QCAuditRunner:
                 page.screenshot(path=ss)
                 self.record_scenario(43, "Cross-user Tampering for Fuel Analytics (S43)", "FAIL", str(e), ss, time.time() - t0)
 
+            # --- M17: Vehicle Reliability Engineering ---
+            # --- S44: Garage-level Reliability Matrix (S44) ---
+            t0 = time.time()
+            try:
+                page.goto(BASE_URL + "/vehicles/reliability")
+                page.wait_for_load_state("domcontentloaded")
+                expect(page.locator("text=Fleet Reliability Matrix")).to_be_visible()
+                expect(page.locator("text=Vehicle Reliability Leaderboard")).to_be_visible()
+                expect(page.locator("text=Average Garage VRI")).to_be_visible()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "44_garage_reliability_matrix.png")
+                page.screenshot(path=ss)
+                self.record_scenario(44, "Garage-level Reliability Matrix (S44)", "PASS", "Fleet reliability matrix rendered successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "44_garage_reliability_matrix_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(44, "Garage-level Reliability Matrix (S44)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S45: Per-Vehicle Reliability Dashboard (S45) ---
+            t0 = time.time()
+            try:
+                if getattr(self, 'user_a_vehicle_id', None):
+                    page.goto(f"{BASE_URL}/vehicles/{self.user_a_vehicle_id}/reliability")
+                else:
+                    page.click("a.btn-outline-primary:has-text('Analysis')")
+                page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Vehicle Reliability Engineering")).to_be_visible()
+                expect(page.locator("text=Vehicle Reliability Index")).to_be_visible()
+                expect(page.locator("text=Mean Distance Between Failures")).to_be_visible()
+                expect(page.locator("text=Subsystem Failure & Cost Distribution")).to_be_visible()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "45_vehicle_reliability_dashboard.png")
+                page.screenshot(path=ss)
+                self.record_scenario(45, "Per-Vehicle Reliability Dashboard (S45)", "PASS", "Vehicle reliability dashboard rendered successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "45_vehicle_reliability_dashboard_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(45, "Per-Vehicle Reliability Dashboard (S45)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S46: Cross-User Tampering & Admin Blocking for Reliability ---
+            t0 = time.time()
+            try:
+                # User A attempts to view User B's reliability
+                if getattr(self, 'user_b_vehicle_id', None):
+                    tamper_url = f"{BASE_URL}/vehicles/{self.user_b_vehicle_id}/reliability"
+                    page.goto(tamper_url)
+                    # Must be redirected to /vehicles
+                    expect(page).to_have_url(f"{BASE_URL}/vehicles")
+
+                # Admin blocked from reliability
+                admin_context = browser.new_context()
+                ap = admin_context.new_page()
+                ap.goto(BASE_URL + "/login")
+                ap.fill("input[name='email']", "admin@mygarage.com")
+                ap.fill("input[name='password']", "Admin@123")
+                ap.click("button[type='submit']")
+                ap.wait_for_url("**/admin/dashboard")
+
+                # Admin tries to access User A's reliability
+                if getattr(self, 'user_a_vehicle_id', None):
+                    r = ap.goto(f"{BASE_URL}/vehicles/{self.user_a_vehicle_id}/reliability")
+                    assert r.status in [403, 302], f"Expected 403 or redirect for admin accessing user vehicle, got {r.status}"
+
+                admin_context.close()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "46_reliability_tampering_isolation.png")
+                page.screenshot(path=ss)
+                self.record_scenario(46, "Reliability Tampering & Admin 403 Isolation (S46)", "PASS", "Tampering and admin isolation verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "46_reliability_tampering_isolation_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(46, "Reliability Tampering & Admin 403 Isolation (S46)", "FAIL", str(e), ss, time.time() - t0)
+
             browser.close()
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()
 
         summary = {
-            "title": "MyGarage M1–M16 Playwright Browser QC Audit Report",
+            "title": "MyGarage M1–M17 Playwright Browser QC Audit Report",
             "system_id": "APPJFS19",
             "base_url": BASE_URL,
             "start_time": self.start_time.isoformat(),

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garage Reliability Matrix — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+        </div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+                <span class="fw-semibold">Fleet Reliability Engineering Matrix</span>
+            </div>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1">Fleet Reliability Matrix</h3>
+                    <p class="text-muted mb-0">Cross-vehicle failure rates, breakdown risks, and reliability rankings</p>
+                </div>
+            </div>
+
+            <!-- Disclaimer Alert -->
+            <div class="alert alert-info border-0 shadow-sm mb-4">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <small th:text="${matrix.disclaimer}"></small>
+            </div>
+
+            <!-- Fleet Overview Metric Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="text-muted small">Average Garage VRI</span>
+                            <h3 class="fw-bold mt-2 mb-1" th:classappend="${matrix.averageGarageVri >= 75 ? 'text-success' : (matrix.averageGarageVri >= 60 ? 'text-warning' : 'text-danger')}"
+                                th:text="${matrix.averageGarageVri + ' / 100'}">100 / 100</h3>
+                            <span class="badge" th:classappend="${matrix.averageGarageVri >= 75 ? 'bg-success' : (matrix.averageGarageVri >= 60 ? 'bg-warning text-dark' : 'bg-danger')}"
+                                  th:text="${'Grade: ' + matrix.fleetReliabilityGrade}">Grade</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="text-muted small">Fleet Mean Distance Between Failures</span>
+                            <h3 class="fw-bold mt-2 mb-1" th:text="${matrix.fleetMdbfKm != null ? #numbers.formatDecimal(matrix.fleetMdbfKm, 1, 1) + ' km' : 'N/A'}">--</h3>
+                            <span class="small text-muted">Fleet average distance per service</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="text-muted small">Unscheduled Breakdown Spend</span>
+                            <h3 class="fw-bold mt-2 mb-1 text-danger" th:text="${'?' + #numbers.formatDecimal(matrix.fleetTotalBreakdownSpend, 1, 2)}">?0.00</h3>
+                            <span class="small text-muted">Expenditure on corrective repairs</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="text-muted small">Total Workshop Visits</span>
+                            <h3 class="fw-bold mt-2 mb-1" th:text="${matrix.fleetTotalServiceVisits}">0</h3>
+                            <span class="small text-muted">Total service logs across fleet</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reliability Benchmarking Leaderboard -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                    <span>Vehicle Reliability Leaderboard</span>
+                    <span class="badge bg-secondary" th:text="${#lists.size(matrix.vehicleSummaries) + ' Vehicles'}">0 Vehicles</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Vehicle</th>
+                                    <th>VRI Score</th>
+                                    <th>Grade</th>
+                                    <th>Total Visits</th>
+                                    <th>MDBF (km)</th>
+                                    <th>Breakdown Risk</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(matrix.vehicleSummaries)}">
+                                    <td colspan="8" class="text-center text-muted py-4">No vehicles logged in garage.</td>
+                                </tr>
+                                <tr th:each="veh, stat : ${matrix.vehicleSummaries}">
+                                    <td class="fw-bold" th:text="${'#' + (stat.index + 1)}">#1</td>
+                                    <td>
+                                        <div class="fw-semibold" th:text="${veh.make + ' ' + veh.model}">Vehicle</div>
+                                        <div class="small text-muted" th:text="${veh.plateNumber}">Plate</div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold fs-6" th:classappend="${veh.vriScore >= 75 ? 'text-success' : (veh.vriScore >= 60 ? 'text-warning' : 'text-danger')}"
+                                              th:text="${veh.vriScore}">100</span>
+                                        <span class="small text-muted">/ 100</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${veh.vriScore >= 75 ? 'bg-success' : (veh.vriScore >= 60 ? 'bg-warning text-dark' : 'bg-danger')}"
+                                              th:text="${veh.reliabilityGrade}">EXCELLENT</span>
+                                    </td>
+                                    <td th:text="${veh.totalVisits}">0</td>
+                                    <td th:text="${veh.mdbfKm != null ? #numbers.formatDecimal(veh.mdbfKm, 1, 1) + ' km' : 'N/A'}">--</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${veh.breakdownRisk == 'LOW' ? 'bg-success' : (veh.breakdownRisk == 'MODERATE' ? 'bg-info' : (veh.breakdownRisk == 'ELEVATED' ? 'bg-warning text-dark' : 'bg-danger'))}"
+                                              th:text="${veh.breakdownRisk}">LOW</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/vehicles/{id}/reliability(id=${veh.vehicleId})}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-graph-up me-1"></i> Analysis
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subsystem Distribution & Preventative Recommendations -->
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white fw-bold">Fleet-Wide Subsystem Expenditure Distribution</div>
+                        <div class="card-body">
+                            <div style="max-height: 260px; position: relative;">
+                                <canvas id="fleetSubsystemChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white fw-bold text-primary"><i class="bi bi-lightbulb-fill me-2"></i>Prioritized Preventive Recommendations</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-0 py-3" th:each="rec : ${matrix.recommendations}">
+                                    <i class="bi bi-check2-circle text-primary me-2"></i>
+                                    <span th:text="${rec}">Recommendation text</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const subLabels = /*[[${matrix.subsystemSpendDistribution.![displayName]}]]*/ [];
+    const subCosts = /*[[${matrix.subsystemSpendDistribution.![totalCost]}]]*/ [];
+
+    const ctx = document.getElementById('fleetSubsystemChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subLabels,
+                datasets: [{
+                    label: 'Fleet Spend (?)',
+                    data: subCosts,
+                    backgroundColor: '#0d6efd',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+    /*]]>*/
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
