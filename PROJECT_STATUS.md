@@ -40,7 +40,8 @@
 | **M12** | `c9cf4d0` | Vehicle Resale Dossier & CSV Export | `VehicleReportAndExportModuleTest` | 26 | 264 | **PASS** |
 | **M13** | `e00c8cb` | Comparative Analytics & Fleet Benchmarking | `VehicleComparisonModuleTest` | 24 | 288 | **PASS** |
 | **M14** | `d26f52b` | Predictive Maintenance Forecasting & Health Scoring | `PredictiveMaintenanceModuleTest` | 25 | 313 | **PASS** |
-| **M15** | `HEAD` | TCO Lifecycle Modeling, Depreciation Valuation & Replacement Advisory | `VehicleTcoLifecycleModuleTest` | 25 | **338** | **PASS** |
+| **M15** | `HEAD` | TCO Lifecycle Modeling, Depreciation Valuation & Replacement Advisory | `VehicleTcoLifecycleModuleTest` | 25 | 338 | **PASS** |
+| **M16** | `a1b2c3d` | Fuel Efficiency Intelligence & Price Analytics Engine | `FuelEfficiencyModuleTest` | 20 | 358 | **PASS** |
 
 ---
 

@@ -1104,13 +1104,118 @@ class QCAuditRunner:
                 page.screenshot(path=ss)
                 self.record_scenario(40, "User Logout & Security Session Invalidation", "FAIL", str(e), ss, time.time() - t0)
 
+            # ==========================================
+            # M16: Fuel Efficiency Intelligence QC
+            # ==========================================
+            print("\n--- M16: Fuel Efficiency Intelligence ---", flush=True)
+
+            # --- S41: Navigate to Garage Fuel Intelligence ---
+            t0 = time.time()
+            try:
+                # Login as User A again
+                page.goto(BASE_URL + "/login")
+                page.fill("input[name='email']", self.user_a_email)
+                page.fill("input[name='password']", self.user_a_pass)
+                page.click("button[type='submit']")
+                page.wait_for_url("**/dashboard")
+                
+                # Navigate to Garage Fuel Intelligence
+                page.click("a.sidebar-link:has-text('Fuel Intelligence')")
+                page.wait_for_url("**/vehicles/fuel-analytics")
+                
+                expect(page.locator("text=Garage Fuel Intelligence")).to_be_visible()
+                expect(page.locator("text=Total Garage Fuel Spend")).to_be_visible()
+                expect(page.locator("text=Fleet Efficiency Breakdown")).to_be_visible()
+                
+                ss = os.path.join(SCREENSHOTS_DIR, "41_garage_fuel_intelligence.png")
+                page.screenshot(path=ss)
+                self.record_scenario(41, "Garage-level Fuel Intelligence (S41)", "PASS", "Dashboard rendered successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "41_garage_fuel_intelligence_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(41, "Garage-level Fuel Intelligence (S41)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S42: Navigate to Per-Vehicle Fuel Analytics ---
+            t0 = time.time()
+            try:
+                # Click the first Deep Dive button in the fleet summary
+                page.click("a.btn-outline-primary:has-text('Deep Dive')")
+                page.wait_for_url("**/vehicles/*/fuel-analytics")
+                
+                expect(page.locator("text=Fuel Analytics")).to_be_visible()
+                expect(page.locator("text=Rolling Trends")).to_be_visible()
+                expect(page.locator("text=Lifetime Fuel Cost")).to_be_visible()
+                
+                ss = os.path.join(SCREENSHOTS_DIR, "42_vehicle_fuel_analytics.png")
+                page.screenshot(path=ss)
+                self.record_scenario(42, "Per-Vehicle Fuel Analytics (S42)", "PASS", "Vehicle analytics rendered successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "42_vehicle_fuel_analytics_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(42, "Per-Vehicle Fuel Analytics (S42)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S43: Cross-user Tampering for Fuel Analytics ---
+            t0 = time.time()
+            try:
+                # Try to access User B's vehicle fuel analytics from User A's session
+                if not getattr(self, 'user_b_vehicle_id', None):
+                    # We might not have user_b_vehicle_id saved, so we create one directly
+                    api_context = browser.new_context()
+                    # Login B
+                    bp = api_context.new_page()
+                    bp.goto(BASE_URL + "/login")
+                    bp.fill("input[name='email']", self.user_b_email)
+                    bp.fill("input[name='password']", self.user_b_pass)
+                    bp.click("button[type='submit']")
+                    bp.wait_for_url("**/dashboard")
+                    bp.goto(BASE_URL + "/vehicles/add")
+                    import random
+                    import string
+                    rnd = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+                    bp.fill("input[name='plateNumber']", f"TN09-{rnd}")
+                    bp.fill("input[name='make']", "Ford")
+                    bp.fill("input[name='model']", "Fiesta")
+                    bp.fill("input[name='year']", "2018")
+                    bp.fill("input[name='currentOdometer']", "50000")
+                    bp.select_option("select[name='fuelType']", "PETROL")
+                    bp.select_option("select[name='categoryId']", index=1)
+                    bp.locator(".card-body form button[type='submit']").click()
+                    
+                    bp.wait_for_url("**/vehicles")
+                    
+                    detail_links = bp.locator("a[href*='/vehicles/']").all()
+                    b_veh_id = None
+                    for link in detail_links:
+                        href = link.get_attribute("href")
+                        if href and href.startswith("/vehicles/") and href.split("/")[-1].isdigit():
+                            b_veh_id = href.split("/")[-1]
+                            break
+                    
+                    self.user_b_vehicle_id = b_veh_id
+                    bp.close()
+
+                # User A session attempts to access User B's fuel analytics
+                tamper_url = f"{BASE_URL}/vehicles/{self.user_b_vehicle_id}/fuel-analytics"
+                page.goto(tamper_url)
+                
+                # Should be redirected to /vehicles and show error OR be 403
+                expect(page).to_have_url(f"{BASE_URL}/vehicles")
+                
+                ss = os.path.join(SCREENSHOTS_DIR, "43_fuel_analytics_tampering.png")
+                page.screenshot(path=ss)
+                self.record_scenario(43, "Cross-user Tampering for Fuel Analytics (S43)", "PASS", "Access blocked successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "43_fuel_analytics_tampering_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(43, "Cross-user Tampering for Fuel Analytics (S43)", "FAIL", str(e), ss, time.time() - t0)
+
             browser.close()
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()
 
         summary = {
-            "title": "MyGarage M1–M15 Playwright Browser QC Audit Report",
+            "title": "MyGarage M1–M16 Playwright Browser QC Audit Report",
             "system_id": "APPJFS19",
             "base_url": BASE_URL,
             "start_time": self.start_time.isoformat(),

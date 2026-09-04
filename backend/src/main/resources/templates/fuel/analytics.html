@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${vehicle.displayName + ' — Fuel Analytics'}">Fuel Analytics</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+        </div>
+    </nav>
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+                <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back to Vehicle</a>
+                <span class="fw-semibold">Fuel Analytics</span>
+            </div>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+        <div class="page-content px-4 pb-4">
+            
+            <div th:if="${report.insufficientData}" class="alert alert-warning alert-dismissible fade show mt-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Insufficient Data:</strong> You need at least 2 fuel fill-ups with valid mileage to generate a full analytics report. Start logging more fuel records!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Vehicle Header -->
+            <div class="vehicle-header card border-0 shadow-sm mt-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="vehicle-header-icon bg-info text-white"><i class="bi bi-fuel-pump"></i></div>
+                        <div>
+                            <h4 class="fw-bold mb-1" th:text="${report.make + ' ' + report.model}">Make Model</h4>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-primary" th:text="${report.plateNumber}">Plate</span>
+                                <span class="badge bg-secondary-subtle text-secondary" th:text="${report.fuelType}">Fuel</span>
+                                <span class="badge bg-light text-dark" th:text="${report.currentOdometer != null ? report.currentOdometer + ' km' : 'Odometer Unset'}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trajectory Banner -->
+            <div th:if="${!report.insufficientData}" class="alert border-0 shadow-sm mb-4" 
+                 th:classappend="${report.mileageTrajectory == 'IMPROVING' ? 'bg-success-subtle text-success' : (report.mileageTrajectory == 'DEGRADING' ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-dark')}">
+                <div class="d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        <h4 class="mb-0 fw-bold">
+                            <span th:text="${report.mileageTrendArrow}"></span> 
+                            <span th:text="${report.mileageTrajectory}"></span>
+                        </h4>
+                        <small>Mileage trend (Last 30 days vs previous 30 days)</small>
+                    </div>
+                    <div class="fs-4 fw-bold" th:if="${report.mileageDeltaPercentage != null}">
+                        <span th:text="${report.mileageDeltaPercentage > 0 ? '+' : ''}"></span><span th:text="${report.mileageDeltaPercentage}"></span>%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Stats Strip -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted small text-uppercase mb-2">Total Fill-Ups</h6>
+                            <h3 class="fw-bold mb-0 text-primary" th:text="${report.totalFillUps}">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted small text-uppercase mb-2">Lifetime Fuel Cost</h6>
+                            <h3 class="fw-bold mb-0 text-danger" th:text="'₹' + ${report.totalFuelCost}">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted small text-uppercase mb-2">Avg Price/Litre</h6>
+                            <h3 class="fw-bold mb-0 text-warning" th:text="${report.overallAvgPricePerLitre != null ? '₹' + report.overallAvgPricePerLitre : '—'}">—</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted small text-uppercase mb-2">Lifetime Avg km/L</h6>
+                            <h3 class="fw-bold mb-0 text-success" th:text="${report.overallAvgMileageKmpl != null ? report.overallAvgMileageKmpl : '—'}">—</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics & Charts row -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <!-- Rolling Window Table -->
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Rolling Trends</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Window</th>
+                                            <th>Fills</th>
+                                            <th>Avg km/L</th>
+                                            <th>Avg ₹/L</th>
+                                            <th>Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="window : ${report.windowMetrics}">
+                                            <td><strong th:text="'Last ' + ${window.windowDays} + ' Days'"></strong></td>
+                                            <td th:text="${window.recordCount}"></td>
+                                            <td>
+                                                <span th:if="${window.sufficientData}" class="fw-semibold text-success" th:text="${window.avgMileageKmpl}"></span>
+                                                <span th:unless="${window.sufficientData}" class="text-muted small">Not enough data</span>
+                                            </td>
+                                            <td th:text="${window.avgPricePerLitre != null ? '₹' + window.avgPricePerLitre : '—'}"></td>
+                                            <td th:text="'₹' + ${window.totalCost}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <!-- Volatility & Fill Frequency -->
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-lightning-charge me-2"></i>Insights</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="text-muted mb-1">Fill Frequency</h6>
+                                    <h4 class="fw-bold mb-0" th:text="${report.avgDaysBetweenFillUps != null ? report.avgDaysBetweenFillUps + ' days' : '—'}"></h4>
+                                </div>
+                                <i class="bi bi-calendar2-week fs-1 text-primary opacity-50"></i>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="text-muted mb-1">Price Volatility Index</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h4 class="fw-bold mb-0" th:text="${report.priceVolatilityStdDev}">0.00</h4>
+                                        <span class="badge" th:classappend="${report.priceVolatilityLabel == 'LOW' ? 'bg-success' : (report.priceVolatilityLabel == 'MODERATE' ? 'bg-warning' : 'bg-danger')}" th:text="${report.priceVolatilityLabel}"></span>
+                                    </div>
+                                </div>
+                                <i class="bi bi-graph-down-arrow fs-1 text-danger opacity-50"></i>
+                            </div>
+
+                            <div class="row g-2 mt-2" th:if="${report.bestMileageDate != null}">
+                                <div class="col-6">
+                                    <div class="p-2 border rounded border-success border-opacity-25">
+                                        <small class="text-muted d-block">Best Mileage</small>
+                                        <strong class="text-success fs-5" th:text="${report.bestMileageKmpl} + ' km/L'"></strong>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-2 border rounded border-danger border-opacity-25">
+                                        <small class="text-muted d-block">Worst Mileage</small>
+                                        <strong class="text-danger fs-5" th:text="${report.worstMileageKmpl} + ' km/L'"></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Chart -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2"></i>Monthly Fuel Spend (Last 12 Months)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlySpendChart" height="80"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
+    /*<![CDATA[*/
+    const monthlyData = /*[[${report.monthlyBreakdown}]]*/ [];
+    /*]]>*/
+    
+    if (monthlyData && monthlyData.length > 0) {
+        const labels = monthlyData.map(d => d.monthLabel);
+        const costs = monthlyData.map(d => d.totalCost);
+        const ctx = document.getElementById('monthlySpendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Fuel Spend (₹)',
+                    data: costs,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -59,4 +59,37 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecord, Long> {
 
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
+
+    // ==========================================
+    // M16: Fuel Efficiency Intelligence Queries
+    // ==========================================
+
+    // Ordered list for fill-frequency computation
+    List<FuelRecord> findByVehicleVehicleIdOrderByFuelDateAsc(Long vehicleId);
+
+    // For rolling window computations — date-range ordered by date ascending
+    @Query("SELECT f FROM FuelRecord f WHERE f.vehicle.vehicleId = :vehicleId " +
+           "AND f.fuelDate >= :fromDate ORDER BY f.fuelDate ASC")
+    List<FuelRecord> findByVehicleIdAndFuelDateFromOrderByDateAsc(
+            @Param("vehicleId") Long vehicleId, @Param("fromDate") LocalDate fromDate);
+
+    // For monthly aggregation (last 12 months, specific vehicle)
+    @Query("SELECT YEAR(f.fuelDate), MONTH(f.fuelDate), " +
+           "SUM(f.totalCost), SUM(f.quantityLitres), COUNT(f) " +
+           "FROM FuelRecord f WHERE f.vehicle.vehicleId = :vehicleId " +
+           "AND f.fuelDate >= :fromDate " +
+           "GROUP BY YEAR(f.fuelDate), MONTH(f.fuelDate) " +
+           "ORDER BY YEAR(f.fuelDate) ASC, MONTH(f.fuelDate) ASC")
+    List<Object[]> findMonthlyAggregationByVehicle(
+            @Param("vehicleId") Long vehicleId, @Param("fromDate") LocalDate fromDate);
+
+    // Garage-level monthly aggregation across all user vehicles
+    @Query("SELECT YEAR(f.fuelDate), MONTH(f.fuelDate), " +
+           "SUM(f.totalCost), SUM(f.quantityLitres), COUNT(f) " +
+           "FROM FuelRecord f WHERE f.vehicle.user.userId = :userId " +
+           "AND f.fuelDate >= :fromDate " +
+           "GROUP BY YEAR(f.fuelDate), MONTH(f.fuelDate) " +
+           "ORDER BY YEAR(f.fuelDate) ASC, MONTH(f.fuelDate) ASC")
+    List<Object[]> findMonthlyAggregationByUser(
+            @Param("userId") Long userId, @Param("fromDate") LocalDate fromDate);
 }
