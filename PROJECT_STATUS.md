@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-04  
-**Current Phase:** **MILESTONE 12 (M12) COMPLETE & FULLY VERIFIED**
+**Current Phase:** **MILESTONE 13 (M13) COMPLETE & FULLY VERIFIED**
 
 ---
 
@@ -37,23 +37,25 @@
 | **M9** | `8a28750` | Admin Governance & System Mgmt | `AdminModuleTest` | 30 | 203 | **PASS** |
 | **M10** | `2b48ae9` / `5bef344` | Polish, 6-Layer QC & Profile APIs | `QualityControlModuleTest` | 15 | 218 | **PASS** |
 | **M11** | `f11e861` | Global Record Logs & Monitoring | `GlobalRecordsModuleTest` | 20 | 238 | **PASS** |
-| **M12** | `HEAD` | Vehicle Resale Dossier & CSV Export | `VehicleReportAndExportModuleTest` | 26 | **264** | **PASS** |
+| **M12** | `c9cf4d0` | Vehicle Resale Dossier & CSV Export | `VehicleReportAndExportModuleTest` | 26 | 264 | **PASS** |
+| **M13** | `HEAD` | Comparative Analytics & Fleet Benchmarking | `VehicleComparisonModuleTest` | 24 | **288** | **PASS** |
 
 ---
 
-## 3. Milestone 12 (M12) Verification Matrix
+## 3. Milestone 13 (M13) Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Web MVC Routes** | `/reports`, `/vehicles/{id}/report`, `/vehicles/{id}/export/*`, `/export/garage/csv` | **PASS** |
-| **REST APIs** | `GET /api/reports/garage-summary`, `GET /api/vehicles/{id}/export/*` | **PASS** |
-| **Vehicle Resale Dossier** | Print-ready HTML document with official seal, financials, and verified ledger | **PASS** |
-| **CSV Streaming Engine** | RFC 4180 standard escaping for Services, Fuel, Maintenance, Master & Garage | **PASS** |
-| **Security & RBAC** | Admin blocked from user reports (403); Normal user isolated to owned vehicles | **PASS** |
-| **Data Isolation & Tampering** | User A accessing User B vehicle dossier or export strictly blocked (403) | **PASS** |
-| **Automated Tests** | 26 dedicated tests in `VehicleReportAndExportModuleTest` | **PASS (26/26)** |
-| **Full Regression Suite** | 264 automated tests across 14 test classes | **PASS (264/264, 0 failures, 0 errors)** |
-| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all 16 acceptance criteria checks | **PASS** |
+| **Web MVC Routes** | `GET /vehicles/compare` (Selection Hub & Side-by-Side Comparison Table) | **PASS** |
+| **REST APIs** | `GET /api/analytics/compare`, `/api/vehicles/{id1}/compare/{id2}`, `/api/vehicles/{id}/analytics`, `/api/analytics/fleet-breakdown` | **PASS** |
+| **Comparative Analytics Matrix** | Specifications, lifetime finances, operational efficiency (km/L, ₹/km), maintenance reliability | **PASS** |
+| **Automated Badging** | Most Economical, Highest Mileage, Lowest Cost/km, Lowest Maintenance, Fleet Workhorse | **PASS** |
+| **Fleet Spend Distribution** | Proportional expenditure breakdown across Fuel, Services, Maintenance & per vehicle | **PASS** |
+| **Security & RBAC** | Admin blocked from comparison & analytics (403); Normal user isolated to owned vehicles | **PASS** |
+| **Data Isolation & Tampering** | Cross-user tampering in comparison IDs redirects with flash error (Web) or returns 403 (REST) | **PASS** |
+| **Automated Tests** | 24 dedicated tests in `VehicleComparisonModuleTest` | **PASS (24/24)** |
+| **Full Regression Suite** | 288 automated tests across 15 test classes | **PASS (288/288, 0 failures, 0 errors)** |
+| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all 22 acceptance criteria checks | **PASS** |
 
 ---
 
@@ -73,11 +75,12 @@
 12. [`docs/M10_POLISH_AND_QC_DESIGN.md`](docs/M10_POLISH_AND_QC_DESIGN.md) — M10 polish, 6-layer QC framework, and profile API specification.
 13. [`docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md`](docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md) — M11 cross-vehicle records and monitoring specification.
 14. [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — M12 vehicle resale dossier, CSV export, and reporting specification.
-15. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
-16. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
-17. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
-18. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
+15. [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 comparative analytics and fleet efficiency benchmarking specification.
+16. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
+17. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
+18. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
+19. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
 
 ---
 
-## Project Status: M12 COMPLETE & FULLY VERIFIED
+## Project Status: M13 COMPLETE & FULLY VERIFIED

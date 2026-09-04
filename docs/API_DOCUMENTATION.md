@@ -373,3 +373,88 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
     ]
   }
   ```
+
+---
+
+### I. Comparative Analytics & Fleet Benchmarking (`/api/analytics/**`)
+*Accessible by: `ROLE_NORMAL_USER` (Blocked for `ROLE_ADMIN` with 403 Forbidden)*
+
+#### 1. Multi-Vehicle Comparative Report
+- **Method:** `GET /api/analytics/compare?vehicleIds=1,2,3`
+- **Params:** `vehicleIds` (comma-separated or repeated parameter, 2 to 4 IDs required)
+- **Response:** `200 OK`
+  ```json
+  {
+    "comparedVehicleCount": 2,
+    "fleetTotalSpend": 10300.00,
+    "fleetAverageMileage": 22.5,
+    "fleetAverageRunningCostPerKm": 0.40,
+    "mostEfficientVehiclePlate": "TN13A1001",
+    "mostEconomicalVehiclePlate": "TN13B1002",
+    "lowestMaintenanceVehiclePlate": "TN13B1002",
+    "fleetWorkhorsePlate": "TN13A1001",
+    "vehicles": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN13A1001",
+        "make": "Honda",
+        "model": "City",
+        "year": 2022,
+        "color": "Silver",
+        "categoryName": "Sedan",
+        "fuelType": "PETROL",
+        "currentOdometer": 20000,
+        "serviceCost": 5000.00,
+        "fuelCost": 2000.00,
+        "maintenanceCost": 1000.00,
+        "totalOwnershipCost": 8000.00,
+        "avgMileageKmpl": 18.5,
+        "totalFuelLitres": 20.00,
+        "runningCostPerKm": 0.40,
+        "fuelCostPerKm": 0.10,
+        "totalServicesCount": 1,
+        "totalFuelLogsCount": 1,
+        "totalMaintenanceTasksCount": 1,
+        "maintenanceCompletedCount": 1,
+        "maintenanceOverdueCount": 0,
+        "maintenanceCompletionRate": 100.0,
+        "mostFuelEfficient": false,
+        "lowestCostPerKm": true,
+        "lowestMaintenanceCost": false,
+        "fleetWorkhorse": true
+      }
+    ]
+  }
+  ```
+- **Error Responses:** `400 Bad Request` (< 2 or > 4 vehicles), `403 Forbidden` (cross-user vehicle tampering or admin access)
+
+#### 2. Head-to-Head Pairwise Vehicle Comparison
+- **Method:** `GET /api/vehicles/{id1}/compare/{id2}`
+- **Response:** `200 OK` (Structured `FleetComparisonReportDTO` for the two vehicles)
+
+#### 3. Single Vehicle Operational Analytics & Running Cost
+- **Method:** `GET /api/vehicles/{id}/analytics`
+- **Response:** `200 OK` (Detailed `VehicleComparisonDTO` with running cost per km, fuel cost per km, and completion rate)
+
+#### 4. Garage-Wide Fleet Expense Breakdown
+- **Method:** `GET /api/analytics/fleet-breakdown`
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalVehicles": 2,
+    "totalFleetSpend": 10300.00,
+    "serviceCostPercentage": 63.1,
+    "fuelCostPercentage": 27.2,
+    "maintenanceCostPercentage": 9.7,
+    "vehicleShares": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN13A1001",
+        "make": "Honda",
+        "model": "City",
+        "totalSpend": 8000.00,
+        "percentageOfFleetSpend": 77.7
+      }
+    ]
+  }
+  ```

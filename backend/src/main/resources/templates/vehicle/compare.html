@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Comparative Analytics — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        .compare-header-card {
+            border-top: 4px solid #0d6efd;
+            border-radius: 8px;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .metric-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+        .badge-award {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        .table-compare th {
+            width: 22%;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        .table-compare td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="sidebar-section-label">GARAGE</li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles/compare}"><i class="bi bi-arrow-left-right"></i> Compare Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/services}"><i class="bi bi-tools"></i> All Services</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/fuel}"><i class="bi bi-fuel-pump"></i> All Fuel Logs</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/maintenance}"><i class="bi bi-calendar-check"></i> All Maintenance</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/reports}"><i class="bi bi-file-earmark-bar-graph"></i> Reports & Export</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Multi-Vehicle Comparative Analytics</span>
+            <div class="ms-auto"><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+
+        <div class="page-content px-4 py-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="fw-bold mb-0">Fleet Efficiency & Multi-Vehicle Comparison</h4>
+                    <p class="text-muted small mb-0">Evaluate running costs, fuel economy, and maintenance reliability side-by-side.</p>
+                </div>
+                <div>
+                    <a th:href="@{/vehicles}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Garage
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Selection Card -->
+            <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-check2-square text-primary me-2"></i>Select Vehicles to Compare (Select 2 to 4)</h6>
+
+                <div th:if="${ownedVehicles == null or #lists.size(ownedVehicles) < 2}" class="text-center py-4">
+                    <i class="bi bi-car-front text-muted fs-1 mb-2 d-block"></i>
+                    <h6 class="fw-semibold text-secondary">Not Enough Vehicles to Compare</h6>
+                    <p class="text-muted small mb-3">You need at least two vehicles registered in your garage to perform comparative analytics.</p>
+                    <a th:href="@{/vehicles/new}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Another Vehicle</a>
+                </div>
+
+                <form th:if="${ownedVehicles != null and #lists.size(ownedVehicles) >= 2}" th:action="@{/vehicles/compare}" method="get">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-9">
+                            <div class="d-flex flex-wrap gap-3">
+                                <div th:each="veh : ${ownedVehicles}" class="form-check p-2 border rounded bg-light px-3">
+                                    <input class="form-check-input" type="checkbox" name="vehicleIds" th:value="${veh.vehicleId}"
+                                           th:id="'veh_' + ${veh.vehicleId}"
+                                           th:checked="${selectedVehicleIds != null and #lists.contains(selectedVehicleIds, veh.vehicleId)}">
+                                    <label class="form-check-label fw-semibold" th:for="'veh_' + ${veh.vehicleId}">
+                                        <span th:text="${veh.year + ' ' + veh.make + ' ' + veh.model}"></span>
+                                        <span class="badge bg-secondary font-monospace ms-1" th:text="${veh.plateNumber}"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-arrow-left-right me-1"></i> Compare Now
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Comparison Results Section -->
+            <div th:if="${report != null}">
+                <!-- Fleet Highlights Banner -->
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary-subtle text-primary p-3 rounded-circle fs-4">
+                                    <i class="bi bi-currency-rupee"></i>
+                                </div>
+                                <div>
+                                    <div class="metric-label">Combined Spend</div>
+                                    <div class="metric-value text-dark" th:text="'₹' + ${#numbers.formatDecimal(report.fleetTotalSpend, 1, 'COMMA', 2, 'POINT')}">₹0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-success-subtle text-success p-3 rounded-circle fs-4">
+                                    <i class="bi bi-fuel-pump"></i>
+                                </div>
+                                <div>
+                                    <div class="metric-label">Average Fleet Mileage</div>
+                                    <div class="metric-value text-success" th:text="${report.fleetAverageMileage != null ? report.fleetAverageMileage + ' km/L' : 'N/A'}">N/A</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-info-subtle text-info p-3 rounded-circle fs-4">
+                                    <i class="bi bi-speedometer"></i>
+                                </div>
+                                <div>
+                                    <div class="metric-label">Avg Running Cost</div>
+                                    <div class="metric-value text-info" th:text="'₹' + ${report.fleetAverageRunningCostPerKm} + ' /km'">₹0.00 /km</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-warning-subtle text-warning p-3 rounded-circle fs-4">
+                                    <i class="bi bi-trophy-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="metric-label">Most Economical</div>
+                                    <div class="metric-value text-dark" th:text="${report.mostEconomicalVehiclePlate != null ? report.mostEconomicalVehiclePlate : 'N/A'}">N/A</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side-by-Side Comparison Table -->
+                <div class="card border-0 shadow-sm mb-4 bg-white overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle mb-0 table-compare">
+                            <!-- Vehicle Header Row -->
+                            <thead>
+                            <tr>
+                                <th class="table-light">Vehicle Overview</th>
+                                <td th:each="v : ${report.vehicles}" class="p-3 bg-white">
+                                    <div class="fw-bold fs-5 text-dark" th:text="${v.year + ' ' + v.make + ' ' + v.model}"></div>
+                                    <span class="badge bg-dark font-monospace fs-6 mt-1 mb-2" th:text="${v.plateNumber}"></span>
+                                    <div>
+                                        <span class="badge bg-secondary me-1" th:text="${v.categoryName}"></span>
+                                        <span class="badge bg-light text-dark border" th:text="${v.fuelType}"></span>
+                                    </div>
+                                    <!-- Badges -->
+                                    <div class="mt-2 d-flex flex-wrap gap-1 justify-content-center">
+                                        <span th:if="${v.mostFuelEfficient}" class="badge bg-success badge-award"><i class="bi bi-lightning-charge-fill"></i> Best Mileage</span>
+                                        <span th:if="${v.lowestCostPerKm}" class="badge bg-primary badge-award"><i class="bi bi-piggy-bank-fill"></i> Lowest ₹/km</span>
+                                        <span th:if="${v.lowestMaintenanceCost}" class="badge bg-info text-dark badge-award"><i class="bi bi-wrench-adjustable"></i> Low Maint</span>
+                                        <span th:if="${v.fleetWorkhorse}" class="badge bg-warning text-dark badge-award"><i class="bi bi-speedometer2"></i> Workhorse</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Category: Financial Comparison -->
+                            <tr class="table-secondary">
+                                <th colspan="5" class="text-uppercase small fw-bold text-secondary ps-3">
+                                    <i class="bi bi-cash-stack me-1"></i> Lifetime Financial Expenditures
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Total Ownership Spend</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span class="fs-5 fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(v.totalOwnershipCost, 1, 'COMMA', 2, 'POINT')}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fuel Expenses</th>
+                                <td th:each="v : ${report.vehicles}" th:text="'₹' + ${#numbers.formatDecimal(v.fuelCost, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr>
+                                <th>Service & Repairs Spend</th>
+                                <td th:each="v : ${report.vehicles}" th:text="'₹' + ${#numbers.formatDecimal(v.serviceCost, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr>
+                                <th>Scheduled Maintenance Spend</th>
+                                <td th:each="v : ${report.vehicles}" th:text="'₹' + ${#numbers.formatDecimal(v.maintenanceCost, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+
+                            <!-- Category: Operational Efficiency -->
+                            <tr class="table-secondary">
+                                <th colspan="5" class="text-uppercase small fw-bold text-secondary ps-3">
+                                    <i class="bi bi-graph-up me-1"></i> Operational Efficiency & Fuel Economy
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Current Odometer</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span class="fw-bold font-monospace" th:text="${v.currentOdometer != null ? #numbers.formatInteger(v.currentOdometer, 1, 'COMMA') + ' km' : 'N/A'}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Average Fuel Economy</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span th:if="${v.avgMileageKmpl != null}" class="badge bg-success-subtle text-success fs-6 fw-bold" th:text="${v.avgMileageKmpl + ' km/L'}"></span>
+                                    <span th:if="${v.avgMileageKmpl == null}" class="text-muted">No data</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Total Fuel Volume</th>
+                                <td th:each="v : ${report.vehicles}" th:text="${v.totalFuelLitres != null ? v.totalFuelLitres + ' L' : '0.00 L'}"></td>
+                            </tr>
+                            <tr>
+                                <th>Running Cost per KM</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span class="fw-bold text-dark" th:text="'₹' + ${v.runningCostPerKm} + ' /km'"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fuel Cost per KM</th>
+                                <td th:each="v : ${report.vehicles}" th:text="'₹' + ${v.fuelCostPerKm} + ' /km'"></td>
+                            </tr>
+
+                            <!-- Category: Reliability & Maintenance -->
+                            <tr class="table-secondary">
+                                <th colspan="5" class="text-uppercase small fw-bold text-secondary ps-3">
+                                    <i class="bi bi-shield-check me-1"></i> Maintenance Health & Service History
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Service Visits Logged</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span class="badge bg-light text-dark border fs-6" th:text="${v.totalServicesCount}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fuel Refills Logged</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span class="badge bg-light text-dark border fs-6" th:text="${v.totalFuelLogsCount}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Maintenance Tasks (Done / Total)</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span th:text="${v.maintenanceCompletedCount + ' / ' + v.totalMaintenanceTasksCount}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Overdue Tasks</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <span th:if="${v.maintenanceOverdueCount > 0}" class="badge bg-danger fs-6" th:text="${v.maintenanceOverdueCount + ' Overdue'}"></span>
+                                    <span th:if="${v.maintenanceOverdueCount == 0}" class="badge bg-success fs-6">None</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Maintenance Completion Rate</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px; max-width: 120px;">
+                                            <div class="progress-bar bg-success" role="progressbar"
+                                                 th:style="'width: ' + ${v.maintenanceCompletionRate} + '%;'"
+                                                 th:aria-valuenow="${v.maintenanceCompletionRate}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="small fw-bold" th:text="${v.maintenanceCompletionRate + '%'}"></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Action Links -->
+                            <tr>
+                                <th>Quick Actions</th>
+                                <td th:each="v : ${report.vehicles}">
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{'/vehicles/' + ${v.vehicleId}}" class="btn btn-outline-secondary">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a th:href="@{'/vehicles/' + ${v.vehicleId} + '/report'}" class="btn btn-outline-primary">
+                                            <i class="bi bi-file-earmark-text"></i> Dossier
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fleet Cost Share Distribution Card -->
+            <div th:if="${fleetBreakdown != null and fleetBreakdown.totalVehicles > 0}" class="card border-0 shadow-sm p-4 bg-white mb-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Total Garage Budget Distribution</h6>
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-5">
+                        <div class="p-3 bg-light rounded border">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Total Fleet Expenditure:</span>
+                                <span class="fw-bold fs-6 text-dark" th:text="'₹' + ${#numbers.formatDecimal(fleetBreakdown.totalFleetSpend, 1, 'COMMA', 2, 'POINT')}"></span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span><i class="bi bi-fuel-pump text-success me-1"></i> Fuel:</span>
+                                <span th:text="'₹' + ${#numbers.formatDecimal(fleetBreakdown.totalFuelCost, 1, 'COMMA', 2, 'POINT')} + ' (' + ${fleetBreakdown.fuelCostPercentage} + '%)'"></span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span><i class="bi bi-tools text-primary me-1"></i> Services:</span>
+                                <span th:text="'₹' + ${#numbers.formatDecimal(fleetBreakdown.totalServiceCost, 1, 'COMMA', 2, 'POINT')} + ' (' + ${fleetBreakdown.serviceCostPercentage} + '%)'"></span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="bi bi-calendar-check text-warning me-1"></i> Maintenance:</span>
+                                <span th:text="'₹' + ${#numbers.formatDecimal(fleetBreakdown.totalMaintenanceCost, 1, 'COMMA', 2, 'POINT')} + ' (' + ${fleetBreakdown.maintenanceCostPercentage} + '%)'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h6 class="small text-secondary text-uppercase fw-bold mb-2">Spend Contribution per Vehicle</h6>
+                        <div th:each="share : ${fleetBreakdown.vehicleShares}" class="mb-3">
+                            <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                <span><span class="badge bg-dark font-monospace me-1" th:text="${share.plateNumber}"></span> <span th:text="${share.make + ' ' + share.model}"></span></span>
+                                <span th:text="'₹' + ${#numbers.formatDecimal(share.totalCost, 1, 'COMMA', 2, 'POINT')} + ' (' + ${share.percentageOfFleetSpend} + '%)'"></span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                     th:style="'width: ' + ${share.percentageOfFleetSpend} + '%;'"
+                                     th:aria-valuenow="${share.percentageOfFleetSpend}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

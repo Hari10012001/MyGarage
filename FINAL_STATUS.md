@@ -3,7 +3,7 @@
 **Project Name:** MyGarage — A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **System ID:** APPJFS19  
 **Academic Year:** 2026–2027  
-**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M12 COMPLETE)**  
+**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M13 COMPLETE)**  
 **Date of Completion:** 2026-09-04  
 
 ---
@@ -25,13 +25,14 @@
 | **M10** | Polish, Comprehensive 6-Layer QC, Profile APIs & Documentation Finalization | 15 | Full Regression & Docs | **ACCEPTED** |
 | **M11** | Global Record Logs, Cross-Vehicle Aggregation & System Monitoring | 20 | Global Logs & RBAC | **ACCEPTED** |
 | **M12** | Vehicle Resale Dossier, RFC 4180 CSV Data Export & Advanced Reporting | 26 | Dossier, CSV & Isolation | **ACCEPTED** |
-| **TOTAL** | **Full System Integration & Regression** | **264** | **100% PASS** | **M12 ACCEPTED — READY FOR M13** |
+| **M13** | Comparative Analytics & Fleet Efficiency Benchmarking | 24 | Comparison, Badging & Isolation | **ACCEPTED** |
+| **TOTAL** | **Full System Integration & Regression** | **288** | **100% PASS** | **M13 ACCEPTED** |
 
 ---
 
 ## 2. Technical Quality Metrics
 
-- **Total Automated Test Cases:** **264**
+- **Total Automated Test Cases:** **288**
 - **Failures:** **0**
 - **Errors:** **0**
 - **Skipped:** **0**
@@ -41,6 +42,7 @@
 - **Database Schema:** 6 relational tables with verified primary keys, foreign keys, unique constraints, and indexes.
 - **Security Compliance:** Spring Security 6.x form-based authentication, BCrypt hashing (cost 10), CSRF protection on all state-changing endpoints, strict request matcher ordering, ADMIN isolation.
 - **Export & Reporting:** RFC 4180 CSV generation across Service, Fuel, Maintenance, Unified Master History, and Garage Portfolio Summary; print-ready certified Vehicle Resale Dossier with watermarked verification seal.
+- **Comparative Analytics:** Side-by-side multi-vehicle comparison matrix, automated efficiency badging, running cost per km calculation, and proportional fleet budget distribution.
 
 ---
 

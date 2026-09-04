@@ -43,5 +43,6 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
 
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
+    long countByVehicleVehicleIdAndStatus(Long vehicleId, MaintenanceStatus status);
     long countByStatus(MaintenanceStatus status);
 }
