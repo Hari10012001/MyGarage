@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Vehicle Resale Dossier — ' + ${dossier.plateNumber} + ' — MyGarage'">Vehicle Resale Dossier — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        @media print {
+            .no-print, .sidebar, .topbar, #sidebarOverlay { display: none !important; }
+            .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            .page-content { padding: 0 !important; }
+            body { background: #fff !important; font-size: 11pt; color: #000 !important; }
+            .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; margin-bottom: 20px !important; }
+            .table th, .table td { padding: 5px 8px !important; }
+            .dossier-header { border-bottom: 2px solid #0d6efd !important; padding-bottom: 12px !important; }
+            .page-break { page-break-before: always; }
+        }
+        .dossier-card {
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+        }
+        .cert-seal {
+            border: 2px dashed #0d6efd;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 18px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="d-flex">
+    <!-- Sidebar (Hidden in Print) -->
+    <div class="sidebar-overlay d-lg-none no-print" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column no-print">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="sidebar-section-label">GARAGE</li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/services}"><i class="bi bi-tools"></i> All Services</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/fuel}"><i class="bi bi-fuel-pump"></i> All Fuel Logs</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/maintenance}"><i class="bi bi-calendar-check"></i> All Maintenance</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/reports}"><i class="bi bi-file-earmark-bar-graph"></i> Reports & Export</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content flex-grow-1">
+        <!-- Topbar (Hidden in Print) -->
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3 no-print">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Vehicle Life-History & Resale Dossier</span>
+            <div class="ms-auto"><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+
+        <div class="page-content px-4 py-4">
+            <!-- Action Toolbar (Hidden in Print) -->
+            <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+                <a th:href="@{/reports}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Reports
+                </a>
+                <div class="d-flex gap-2">
+                    <button onclick="window.print()" class="btn btn-primary btn-sm">
+                        <i class="bi bi-printer me-1"></i> Print / Save as PDF
+                    </button>
+                    <a th:href="@{'/vehicles/' + ${dossier.vehicleId} + '/export/all/csv'}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-filetype-csv me-1"></i> Download Master CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dossier Document Container -->
+            <div class="card border-0 shadow-sm p-4 p-md-5 bg-white">
+                <!-- Document Header -->
+                <div class="dossier-header d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-shield-check text-primary fs-2"></i>
+                            <h3 class="fw-bold mb-0 text-dark">OFFICIAL VEHICLE RESALE DOSSIER</h3>
+                        </div>
+                        <p class="text-muted small mb-0">Certified Digital Maintenance History, Fuel Economy Ledger & Financial Audit</p>
+                        <p class="text-muted small font-monospace mt-1" th:text="'Generated on: ' + ${#temporals.format(dossier.generatedAt, 'dd MMMM yyyy, HH:mm:ss')} + ' | Platform: MyGarage Enterprise (APPJFS19)'"></p>
+                    </div>
+                    <div class="cert-seal text-center">
+                        <i class="bi bi-patch-check-fill text-primary fs-3 d-block"></i>
+                        <span class="fw-bold text-primary small">VERIFIED DIGITAL RECORD</span>
+                        <div class="small text-muted font-monospace" th:text="'VEHICLE ID #' + ${dossier.vehicleId}"></div>
+                    </div>
+                </div>
+
+                <!-- Section 1: Vehicle Specifications & Custodian -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-7">
+                        <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-car-front me-2"></i>Vehicle Identification & Specifications</h6>
+                        <table class="table table-sm table-bordered align-middle">
+                            <tbody>
+                            <tr>
+                                <th class="table-light w-35 text-secondary">Make & Model</th>
+                                <td class="fw-bold text-dark" th:text="${dossier.year + ' ' + dossier.make + ' ' + dossier.model}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Registration Number</th>
+                                <td><span class="badge bg-dark font-monospace fs-6" th:text="${dossier.plateNumber}"></span></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Category / Body Type</th>
+                                <td th:text="${dossier.categoryName}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Fuel Type & Color</th>
+                                <td th:text="${dossier.fuelType + ' • ' + dossier.color}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Current Odometer</th>
+                                <td class="fw-bold text-primary" th:text="${#numbers.formatInteger(dossier.currentOdometer, 1, 'COMMA')} + ' km'"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-5">
+                        <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-person-badge me-2"></i>Registered Custodian Details</h6>
+                        <table class="table table-sm table-bordered align-middle">
+                            <tbody>
+                            <tr>
+                                <th class="table-light w-40 text-secondary">Owner Name</th>
+                                <td class="fw-semibold text-dark" th:text="${dossier.ownerName}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Contact Email</th>
+                                <td th:text="${dossier.ownerEmail}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Contact Phone</th>
+                                <td th:text="${dossier.ownerPhone}"></td>
+                            </tr>
+                            <tr>
+                                <th class="table-light text-secondary">Verification Status</th>
+                                <td><span class="badge bg-success-subtle text-success fw-semibold"><i class="bi bi-check-circle me-1"></i>Active Owner</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 2: Lifetime Financial Ledger & Performance Metrics -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-graph-up me-2"></i>Lifetime Financial Audit & Performance Metrics</h6>
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="p-3 bg-light rounded border">
+                                <div class="text-muted small">Total Service Expenditure</div>
+                                <div class="fs-5 fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(dossier.totalServiceCost, 1, 2)}">₹0.00</div>
+                                <div class="small text-muted" th:text="${dossier.totalServicesCount + ' visits logged'}"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="p-3 bg-light rounded border">
+                                <div class="text-muted small">Total Fuel Expenditure</div>
+                                <div class="fs-5 fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(dossier.totalFuelCost, 1, 2)}">₹0.00</div>
+                                <div class="small text-muted" th:text="${dossier.totalFuelLogsCount + ' fill-ups logged'}"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="p-3 bg-light rounded border">
+                                <div class="text-muted small">Total Maintenance Cost</div>
+                                <div class="fs-5 fw-bold text-warning" th:text="'₹' + ${#numbers.formatDecimal(dossier.totalMaintenanceCost, 1, 2)}">₹0.00</div>
+                                <div class="small text-muted" th:text="${dossier.totalMaintenanceTasksCount + ' tasks tracked'}"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="p-3 bg-primary bg-opacity-10 rounded border border-primary">
+                                <div class="text-primary fw-semibold small">Total Lifetime Ownership Cost</div>
+                                <div class="fs-5 fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(dossier.totalOwnershipCost, 1, 2)}">₹0.00</div>
+                                <div class="small text-muted" th:text="'Avg Mileage: ' + (${dossier.averageMileageKmpl != null ? dossier.averageMileageKmpl + ' km/L' : 'N/A'})"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Verified Service History Ledger -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-tools me-2"></i>1. Verified Service & Maintenance Ledger</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Service Category / Type</th>
+                                <th>Garage / Service Provider</th>
+                                <th>Odometer</th>
+                                <th>Cost</th>
+                                <th>Next Due Date</th>
+                                <th>Description / Work Performed</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="s : ${dossier.services}">
+                                <td class="fw-semibold font-monospace" th:text="${s.serviceDate}"></td>
+                                <td class="fw-bold text-dark" th:text="${s.serviceType}"></td>
+                                <td th:text="${s.garageName != null ? s.garageName : '—'}"></td>
+                                <td th:text="${s.odometerAtService != null ? #numbers.formatInteger(s.odometerAtService, 1, 'COMMA') + ' km' : '—'}"></td>
+                                <td class="text-primary fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.cost, 1, 2)}"></td>
+                                <td class="font-monospace text-muted" th:text="${s.nextServiceDueDate != null ? s.nextServiceDueDate : '—'}"></td>
+                                <td class="small" th:text="${s.description != null ? s.description : '—'}"></td>
+                            </tr>
+                            <tr th:if="${dossier.services == null || dossier.services.isEmpty()}">
+                                <td colspan="7" class="text-center text-muted py-3">No service records on file for this vehicle.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 4: Fuel Consumption & Economy Log -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-fuel-pump me-2"></i>2. Fuel Consumption & Economy Log</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Fuel Type</th>
+                                <th>Quantity (L)</th>
+                                <th>Rate (₹/L)</th>
+                                <th>Total Paid</th>
+                                <th>Odometer</th>
+                                <th>Calculated Economy</th>
+                                <th>Notes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="f : ${dossier.fuelLogs}">
+                                <td class="fw-semibold font-monospace" th:text="${f.fuelDate}"></td>
+                                <td th:text="${f.fuelType}"></td>
+                                <td th:text="${f.quantityLitres + ' L'}"></td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(f.costPerLitre, 1, 2)}"></td>
+                                <td class="text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(f.totalCost, 1, 2)}"></td>
+                                <td th:text="${f.odometerAtFill != null ? #numbers.formatInteger(f.odometerAtFill, 1, 'COMMA') + ' km' : '—'}"></td>
+                                <td>
+                                    <span th:if="${f.estimatedMileageKmpl != null}" class="badge bg-info-subtle text-info fw-semibold" th:text="${f.estimatedMileageKmpl + ' km/L'}"></span>
+                                    <span th:if="${f.estimatedMileageKmpl == null}" class="text-muted small">—</span>
+                                </td>
+                                <td class="small text-muted" th:text="${f.notes != null ? f.notes : '—'}"></td>
+                            </tr>
+                            <tr th:if="${dossier.fuelLogs == null || dossier.fuelLogs.isEmpty()}">
+                                <td colspan="8" class="text-center text-muted py-3">No fuel records on file for this vehicle.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 5: Scheduled Maintenance Audit -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-uppercase text-secondary small mb-3"><i class="bi bi-calendar-check me-2"></i>3. Scheduled Maintenance Audit & Status</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Task Title</th>
+                                <th>Status</th>
+                                <th>Scheduled Date</th>
+                                <th>Completion Date</th>
+                                <th>Cost</th>
+                                <th>Description / Scope</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="m : ${dossier.maintenanceRecords}">
+                                <td class="fw-bold text-dark" th:text="${m.title}"></td>
+                                <td>
+                                    <span th:if="${m.status.name() == 'COMPLETED'}" class="badge bg-success-subtle text-success">COMPLETED</span>
+                                    <span th:if="${m.status.name() == 'OVERDUE'}" class="badge bg-danger-subtle text-danger">OVERDUE</span>
+                                    <span th:if="${m.status.name() == 'DUE_TODAY'}" class="badge bg-warning-subtle text-warning">DUE TODAY</span>
+                                    <span th:if="${m.status.name() == 'UPCOMING'}" class="badge bg-primary-subtle text-primary">UPCOMING</span>
+                                </td>
+                                <td class="font-monospace" th:text="${m.scheduledDate}"></td>
+                                <td class="font-monospace text-success fw-semibold" th:text="${m.completedDate != null ? m.completedDate : 'Pending'}"></td>
+                                <td th:text="${m.cost != null ? '₹' + #numbers.formatDecimal(m.cost, 1, 2) : '—'}"></td>
+                                <td class="small" th:text="${m.description != null ? m.description : '—'}"></td>
+                            </tr>
+                            <tr th:if="${dossier.maintenanceRecords == null || dossier.maintenanceRecords.isEmpty()}">
+                                <td colspan="6" class="text-center text-muted py-3">No scheduled maintenance tasks on file for this vehicle.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Document Footer & Verification Notice -->
+                <div class="border-top pt-3 mt-4 text-center text-muted small">
+                    <p class="mb-1 fw-semibold text-secondary">CERTIFIED OFFICIAL RESALE DOSSIER — MYGARAGE PLATFORM</p>
+                    <p class="mb-0">This document has been compiled automatically from digitally registered logbook entries. Generated exclusively for vehicle identification, buyer handover, insurance evaluation, and maintenance audit purposes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/mygarage.js}"></script>
+</body>
+</html>

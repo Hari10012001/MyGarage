@@ -38,6 +38,9 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     @Query("SELECT m FROM MaintenanceRecord m JOIN FETCH m.vehicle v WHERE v.user.userId = :userId AND m.status = :status ORDER BY m.scheduledDate ASC")
     List<MaintenanceRecord> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") MaintenanceStatus status);
 
+    @Query("SELECT COALESCE(SUM(m.cost), 0) FROM MaintenanceRecord m WHERE m.vehicle.vehicleId = :vehicleId")
+    java.math.BigDecimal sumCostByVehicleId(@Param("vehicleId") Long vehicleId);
+
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
     long countByStatus(MaintenanceStatus status);

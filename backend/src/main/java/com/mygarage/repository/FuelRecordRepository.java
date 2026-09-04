@@ -48,6 +48,15 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecord, Long> {
     @Query("SELECT COALESCE(SUM(f.quantityLitres), 0) FROM FuelRecord f WHERE f.vehicle.user.userId = :userId")
     java.math.BigDecimal sumQuantityLitresByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT COALESCE(SUM(f.totalCost), 0) FROM FuelRecord f WHERE f.vehicle.vehicleId = :vehicleId")
+    java.math.BigDecimal sumTotalCostByVehicleId(@Param("vehicleId") Long vehicleId);
+
+    @Query("SELECT COALESCE(SUM(f.quantityLitres), 0) FROM FuelRecord f WHERE f.vehicle.vehicleId = :vehicleId")
+    java.math.BigDecimal sumQuantityLitresByVehicleId(@Param("vehicleId") Long vehicleId);
+
+    @Query("SELECT AVG(f.estimatedMileageKmpl) FROM FuelRecord f WHERE f.vehicle.vehicleId = :vehicleId AND f.estimatedMileageKmpl IS NOT NULL")
+    Double avgEstimatedMileageByVehicleId(@Param("vehicleId") Long vehicleId);
+
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
 }

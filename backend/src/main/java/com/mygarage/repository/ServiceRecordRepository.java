@@ -41,6 +41,9 @@ public interface ServiceRecordRepository extends JpaRepository<ServiceRecord, Lo
            "LOWER(v.model) LIKE LOWER(CONCAT('%', :keyword, '%'))) ORDER BY s.serviceDate DESC")
     List<ServiceRecord> searchAllByUserIdAndKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
 
+    @Query("SELECT COALESCE(SUM(s.cost), 0) FROM ServiceRecord s WHERE s.vehicle.vehicleId = :vehicleId")
+    java.math.BigDecimal sumCostByVehicleId(@Param("vehicleId") Long vehicleId);
+
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
 }

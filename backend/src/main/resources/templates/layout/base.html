@@ -55,6 +55,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'reports'} ? 'active'" th:href="@{/reports}">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Reports & Export
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link sidebar-link" th:classappend="${activePage == 'profile'} ? 'active'" th:href="@{/profile}">
                         <i class="bi bi-person-circle"></i> My Profile
                     </a>

@@ -6,7 +6,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-238%2F238%20PASS-success.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-264%2F264%20PASS-success.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -18,7 +18,7 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, and scheduled maintenance urgency tracking while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, official vehicle resale dossiers, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
@@ -26,6 +26,8 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 
 ### 👤 Normal User Features
 - **Garage Management:** Add, edit, view, and delete multiple vehicles (cars, motorcycles, scooters, trucks, EVs) with license plate uniqueness and category classification.
+- **Vehicle Resale Dossier & Service Certificate:** Print-ready, certified life-history dossiers (`/vehicles/{id}/report`) with official verification seal, lifetime financial summaries, and chronologically verified ledgers for vehicle resale, insurance handoff, and mechanic audits.
+- **Multi-Format Data Export:** RFC 4180 compliant CSV exports for Services, Fuel Logs, Maintenance Tasks, Unified Master History, and Complete User Garage Portfolios.
 - **Global Record Views:** Dedicated cross-vehicle central feeds for All Services (with search & cost tallies), All Fuel Logs (with volume, spend, and avg mileage), and All Maintenance Tasks (with urgency filters and one-click completion).
 - **Service History:** Log maintenance visits with garage names, parts replaced, costs, and next service due dates.
 - **Fuel Mileage Tracking:** Automatically calculates fuel economy ($\text{km/L}$) between consecutive fill-ups based on odometer progression and volume.
@@ -43,7 +45,7 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 - **User Governance:** Search and filter registered users by name or email; toggle account active/disabled status.
 - **Primary Admin Inviolability:** Hard security guard preventing the accidental or malicious deactivation/deletion of the primary administrator account.
 - **Category Management:** Manage standard vehicle categories (icon, name, description) with referential integrity protection (deletion blocked if vehicles are assigned).
-- **Strict Privacy Isolation:** Administrators have no backdoor into individual user garages or logs.
+- **Strict Privacy Isolation:** Administrators have no backdoor into individual user garages, dossiers, or logs.
 
 ---
 

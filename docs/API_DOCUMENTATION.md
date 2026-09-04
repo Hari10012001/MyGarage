@@ -264,7 +264,66 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 
 ---
 
-### G. System Administration (`/api/admin/**`)
+### G. Vehicle Resale Dossiers & Data Export (`/api/reports/**`, `/api/vehicles/{vehicleId}/export/**`)
+*Accessible by: `ROLE_NORMAL_USER` (Blocked for `ADMIN`)*
+
+#### 1. Garage Portfolio Lifetime Summary
+- **Method:** `GET /api/reports/garage-summary`
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalVehicles": 2,
+    "totalServices": 5,
+    "totalFuelLogs": 12,
+    "totalMaintenanceTasks": 4,
+    "totalServiceCost": 12500.00,
+    "totalFuelCost": 18200.00,
+    "totalMaintenanceCost": 3400.00,
+    "totalGarageCost": 34100.00,
+    "averageMileage": 15.8,
+    "vehicleBreakdown": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN01AB1234",
+        "make": "Honda",
+        "model": "City",
+        "year": 2022,
+        "category": "Sedan",
+        "currentOdometer": 25000,
+        "serviceCost": 7500.00,
+        "fuelCost": 12000.00,
+        "maintenanceCost": 1500.00,
+        "totalCost": 21000.00,
+        "avgMileage": 16.2,
+        "totalRecords": 15
+      }
+    ]
+  }
+  ```
+
+#### 2. Vehicle Resale Dossier JSON Payload
+- **Method:** `GET /api/vehicles/{vehicleId}/export/summary`
+- **Response:** `200 OK` (Full specifications, owner credentials, lifetime financials, and record lists)
+
+#### 3. Vehicle Services CSV Stream
+- **Method:** `GET /api/vehicles/{vehicleId}/export/services`
+- **Response:** `200 OK` (`Content-Type: text/csv;charset=UTF-8`, RFC 4180 CSV)
+
+#### 4. Vehicle Fuel Logs CSV Stream
+- **Method:** `GET /api/vehicles/{vehicleId}/export/fuel`
+- **Response:** `200 OK` (`Content-Type: text/csv;charset=UTF-8`)
+
+#### 5. Vehicle Maintenance Tasks CSV Stream
+- **Method:** `GET /api/vehicles/{vehicleId}/export/maintenance`
+- **Response:** `200 OK` (`Content-Type: text/csv;charset=UTF-8`)
+
+#### 6. Vehicle Master Unified History CSV Stream
+- **Method:** `GET /api/vehicles/{vehicleId}/export/all`
+- **Response:** `200 OK` (`Content-Type: text/csv;charset=UTF-8`, combines services, fuel, maintenance)
+
+---
+
+### H. System Administration (`/api/admin/**`)
 *Accessible strictly by: `ROLE_ADMIN` (Blocked for `NORMAL_USER`)*
 
 #### 1. System Platform Statistics
