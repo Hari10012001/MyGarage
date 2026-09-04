@@ -6,7 +6,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-288%2F288%20PASS-success.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-313%2F313%20PASS-success.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -18,7 +18,7 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, official vehicle resale dossiers, multi-vehicle comparative analytics, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
@@ -26,6 +26,11 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 
 ### 👤 Normal User Features
 - **Garage Management:** Add, edit, view, and delete multiple vehicles (cars, motorcycles, scooters, trucks, EVs) with license plate uniqueness and category classification.
+- **Predictive Maintenance & Smart Service Planner (`/vehicles/{id}/forecast`, `/vehicles/planner`):** Dynamic distance-based service forecasting driven by empirical driving velocity (km/day) with odometer rollback/anomaly filtering.
+- **Vehicle Health Index (VHI) Scoring:** Real-time 0–100 composite health score evaluating maintenance punctuality, overdue tasks, service recency, vehicle age, and mileage with qualitative ratings (`EXCELLENT` to `CRITICAL`).
+- **Repeating PMS Milestone Forecasting:** Automatically projects the next due odometer and projected calendar dates for recurring OEM maintenance intervals (5,000 km, 10,000 km, 20,000 km, 40,000 km, 60,000 km multiples).
+- **Forward Horizon Expense Forecasting:** Aggregates projected upcoming service milestones and pending tasks into 30, 60, 90, and 180-day financial maintenance budgets.
+- **One-Click Smart Milestone Scheduling:** Instantly convert projected PMS milestones into active tracked `MaintenanceRecord` tasks with automatic title deduplication and state conflict handling.
 - **Multi-Vehicle Comparative Analytics (`/vehicles/compare`):** Side-by-side benchmark matrix across 2 to 4 vehicles comparing total lifetime expenses, operational efficiency (running cost per km, average fuel mileage), and maintenance health with automated performance badging.
 - **Fleet Efficiency Benchmarking & Highlights:** Automatically identifies the "Most Economical", "Highest Mileage", "Lowest Running Cost", "Lowest Maintenance", and "Fleet Workhorse" across compared vehicles.
 - **Garage Expenditure Contribution Analysis:** Computes proportional spending shares across fuel, services, and maintenance with dynamic visual progress distribution.
@@ -188,14 +193,14 @@ erDiagram
 
 ## 6. Comprehensive Verification Summary
  
-- **Total Automated Test Cases:** **288**
-- **Test Results:** **288 Passed, 0 Failed, 0 Errors, 0 Skipped**
+- **Total Automated Test Cases:** **313**
+- **Test Results:** **313 Passed, 0 Failed, 0 Errors, 0 Skipped**
 - **Full Regression Status:** **`BUILD SUCCESS`**
 
 ```
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 288, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 313, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -211,6 +216,7 @@ erDiagram
 - [`docs/SECURITY_DESIGN.md`](docs/SECURITY_DESIGN.md) — Spring Security Matcher Ordering, RBAC & CSRF Specification
 - [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — M12 Vehicle Resale Dossier & CSV Export Specification
 - [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 Comparative Analytics & Fleet Efficiency Benchmarking Specification
+- [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 Predictive Maintenance Forecasting, Vehicle Health Scoring & Smart Service Planner Specification
 - [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API Endpoints & Request/Response Contracts
 - [`docs/TESTING.md`](docs/TESTING.md) — Testing Strategy, Automated Test Suites & Regression Verification
 - [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Viva Preparation Guide in Tanglish

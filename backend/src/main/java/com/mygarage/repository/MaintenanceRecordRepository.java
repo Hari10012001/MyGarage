@@ -45,4 +45,9 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     long countByVehicleVehicleId(Long vehicleId);
     long countByVehicleVehicleIdAndStatus(Long vehicleId, MaintenanceStatus status);
     long countByStatus(MaintenanceStatus status);
+
+    // M14: Check duplicate pending tasks for predictive milestones
+    boolean existsByVehicleVehicleIdAndTitleIgnoreCaseAndStatusIn(Long vehicleId, String title, List<MaintenanceStatus> statuses);
+
+    Optional<MaintenanceRecord> findFirstByVehicleVehicleIdAndTitleIgnoreCaseAndStatusIn(Long vehicleId, String title, List<MaintenanceStatus> statuses);
 }

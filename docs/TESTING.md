@@ -1,8 +1,8 @@
 # TESTING & VERIFICATION REPORT — MyGarage (APPJFS19)
 
 **System ID:** APPJFS19  
-**Total Automated Tests:** **288**  
-**Pass Rate:** **100% (288/288 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
+**Total Automated Tests:** **313**  
+**Pass Rate:** **100% (313/313 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
 **Regression Status:** **`BUILD SUCCESS`**
 
 ---
@@ -29,6 +29,8 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 [Layer 8: Vehicle Resale Dossiers & Data Export] (RFC 4180 CSV, Print Dossiers, REST Exports)
         ↓
 [Layer 9: Comparative Analytics & Fleet Benchmarking] (Side-by-Side Comparison, Badging, Running Costs)
+        ↓
+[Layer 10: Predictive Maintenance & Vehicle Health Scoring] (Velocity Engine, Repeating PMS, VHI Clamping, Expense Horizons)
 ```
 
 ---
@@ -37,6 +39,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 
 | Test Suite | Class Name | Tests | Failures | Errors | Skipped | Status |
 |---|---|---|---|---|---|---|
+| **Predictive Maintenance & Health Scoring** | `PredictiveMaintenanceModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Comparative Analytics & Fleet Benchmarking** | `VehicleComparisonModuleTest` | 24 | 0 | 0 | 0 | **PASS** |
 | **Resale Dossiers & Data Export** | `VehicleReportAndExportModuleTest` | 26 | 0 | 0 | 0 | **PASS** |
 | **Global Records & Monitoring** | `GlobalRecordsModuleTest` | 20 | 0 | 0 | 0 | **PASS** |
@@ -52,13 +55,13 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 | **Maintenance Service** | `MaintenanceServiceTest` | 5 | 0 | 0 | 0 | **PASS** |
 | **Password Encoder** | `PasswordEncoderTest` | 1 | 0 | 0 | 0 | **PASS** |
 | **Application Context** | `MyGarageApplicationTests` | 1 | 0 | 0 | 0 | **PASS** |
-| **TOTAL** | | **288** | **0** | **0** | **0** | **PASS** |
+| **TOTAL** | | **313** | **0** | **0** | **0** | **PASS** |
 
 ---
 
 ## 3. Test Command Execution
 
-To execute the entire 288-test regression suite:
+To execute the entire 313-test regression suite:
 
 ```powershell
 cd backend
@@ -69,13 +72,10 @@ mvn clean test "-Dspring.profiles.active=test"
 ```
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 264, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 313, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  02:17 min
-[INFO] Finished at: 2026-09-04T10:43:26+05:30
 [INFO] ------------------------------------------------------------------------
 ```
 
@@ -98,3 +98,8 @@ mvn clean test "-Dspring.profiles.active=test"
 | Category Referential Guard | Deletion blocked if vehicles assigned | `400 Bad Request` | **PASS** |
 | Matcher Order Security | `/api/admin/**` evaluated before `/api/**` | Verified | **PASS** |
 | CSRF Protection | State-changing POST/PUT/DELETE without token rejected | `403 Forbidden` | **PASS** |
+| Driving Velocity Calculation | Computes empirical km/day rate while rejecting rollback anomalies | Verified | **PASS** |
+| Repeating PMS Intervals | Projects 5k, 10k, 20k, 40k, 60k OEM intervals dynamically | Verified | **PASS** |
+| Vehicle Health Index (VHI) | Multi-factor health score clamped strictly 0–100 with rating | Verified | **PASS** |
+| Forward Expense Horizon | Projects 30, 60, 90, 180-day maintenance budgets | Verified | **PASS** |
+| Milestone Schedule Conversion | Promotes projected milestone into active task with duplicate guard | Verified | **PASS** |

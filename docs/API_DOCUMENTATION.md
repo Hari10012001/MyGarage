@@ -458,3 +458,88 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
     ]
   }
   ```
+
+---
+
+### J. Predictive Maintenance & Vehicle Health APIs (`/api/vehicles/{id}/forecast`, `/api/analytics/garage-forecast`)
+*Accessible by: `ROLE_NORMAL_USER` (Blocked for `ROLE_ADMIN` with 403 Forbidden)*
+
+#### 1. Vehicle Predictive Maintenance & Health Report
+- **Method:** `GET /api/vehicles/{id}/forecast`
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN14A1001",
+    "make": "Honda",
+    "model": "City",
+    "year": 2022,
+    "currentOdometer": 14500,
+    "estimatedDailyKm": 45.0,
+    "velocityConfidence": "HIGH",
+    "historicalDataPoints": 3,
+    "healthIndex": {
+      "score": 85,
+      "grade": "EXCELLENT",
+      "statusDescription": "Vehicle is in prime mechanical shape.",
+      "overdueDeductions": 0,
+      "serviceRecencyScore": 10,
+      "mileageFactorScore": 0,
+      "completionRateScore": 10
+    },
+    "milestones": [
+      {
+        "milestoneId": "PMS_5000_15000",
+        "title": "Minor Service / Inspection",
+        "description": "Engine oil check, air filter cleaning, tyre rotation, and safety inspections.",
+        "intervalKm": 5000,
+        "dueOdometer": 15000,
+        "remainingKm": 500,
+        "estimatedDaysRemaining": 11,
+        "projectedDueDate": "2026-09-15",
+        "estimatedCost": 1500.00,
+        "urgencyLevel": "SOON",
+        "alreadyScheduled": false
+      }
+    ],
+    "expenseForecast": {
+      "forecast30Days": 1500.00,
+      "forecast60Days": 5000.00,
+      "forecast90Days": 5000.00,
+      "forecast180Days": 12500.00
+    }
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access), `404 Not Found` (vehicle does not exist)
+
+#### 2. Garage-Wide Fleet Health Summary
+- **Method:** `GET /api/analytics/garage-forecast`
+- **Response:** `200 OK`
+  ```json
+  [
+    {
+      "vehicleId": 1,
+      "plateNumber": "TN14A1001",
+      "make": "Honda",
+      "model": "City",
+      "currentOdometer": 14500,
+      "estimatedDailyKm": 45.0,
+      "healthIndex": { "score": 85, "grade": "EXCELLENT" },
+      "expenseForecast": { "forecast30Days": 1500.00, "forecast90Days": 5000.00 }
+    }
+  ]
+  ```
+
+#### 3. Schedule Projected Forecast Milestone
+- **Method:** `POST /api/vehicles/{id}/forecast/schedule`
+- **Body:**
+  ```json
+  {
+    "title": "Minor Service / Inspection",
+    "description": "Engine oil check, air filter cleaning, tyre rotation",
+    "scheduledDate": "2026-09-15",
+    "cost": 1500.00
+  }
+  ```
+- **Response:** `201 Created` (returns created `MaintenanceRecordDTO`)
+- **Error Responses:** `400 Bad Request` (validation error), `403 Forbidden` (cross-user tampering), `409 Conflict` (milestone already scheduled and pending)

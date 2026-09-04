@@ -3,7 +3,7 @@
 **Project Name:** MyGarage — A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **System ID:** APPJFS19  
 **Academic Year:** 2026–2027  
-**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M13 COMPLETE)**  
+**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M14 COMPLETE)**  
 **Date of Completion:** 2026-09-04  
 
 ---
@@ -16,7 +16,7 @@
 | **M1** | Project Setup, Maven, Git, DB Config, Base Architecture & Smoke QC | 1 | Smoke Tests | **ACCEPTED** |
 | **M2** | Database & JPA Entities (Deep Verification, Indexes, Cascades & Mappings) | 14 | Hibernate Validation | **ACCEPTED** |
 | **M3** | Authentication & RBAC (SecurityFilterChain Matcher Order, REST RBAC, CSRF, BCrypt) | 27 | RBAC / Form Auth | **ACCEPTED** |
-| **M4** | Vehicle Module (Vehicle CRUD, Ownership Guarding, License Plate Uniqueness) | 26 | Cascade & Isolation | **ACCEPTED** |
+| **M4** | Vehicle CRUD & Ownership Guarding (Two-Tier Guard, Plate Uniqueness) | 26 | Cascade & Isolation | **ACCEPTED** |
 | **M5** | Service Module (Service History, Costs & Garage Tracking, Two-Tier Ownership) | 25 | Two-Tier Guarding | **ACCEPTED** |
 | **M6** | Fuel Module (Fuel Logs, Estimated Mileage, Auto Total Cost, Two-Tier Ownership) | 28 | Mileage Math | **ACCEPTED** |
 | **M7** | Maintenance Module (Status Logic & Reminders, Priority, Mark Complete, Ownership) | 30 | Status Logic | **ACCEPTED** |
@@ -26,13 +26,14 @@
 | **M11** | Global Record Logs, Cross-Vehicle Aggregation & System Monitoring | 20 | Global Logs & RBAC | **ACCEPTED** |
 | **M12** | Vehicle Resale Dossier, RFC 4180 CSV Data Export & Advanced Reporting | 26 | Dossier, CSV & Isolation | **ACCEPTED** |
 | **M13** | Comparative Analytics & Fleet Efficiency Benchmarking | 24 | Comparison, Badging & Isolation | **ACCEPTED** |
-| **TOTAL** | **Full System Integration & Regression** | **288** | **100% PASS** | **M13 ACCEPTED** |
+| **M14** | Predictive Maintenance Forecasting, Vehicle Health Scoring & Service Planner | 25 | Velocity, VHI, PMS & Duplicate Guard | **ACCEPTED** |
+| **TOTAL** | **Full System Integration & Regression** | **313** | **100% PASS** | **M14 ACCEPTED** |
 
 ---
 
 ## 2. Technical Quality Metrics
 
-- **Total Automated Test Cases:** **288**
+- **Total Automated Test Cases:** **313**
 - **Failures:** **0**
 - **Errors:** **0**
 - **Skipped:** **0**
@@ -43,6 +44,7 @@
 - **Security Compliance:** Spring Security 6.x form-based authentication, BCrypt hashing (cost 10), CSRF protection on all state-changing endpoints, strict request matcher ordering, ADMIN isolation.
 - **Export & Reporting:** RFC 4180 CSV generation across Service, Fuel, Maintenance, Unified Master History, and Garage Portfolio Summary; print-ready certified Vehicle Resale Dossier with watermarked verification seal.
 - **Comparative Analytics:** Side-by-side multi-vehicle comparison matrix, automated efficiency badging, running cost per km calculation, and proportional fleet budget distribution.
+- **Predictive Maintenance:** Driving velocity engine (km/day) with rollback anomaly suppression, repeating PMS milestone forecasting, composite Vehicle Health Index (0–100 clamped), forward horizon expense budgeting, and duplicate scheduling prevention.
 
 ---
 
@@ -59,15 +61,18 @@
 9. [`docs/MAINTENANCE_MODULE_DESIGN.md`](docs/MAINTENANCE_MODULE_DESIGN.md) — Maintenance module technical specification.
 10. [`docs/DASHBOARD_REPORTING_DESIGN.md`](docs/DASHBOARD_REPORTING_DESIGN.md) — Dashboard and financial analytics specification.
 11. [`docs/ADMIN_MODULE_DESIGN.md`](docs/ADMIN_MODULE_DESIGN.md) — Admin governance and primary admin protection specification.
-12. [`docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md`](docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md) — Global record logs and system monitoring design.
-13. [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — Vehicle resale dossier, data export and advanced reporting design.
-14. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — Comprehensive REST API endpoint catalog and request/response schemas.
-15. [`docs/TESTING.md`](docs/TESTING.md) — Complete automated test report and testing strategy.
-16. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — High-yield Tanglish viva preparation and demo guide.
-17. [`FINAL_STATUS.md`](FINAL_STATUS.md) — This final production readiness sign-off report.
+12. [`docs/M10_POLISH_AND_QC_DESIGN.md`](docs/M10_POLISH_AND_QC_DESIGN.md) — M10 polish, 6-layer QC framework, and profile API specification.
+13. [`docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md`](docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md) — Global record logs and system monitoring design.
+14. [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — Vehicle resale dossier, data export and advanced reporting design.
+15. [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 comparative analytics and fleet efficiency benchmarking specification.
+16. [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 predictive maintenance forecasting, vehicle health scoring, and smart service planner specification.
+17. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — Comprehensive REST API endpoint catalog and request/response schemas.
+18. [`docs/TESTING.md`](docs/TESTING.md) — Complete automated test report and testing strategy.
+19. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — High-yield Tanglish viva preparation and demo guide.
+20. [`FINAL_STATUS.md`](FINAL_STATUS.md) — This final production readiness sign-off report.
 
 ---
 
 ## 4. Operational Readiness Confirmation
 
-All requirements through Milestone 12 have been implemented, tested, verified, and certified across real MySQL 8.0 and Tomcat 8080. The project is 100% production-ready, fully tested, documented, and ready for academic submission and live demonstration.
+All requirements through Milestone 14 have been implemented, tested, verified, and certified across real MySQL 8.0 and Tomcat 8080. The project is 100% production-ready, fully tested, documented, and ready for academic submission and live demonstration.
