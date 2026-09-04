@@ -6,7 +6,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-313%2F313%20PASS-success.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-338%2F338%20PASS-success.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -18,7 +18,7 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
@@ -26,6 +26,10 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 
 ### 👤 Normal User Features
 - **Garage Management:** Add, edit, view, and delete multiple vehicles (cars, motorcycles, scooters, trucks, EVs) with license plate uniqueness and category classification.
+- **TCO Lifecycle Modeling & Asset Valuation Advisory (`/vehicles/{id}/tco`, `/vehicles/tco`):** Econometric total cost of ownership analysis combining initial acquisition depreciation with cumulative OPEX (fuel, services, maintenance), cost per km, annualized and monthly run rates.
+- **Depreciation Valuation & Salvage Floor Engine:** Multi-year declining-balance asset depreciation modeling calibrated by vehicle category and annual mileage intensity, strictly bounded by a 10% salvage floor.
+- **Repair-to-Residual-Value Ratio (RRVR) & Replacement Engine:** Evaluates trailing 12-month maintenance investment against current residual value to provide actionable asset advice (`OPTIMAL_RETENTION`, `MONITOR_EXPENSES`, `CONSIDER_REPLACEMENT`).
+- **Direct Tailpipe Carbon ESG Footprint:** Evaluates cumulative and intensity ($\text{g CO}_2\text{/km}$) tailpipe greenhouse gas emissions based on fuel consumed and fuel chemistry (petrol/diesel/CNG/EV).
 - **Predictive Maintenance & Smart Service Planner (`/vehicles/{id}/forecast`, `/vehicles/planner`):** Dynamic distance-based service forecasting driven by empirical driving velocity (km/day) with odometer rollback/anomaly filtering.
 - **Vehicle Health Index (VHI) Scoring:** Real-time 0–100 composite health score evaluating maintenance punctuality, overdue tasks, service recency, vehicle age, and mileage with qualitative ratings (`EXCELLENT` to `CRITICAL`).
 - **Repeating PMS Milestone Forecasting:** Automatically projects the next due odometer and projected calendar dates for recurring OEM maintenance intervals (5,000 km, 10,000 km, 20,000 km, 40,000 km, 60,000 km multiples).
@@ -193,14 +197,14 @@ erDiagram
 
 ## 6. Comprehensive Verification Summary
  
-- **Total Automated Test Cases:** **313**
-- **Test Results:** **313 Passed, 0 Failed, 0 Errors, 0 Skipped**
+- **Total Automated Test Cases:** **338**
+- **Test Results:** **338 Passed, 0 Failed, 0 Errors, 0 Skipped**
 - **Full Regression Status:** **`BUILD SUCCESS`**
 
 ```
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 313, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 338, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -217,6 +221,7 @@ erDiagram
 - [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — M12 Vehicle Resale Dossier & CSV Export Specification
 - [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 Comparative Analytics & Fleet Efficiency Benchmarking Specification
 - [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 Predictive Maintenance Forecasting, Vehicle Health Scoring & Smart Service Planner Specification
+- [`docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md`](docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md) — M15 Total Cost of Ownership (TCO) Lifecycle Modeling, Depreciation Valuation & Economic Replacement Advisory Specification
 - [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API Endpoints & Request/Response Contracts
 - [`docs/TESTING.md`](docs/TESTING.md) — Testing Strategy, Automated Test Suites & Regression Verification
 - [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Viva Preparation Guide in Tanglish

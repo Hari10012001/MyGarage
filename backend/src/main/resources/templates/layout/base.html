@@ -50,6 +50,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'tco'} ? 'active'" th:href="@{/vehicles/tco}">
+                        <i class="bi bi-cash-coin"></i> TCO & Asset Advisory
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link sidebar-link" th:classappend="${activePage == 'services'} ? 'active'" th:href="@{/services}">
                         <i class="bi bi-tools"></i> All Services
                     </a>

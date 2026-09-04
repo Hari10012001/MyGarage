@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-04  
-**Current Phase:** **MILESTONE 14 (M14) COMPLETE & FULLY VERIFIED**
+**Current Phase:** **MILESTONE 15 (M15) COMPLETE & FULLY VERIFIED**
 
 ---
 
@@ -39,7 +39,8 @@
 | **M11** | `f11e861` | Global Record Logs & Monitoring | `GlobalRecordsModuleTest` | 20 | 238 | **PASS** |
 | **M12** | `c9cf4d0` | Vehicle Resale Dossier & CSV Export | `VehicleReportAndExportModuleTest` | 26 | 264 | **PASS** |
 | **M13** | `e00c8cb` | Comparative Analytics & Fleet Benchmarking | `VehicleComparisonModuleTest` | 24 | 288 | **PASS** |
-| **M14** | `HEAD` | Predictive Maintenance Forecasting & Health Scoring | `PredictiveMaintenanceModuleTest` | 25 | **313** | **PASS** |
+| **M14** | `d26f52b` | Predictive Maintenance Forecasting & Health Scoring | `PredictiveMaintenanceModuleTest` | 25 | 313 | **PASS** |
+| **M15** | `HEAD` | TCO Lifecycle Modeling, Depreciation Valuation & Replacement Advisory | `VehicleTcoLifecycleModuleTest` | 25 | **338** | **PASS** |
 
 ---
 
@@ -62,7 +63,26 @@
 
 ---
 
-## 4. Documentation Inventory
+## 4. Milestone 15 (M15) Verification Matrix
+
+| Check / Requirement | Specification | Status |
+|---|---|---|
+| **Web MVC Routes** | `GET /vehicles/{id}/tco`, `GET /vehicles/tco` | **PASS** |
+| **REST APIs** | `GET /api/vehicles/{id}/tco`, `GET /api/analytics/garage-tco` | **PASS** |
+| **Lifecycle OPEX Aggregation** | Fuel + Service + Maintenance cumulative, monthly, annualized run-rates, and cost/km | **PASS** |
+| **Depreciation Curve Engine** | Category benchmark MSRPs, age-based declining balance, mileage intensity factor, 10% salvage floor | **PASS** |
+| **Defensive Boundary Guards** | Zero odometer, zero residual, missing service/fuel/maintenance logs, vintage vehicles | **PASS** |
+| **Economic Replacement Advisory** | Trailing 12-month maintenance filtering, RRVR calculation, actionable advisory status & rationale | **PASS** |
+| **Direct Tailpipe Carbon ESG** | Litres consumed * fuel density * emission factor (kg/L) with zero emission for EVs | **PASS** |
+| **Security & RBAC** | `ROLE_ADMIN` blocked from personal TCO views & APIs (403); Normal users isolated to owned vehicles | **PASS** |
+| **Cross-User Tampering** | Tampering redirected with flash error (Web MVC) or returns 403 Forbidden (REST API) | **PASS** |
+| **Dedicated Automated Tests** | 25 dedicated tests in `VehicleTcoLifecycleModuleTest` | **PASS (25/25)** |
+| **Full Regression Suite** | 338 automated tests across 17 test classes | **PASS (338/338, 0 failures, 0 errors)** |
+| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all 22 acceptance criteria checks | **PASS (22/22)** |
+
+---
+
+## 5. Documentation Inventory
 
 1. [`README.md`](README.md) — Comprehensive technical overview, architecture, quick-start guide, and badges.
 2. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — Milestone tracking and test progression matrix.
@@ -80,11 +100,12 @@
 14. [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — M12 vehicle resale dossier, CSV export, and reporting specification.
 15. [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 comparative analytics and fleet efficiency benchmarking specification.
 16. [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 predictive maintenance forecasting, vehicle health scoring, and smart service planner specification.
-17. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
-18. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
-19. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
-20. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
+17. [`docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md`](docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md) — M15 Total Cost of Ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, and carbon ESG intelligence specification.
+18. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
+19. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
+20. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
+21. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
 
 ---
 
-## Project Status: M14 COMPLETE & FULLY VERIFIED
+## Project Status: M15 COMPLETE & FULLY VERIFIED

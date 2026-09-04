@@ -543,3 +543,81 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```
 - **Response:** `201 Created` (returns created `MaintenanceRecordDTO`)
 - **Error Responses:** `400 Bad Request` (validation error), `403 Forbidden` (cross-user tampering), `409 Conflict` (milestone already scheduled and pending)
+
+---
+
+### K. Total Cost of Ownership (TCO) & Asset Advisory APIs (`/api/vehicles/{id}/tco`, `/api/analytics/garage-tco`)
+*Accessible by: `ROLE_NORMAL_USER` (Blocked for `ROLE_ADMIN` with 403 Forbidden)*
+
+#### 1. Vehicle TCO, Depreciation & Replacement Advisory Report
+- **Method:** `GET /api/vehicles/{id}/tco`
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN15A1001",
+    "make": "Honda",
+    "model": "City",
+    "year": 2022,
+    "category": "Sedan",
+    "currentOdometer": 15000,
+    "vehicleAgeYears": 4,
+    "cumulativeFuelCost": 12000.00,
+    "cumulativeServiceCost": 8000.00,
+    "cumulativeMaintenanceCost": 3500.00,
+    "totalOpex": 23500.00,
+    "estimatedOriginalMSRP": 1500000.00,
+    "estimatedCurrentResidualValue": 786000.00,
+    "cumulativeDepreciation": 714000.00,
+    "lifecycleTco": 737500.00,
+    "opexPerKm": 1.57,
+    "tcoPerKm": 49.17,
+    "annualizedOpex": 5875.00,
+    "monthlyOpexRunRate": 489.58,
+    "trailing12MonthsMaintenanceCost": 3500.00,
+    "repairToResidualValueRatio": 0.45,
+    "replacementAdvisoryStatus": "OPTIMAL_RETENTION",
+    "replacementAdvisoryRationale": "Vehicle demonstrates strong economic health. Trailing maintenance is comfortably below residual value thresholds.",
+    "fuelType": "PETROL",
+    "totalFuelLitres": 200.00,
+    "estimatedTailpipeCo2Kg": 462.00,
+    "tailpipeCo2GramsPerKm": 30.80,
+    "financialDisclaimer": "Note: Asset values and depreciation figures are econometric models calibrated against industry benchmark parameters and do not represent guaranteed cash appraisal values.",
+    "carbonDisclaimer": "Note: Carbon emission calculations represent direct tailpipe combustion estimates (Tank-to-Wheel) and do not include upstream well-to-tank fuel production lifecycle emissions."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access), `404 Not Found` (vehicle not found)
+
+#### 2. Garage-Wide TCO Portfolio Summary
+- **Method:** `GET /api/analytics/garage-tco`
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalVehicles": 2,
+    "totalFleetOpex": 35000.00,
+    "totalFleetFuelCost": 18000.00,
+    "totalFleetServiceCost": 12000.00,
+    "totalFleetMaintenanceCost": 5000.00,
+    "totalEstimatedPortfolioValue": 1450000.00,
+    "totalEstimatedPortfolioMSRP": 2700000.00,
+    "totalCumulativeDepreciation": 1250000.00,
+    "totalFleetLifecycleTco": 1285000.00,
+    "totalFleetTailpipeCo2Kg": 693.00,
+    "averageOpexPerKm": 1.45,
+    "vehicles": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN15A1001",
+        "make": "Honda",
+        "model": "City",
+        "totalOpex": 23500.00,
+        "estimatedCurrentResidualValue": 786000.00,
+        "lifecycleTco": 737500.00,
+        "opexPerKm": 1.57,
+        "repairToResidualValueRatio": 0.45,
+        "replacementAdvisoryStatus": "OPTIMAL_RETENTION"
+      }
+    ]
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)

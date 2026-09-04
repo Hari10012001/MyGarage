@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Cost of Ownership & Replacement Advisory — MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        .tco-badge-healthy { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .tco-badge-moderate { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
+        .tco-badge-watchlist { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+        .tco-badge-disposal { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .advisory-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .metric-card {
+            border-radius: 10px;
+            transition: transform 0.15s ease-in-out;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="d-flex">
+    <!-- Sidebar Overlay for mobile -->
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="sidebar-section-label">GARAGE</li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/planner}"><i class="bi bi-graph-up-arrow"></i> Service Planner</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles/tco}"><i class="bi bi-cash-coin"></i> TCO & Asset Advisory</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/compare}"><i class="bi bi-arrow-left-right"></i> Compare Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/services}"><i class="bi bi-tools"></i> All Services</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/fuel}"><i class="bi bi-fuel-pump"></i> All Fuel Logs</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/maintenance}"><i class="bi bi-calendar-check"></i> All Maintenance</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/reports}"><i class="bi bi-file-earmark-bar-graph"></i> Reports & Export</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content flex-grow-1">
+        <!-- Topbar -->
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+            <span class="fw-semibold">Total Cost of Ownership & Economic Replacement Advisory</span>
+            <div class="ms-auto">
+                <a th:href="@{/vehicles}" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left me-1"></i> My Vehicles</a>
+            </div>
+        </nav>
+
+        <div class="page-content px-4 py-4">
+
+            <!-- Alerts -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Vehicle Header & Quick Selector -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle fs-3">
+                                <i class="bi bi-pie-chart-fill"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <h4 class="mb-0 fw-bold" th:text="${report.make + ' ' + report.model}">Vehicle Make & Model</h4>
+                                    <span class="badge bg-secondary" th:text="${report.plateNumber}">TN14A1001</span>
+                                    <span class="badge bg-info text-dark" th:text="${report.categoryName}">Sedan</span>
+                                </div>
+                                <div class="text-muted small mt-1">
+                                    <span class="me-3"><i class="bi bi-calendar3 me-1"></i> Year: <strong th:text="${report.year}">2022</strong> (<span th:text="${report.vehicleAgeYears}">2</span> yrs old)</span>
+                                    <span class="me-3"><i class="bi bi-speedometer2 me-1"></i> Odometer: <strong th:text="${#numbers.formatDecimal(report.currentOdometer, 0, 'COMMA', 0, 'POINT')} + ' km'">15,000 km</strong></span>
+                                    <span><i class="bi bi-fuel-pump me-1"></i> Fuel: <strong th:text="${report.fuelType}">PETROL</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Vehicle Switcher Dropdown -->
+                            <div class="dropdown" th:if="${userVehicles != null and userVehicles.size() > 1}">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Switch Vehicle
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li th:each="v : ${userVehicles}">
+                                        <a class="dropdown-item" th:href="@{/vehicles/{id}/tco(id=${v.vehicleId})}"
+                                           th:classappend="${v.vehicleId == report.vehicleId} ? 'active' : ''">
+                                            <span th:text="${v.make + ' ' + v.model + ' (' + v.plateNumber + ')'}">Vehicle</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <a th:href="@{/vehicles/{id}/forecast(id=${report.vehicleId})}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-graph-up-arrow me-1"></i> Service Planner
+                            </a>
+                            <a th:href="@{/vehicles/{id}/report(id=${report.vehicleId})}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-text me-1"></i> Resale Dossier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Primary Metric Cards (4 Cards Grid) -->
+            <div class="row g-3 mb-4">
+                <!-- Residual Value -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 metric-card bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-muted small fw-semibold text-uppercase">Residual Equity</span>
+                                <span class="badge bg-success bg-opacity-10 text-success"><i class="bi bi-graph-down me-1"></i>-<span th:text="${report.depreciationPercentage}"></span>%</span>
+                            </div>
+                            <h3 class="fw-bold mb-1 text-dark">₹<span th:text="${#numbers.formatDecimal(report.estimatedResidualValue, 0, 'COMMA', 2, 'POINT')}">12,75,000.00</span></h3>
+                            <div class="text-muted small">Est. Base: ₹<span th:text="${#numbers.formatDecimal(report.estimatedInitialBenchmarkValue, 0, 'COMMA', 0, 'POINT')}">15,00,000</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Annualized Run-Rate -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 metric-card bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-muted small fw-semibold text-uppercase">Annual Operating Cost</span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary">OPEX/Year</span>
+                            </div>
+                            <h3 class="fw-bold mb-1 text-primary">₹<span th:text="${#numbers.formatDecimal(report.annualizedOperatingCost, 0, 'COMMA', 2, 'POINT')}">42,500.00</span></h3>
+                            <div class="text-muted small">Monthly Run-Rate: ₹<span th:text="${#numbers.formatDecimal(report.monthlyOperatingCost, 0, 'COMMA', 0, 'POINT')}">3,541</span>/mo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lifetime Operating Expense -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 metric-card bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-muted small fw-semibold text-uppercase">Lifetime OPEX</span>
+                                <span class="badge bg-info bg-opacity-10 text-info">₹<span th:text="${report.operatingCostPerKm}"></span>/km</span>
+                            </div>
+                            <h3 class="fw-bold mb-1 text-dark">₹<span th:text="${#numbers.formatDecimal(report.totalLifetimeOpex, 0, 'COMMA', 2, 'POINT')}">85,000.00</span></h3>
+                            <div class="text-muted small">Services + Fuel + Maintenance</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Tailpipe Carbon Footprint -->
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100 metric-card bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-muted small fw-semibold text-uppercase">Tailpipe Carbon</span>
+                                <span class="badge" th:classappend="${report.ecoTailpipeRating == 'ECO_EXCELLENT'} ? 'bg-success' : (${report.ecoTailpipeRating == 'ECO_MODERATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${report.ecoTailpipeRating}">ECO_EXCELLENT</span>
+                            </div>
+                            <h3 class="fw-bold mb-1 text-success"><span th:text="${report.totalDirectCarbonEmissionsTonnes}">0.35</span> <small class="fs-6 fw-normal text-muted">t CO₂</small></h3>
+                            <div class="text-muted small"><span th:text="${report.carbonIntensityGramsPerKm}">120</span> g/km direct emissions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Economic Replacement Advisory Banner & RRVR -->
+            <div class="card border-0 shadow-sm mb-4 advisory-card">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Economic Replacement & Asset Retention Advisory</h5>
+                        <p class="text-muted small mb-0">Automated capital retention analysis comparing trailing 12-month repair burden against vehicle market equity.</p>
+                    </div>
+                    <div>
+                        <span class="badge fs-6 px-3 py-2 rounded-pill"
+                              th:classappend="${report.advisoryStatus == 'HEALTHY_RETENTION'} ? 'tco-badge-healthy' : (${report.advisoryStatus == 'MODERATE_EXPENSE'} ? 'tco-badge-moderate' : (${report.advisoryStatus == 'REPLACEMENT_WATCHLIST'} ? 'tco-badge-watchlist' : 'tco-badge-disposal'))">
+                            <i class="bi me-1"
+                               th:classappend="${report.advisoryStatus == 'HEALTHY_RETENTION'} ? 'bi-check-circle-fill' : (${report.advisoryStatus == 'MODERATE_EXPENSE'} ? 'bi-info-circle-fill' : (${report.advisoryStatus == 'REPLACEMENT_WATCHLIST'} ? 'bi-exclamation-circle-fill' : 'bi-slash-circle-fill'))"></i>
+                            <span th:text="${report.advisoryStatus}">HEALTHY_RETENTION</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert mb-4 border-0"
+                         th:classappend="${report.advisoryStatus == 'HEALTHY_RETENTION'} ? 'alert-success' : (${report.advisoryStatus == 'MODERATE_EXPENSE'} ? 'alert-info' : (${report.advisoryStatus == 'REPLACEMENT_WATCHLIST'} ? 'alert-warning' : 'alert-danger'))">
+                        <div class="d-flex align-items-center">
+                            <i class="bi fs-4 me-3"
+                               th:classappend="${report.advisoryStatus == 'HEALTHY_RETENTION'} ? 'bi-shield-check' : (${report.advisoryStatus == 'MODERATE_EXPENSE'} ? 'bi-info-circle' : (${report.advisoryStatus == 'REPLACEMENT_WATCHLIST'} ? 'bi-exclamation-triangle' : 'bi-exclamation-octagon'))"></i>
+                            <div>
+                                <strong class="d-block">Advisory Assessment:</strong>
+                                <span th:text="${report.advisorySummary}">Advisory Summary Description</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repair to Residual Value Ratio (RRVR) Gauge -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold small">Repair-to-Residual-Value Ratio (RRVR)</span>
+                            <span class="fw-bold small text-dark"><span th:text="${report.repairToResidualValueRatio}">4.2</span>% (Trailing 12-Mo Repairs: ₹<span th:text="${#numbers.formatDecimal(report.trailing12MonthsMaintenanceCost, 0, 'COMMA', 2, 'POINT')}"></span>)</span>
+                        </div>
+                        <div class="progress" style="height: 12px;">
+                            <div class="progress-bar" role="progressbar"
+                                 th:style="'width: ' + ${report.repairToResidualValueRatio > 100 ? 100 : report.repairToResidualValueRatio} + '%;'"
+                                 th:classappend="${report.repairToResidualValueRatio < 15.0} ? 'bg-success' : (${report.repairToResidualValueRatio < 30.0} ? 'bg-info' : (${report.repairToResidualValueRatio < 50.0} ? 'bg-warning' : 'bg-danger'))">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-1" style="font-size: 0.75rem;">
+                            <span>0% (Healthy &lt; 15%)</span>
+                            <span>15% (Moderate)</span>
+                            <span>30% (Watchlist)</span>
+                            <span>50%+ (Disposal Recommended)</span>
+                        </div>
+                    </div>
+
+                    <!-- Structured Actionable Recommendations -->
+                    <div>
+                        <h6 class="fw-bold mb-2">Key Financial & Operational Recommendations:</h6>
+                        <ul class="list-group list-group-flush border rounded">
+                            <li class="list-group-item d-flex align-items-center py-2 px-3" th:each="rec : ${report.keyRecommendationPoints}">
+                                <i class="bi bi-arrow-right-circle-fill text-primary me-2"></i>
+                                <span class="small" th:text="${rec}">Recommendation Item</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2-Column Analytics: Cost Distribution & Valuation Metrics -->
+            <div class="row g-4 mb-4">
+                <!-- Left: Lifetime OPEX Breakdown -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart text-primary me-2"></i>Lifetime Expenditure Distribution</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Multi-segment Progress Bar -->
+                            <div class="progress mb-4" style="height: 24px;">
+                                <div class="progress-bar bg-primary" role="progressbar" th:style="'width: ' + ${report.serviceSharePercentage} + '%;'"
+                                     th:title="'Services: ' + ${report.serviceSharePercentage} + '%'" th:text="${report.serviceSharePercentage > 10 ? #numbers.formatDecimal(report.serviceSharePercentage, 1, 1) + '%' : ''}"></div>
+                                <div class="progress-bar bg-warning text-dark" role="progressbar" th:style="'width: ' + ${report.fuelSharePercentage} + '%;'"
+                                     th:title="'Fuel: ' + ${report.fuelSharePercentage} + '%'" th:text="${report.fuelSharePercentage > 10 ? #numbers.formatDecimal(report.fuelSharePercentage, 1, 1) + '%' : ''}"></div>
+                                <div class="progress-bar bg-success" role="progressbar" th:style="'width: ' + ${report.maintenanceSharePercentage} + '%;'"
+                                     th:title="'Maintenance: ' + ${report.maintenanceSharePercentage} + '%'" th:text="${report.maintenanceSharePercentage > 10 ? #numbers.formatDecimal(report.maintenanceSharePercentage, 1, 1) + '%' : ''}"></div>
+                            </div>
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-circle-fill text-primary me-2" style="font-size: 0.6rem;"></i> Scheduled & General Services</span>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(report.serviceCost, 0, 'COMMA', 2, 'POINT')}"></span> (<span th:text="${report.serviceSharePercentage}"></span>%)</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-circle-fill text-warning me-2" style="font-size: 0.6rem;"></i> Total Fuel Expenses</span>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(report.fuelCost, 0, 'COMMA', 2, 'POINT')}"></span> (<span th:text="${report.fuelSharePercentage}"></span>%)</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-circle-fill text-success me-2" style="font-size: 0.6rem;"></i> Scheduled Maintenance Repairs</span>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(report.maintenanceCost, 0, 'COMMA', 2, 'POINT')}"></span> (<span th:text="${report.maintenanceSharePercentage}"></span>%)</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 fw-bold border-top">
+                                    <span>Total Lifetime OPEX</span>
+                                    <span>₹<span th:text="${#numbers.formatDecimal(report.totalLifetimeOpex, 0, 'COMMA', 2, 'POINT')}"></span></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Asset Valuation & Depreciation Breakdown -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-calculator text-primary me-2"></i>Depreciation & Valuation Engine</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Segment Benchmark Value</span>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(report.estimatedInitialBenchmarkValue, 0, 'COMMA', 2, 'POINT')}"></span></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Vehicle Age Compounded Drop</span>
+                                    <span class="text-danger fw-semibold">-<span th:text="${report.depreciationPercentage}"></span>%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Estimated Current Residual Value</span>
+                                    <span class="text-success fw-bold">₹<span th:text="${#numbers.formatDecimal(report.estimatedResidualValue, 0, 'COMMA', 2, 'POINT')}"></span></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span class="text-muted">Trailing 12-Month Repair Costs</span>
+                                    <span class="fw-semibold">₹<span th:text="${#numbers.formatDecimal(report.trailing12MonthsMaintenanceCost, 0, 'COMMA', 2, 'POINT')}"></span></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-top">
+                                    <span class="fw-semibold">Repair-to-Residual-Value Ratio (RRVR)</span>
+                                    <span class="badge" th:classappend="${report.repairToResidualValueRatio < 15.0} ? 'bg-success' : (${report.repairToResidualValueRatio < 30.0} ? 'bg-info' : (${report.repairToResidualValueRatio < 50.0} ? 'bg-warning text-dark' : 'bg-danger'))">
+                                        <span th:text="${report.repairToResidualValueRatio}"></span>%
+                                    </span>
+                                </li>
+                            </ul>
+                            <div class="alert alert-light border mt-3 mb-0 py-2 px-3 small text-muted">
+                                <i class="bi bi-info-circle me-1"></i> <span th:text="${report.valuationDisclaimer}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Environmental Carbon Footprint (ESG) Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-tree text-success me-2"></i>Direct Tailpipe Greenhouse Gas Emissions (ESG Intelligence)</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-3 text-center border-end">
+                            <div class="display-6 fw-bold text-success mb-1" th:text="${report.totalDirectCarbonEmissionsTonnes}">0.35</div>
+                            <div class="text-muted small fw-semibold text-uppercase">Metric Tonnes CO₂</div>
+                            <div class="small text-muted mt-1"><span th:text="${report.totalDirectCarbonEmissionsKg}">350</span> kg Total Direct Emissions</div>
+                        </div>
+                        <div class="col-md-3 text-center border-end">
+                            <div class="display-6 fw-bold text-dark mb-1" th:text="${report.carbonIntensityGramsPerKm}">120</div>
+                            <div class="text-muted small fw-semibold text-uppercase">Grams CO₂ / km</div>
+                            <div class="small text-muted mt-1">Driving Intensity Rate</div>
+                        </div>
+                        <div class="col-md-3 text-center border-end">
+                            <div class="display-6 fw-bold text-primary mb-1" th:text="${report.totalFuelLitres}">150.0</div>
+                            <div class="text-muted small fw-semibold text-uppercase">Total Litres Consumed</div>
+                            <div class="small text-muted mt-1">Fuel Type: <strong th:text="${report.fuelType}">PETROL</strong></div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="badge fs-6 px-3 py-2 rounded-pill mb-2"
+                                  th:classappend="${report.ecoTailpipeRating == 'ECO_EXCELLENT'} ? 'bg-success' : (${report.ecoTailpipeRating == 'ECO_MODERATE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                  th:text="${report.ecoTailpipeRating}">ECO_EXCELLENT</span>
+                            <div class="text-muted small">Tailpipe Efficiency Rating</div>
+                        </div>
+                    </div>
+                    <div class="alert alert-light border mt-4 mb-0 py-2 px-3 small text-muted">
+                        <i class="bi bi-info-circle me-1"></i> <span th:text="${report.carbonDisclaimer}"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+</script>
+</body>
+</html>
