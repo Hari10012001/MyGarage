@@ -21,6 +21,12 @@ public class ServiceApiController {
     private final ServiceRecordService serviceRecordService;
     private final AuthHelper authHelper;
 
+    @GetMapping("/services")
+    public ResponseEntity<List<ServiceRecord>> getAllServices(@RequestParam(required = false) String search) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(serviceRecordService.getAllServicesForUser(userId, search));
+    }
+
     @GetMapping("/vehicles/{vehicleId}/services")
     public ResponseEntity<List<ServiceRecord>> getServices(
             @PathVariable Long vehicleId,

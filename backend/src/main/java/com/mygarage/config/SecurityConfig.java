@@ -60,7 +60,7 @@ public class SecurityConfig {
                 // Profile Web & REST accessible to any authenticated user
                 .requestMatchers("/profile/**", "/api/profile/**").hasAnyRole("NORMAL_USER", "ADMIN")
                 // User Web routes
-                .requestMatchers("/dashboard/**", "/vehicles/**", "/service/**", "/fuel/**", "/maintenance/**").hasRole("NORMAL_USER")
+                .requestMatchers("/dashboard/**", "/vehicles/**", "/service/**", "/services/**", "/fuel/**", "/maintenance/**").hasRole("NORMAL_USER")
                 // User REST APIs - EVALUATED AFTER specific /api/admin/** and /api/profile/**
                 .requestMatchers("/api/**").hasRole("NORMAL_USER")
                 // Everything else requires authentication

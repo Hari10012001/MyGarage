@@ -31,6 +31,13 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     // Count by status for a user
     long countByVehicleUserUserIdAndStatus(Long userId, MaintenanceStatus status);
 
+    // Cross-vehicle user queries
+    @Query("SELECT m FROM MaintenanceRecord m JOIN FETCH m.vehicle v WHERE v.user.userId = :userId ORDER BY m.scheduledDate ASC")
+    List<MaintenanceRecord> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT m FROM MaintenanceRecord m JOIN FETCH m.vehicle v WHERE v.user.userId = :userId AND m.status = :status ORDER BY m.scheduledDate ASC")
+    List<MaintenanceRecord> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") MaintenanceStatus status);
+
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
     long countByStatus(MaintenanceStatus status);

@@ -6,7 +6,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-218%2F218%20PASS-success.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-238%2F238%20PASS-success.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -26,6 +26,7 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 
 ### 👤 Normal User Features
 - **Garage Management:** Add, edit, view, and delete multiple vehicles (cars, motorcycles, scooters, trucks, EVs) with license plate uniqueness and category classification.
+- **Global Record Views:** Dedicated cross-vehicle central feeds for All Services (with search & cost tallies), All Fuel Logs (with volume, spend, and avg mileage), and All Maintenance Tasks (with urgency filters and one-click completion).
 - **Service History:** Log maintenance visits with garage names, parts replaced, costs, and next service due dates.
 - **Fuel Mileage Tracking:** Automatically calculates fuel economy ($\text{km/L}$) between consecutive fill-ups based on odometer progression and volume.
 - **Dynamic Maintenance Alerts:** Automated urgency categorization:
@@ -38,7 +39,7 @@ Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernat
 - **Profile Management:** Update personal information, phone number, and securely change passwords with current-password verification.
 
 ### 🛡️ System Administrator Features
-- **System Dashboard:** Global platform counters (total registered users, total vehicles, total service records, total fuel logs, total maintenance tasks).
+- **System Dashboard & Record Monitoring:** High-level platform counters (total registered users, total vehicles, total service records, total fuel logs, total maintenance tasks) and category distribution metrics without exposing private user record contents.
 - **User Governance:** Search and filter registered users by name or email; toggle account active/disabled status.
 - **Primary Admin Inviolability:** Hard security guard preventing the accidental or malicious deactivation/deletion of the primary administrator account.
 - **Category Management:** Manage standard vehicle categories (icon, name, description) with referential integrity protection (deletion blocked if vehicles are assigned).

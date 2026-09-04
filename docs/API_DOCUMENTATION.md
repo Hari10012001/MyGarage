@@ -84,15 +84,20 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 ### B. Service Records (`/api/vehicles/{vehicleId}/services`, `/api/services/{id}`)
 *Accessible by: `ROLE_NORMAL_USER`*
 
-#### 1. List Services for Vehicle
+#### 1. List All Services for User (Cross-Vehicle)
+- **Method:** `GET /api/services`
+- **Query Params:** `search` (optional)
+- **Response:** `200 OK` (list of services across all vehicles owned by user)
+
+#### 2. List Services for Single Vehicle
 - **Method:** `GET /api/vehicles/{vehicleId}/services`
 - **Response:** `200 OK` (sorted by serviceDate descending)
 
-#### 2. Get Service by ID
+#### 3. Get Service by ID
 - **Method:** `GET /api/services/{id}`
 - **Response:** `200 OK`
 
-#### 3. Create Service Record
+#### 4. Create Service Record
 - **Method:** `POST /api/vehicles/{vehicleId}/services`
 - **Body:**
   ```json
@@ -108,24 +113,28 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```
 - **Response:** `201 Created`
 
-#### 4. Update Service Record
+#### 5. Update Service Record
 - **Method:** `PUT /api/services/{id}`
 - **Response:** `200 OK`
 
-#### 5. Delete Service Record
+#### 6. Delete Service Record
 - **Method:** `DELETE /api/services/{id}`
 - **Response:** `200 OK`
 
 ---
 
-### C. Fuel Records (`/api/vehicles/{vehicleId}/fuel`, `/api/fuel/{id}`)
+### C. Fuel Records (`/api/fuel`, `/api/vehicles/{vehicleId}/fuel`, `/api/fuel/{id}`)
 *Accessible by: `ROLE_NORMAL_USER`*
 
-#### 1. List Fuel Records for Vehicle
+#### 1. List All Fuel Records for User (Cross-Vehicle)
+- **Method:** `GET /api/fuel`
+- **Response:** `200 OK` (list of fuel records across all vehicles owned by user)
+
+#### 2. List Fuel Records for Vehicle
 - **Method:** `GET /api/vehicles/{vehicleId}/fuel`
 - **Response:** `200 OK`
 
-#### 2. Create Fuel Record
+#### 3. Create Fuel Record
 - **Method:** `POST /api/vehicles/{vehicleId}/fuel`
 - **Body:**
   ```json
@@ -139,24 +148,29 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```
 - **Response:** `201 Created` *(Automatically computes total cost and estimated mileage)*
 
-#### 3. Update Fuel Record
+#### 4. Update Fuel Record
 - **Method:** `PUT /api/fuel/{id}`
 - **Response:** `200 OK`
 
-#### 4. Delete Fuel Record
+#### 5. Delete Fuel Record
 - **Method:** `DELETE /api/fuel/{id}`
 - **Response:** `200 OK`
 
 ---
 
-### D. Maintenance Tasks (`/api/vehicles/{vehicleId}/maintenance`, `/api/maintenance/{id}`)
+### D. Maintenance Tasks (`/api/maintenance`, `/api/vehicles/{vehicleId}/maintenance`, `/api/maintenance/{id}`)
 *Accessible by: `ROLE_NORMAL_USER`*
 
-#### 1. List Maintenance for Vehicle
+#### 1. List All Maintenance Tasks for User (Cross-Vehicle)
+- **Method:** `GET /api/maintenance`
+- **Query Params:** `status` (optional, e.g. OVERDUE, DUE_TODAY, UPCOMING, COMPLETED)
+- **Response:** `200 OK` (list of maintenance tasks across all vehicles owned by user)
+
+#### 2. List Maintenance for Vehicle
 - **Method:** `GET /api/vehicles/{vehicleId}/maintenance`
 - **Response:** `200 OK`
 
-#### 2. Create Maintenance Task
+#### 3. Create Maintenance Task
 - **Method:** `POST /api/vehicles/{vehicleId}/maintenance`
 - **Body:**
   ```json
@@ -169,15 +183,15 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```
 - **Response:** `201 Created` *(Status automatically set to UPCOMING, DUE_TODAY, or OVERDUE)*
 
-#### 3. Mark Task Completed
+#### 4. Mark Task Completed
 - **Method:** `PATCH /api/vehicles/{vehicleId}/maintenance/{id}/complete`
 - **Response:** `200 OK`
 
-#### 4. Update Maintenance Task
+#### 5. Update Maintenance Task
 - **Method:** `PUT /api/vehicles/{vehicleId}/maintenance/{id}`
 - **Response:** `200 OK`
 
-#### 5. Delete Maintenance Task
+#### 6. Delete Maintenance Task
 - **Method:** `DELETE /api/vehicles/{vehicleId}/maintenance/{id}`
 - **Response:** `200 OK`
 
@@ -280,3 +294,23 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 - **Create:** `POST /api/admin/categories`
 - **Update:** `PUT /api/admin/categories/{id}`
 - **Delete:** `DELETE /api/admin/categories/{id}` *(Blocked with 400 Bad Request if vehicles are assigned)*
+
+#### 5. Record Monitoring Summary
+- **Method:** `GET /api/admin/records`
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalServices": 45,
+    "totalFuelLogs": 82,
+    "totalMaintenanceTasks": 19,
+    "categories": [
+      {
+        "id": 1,
+        "name": "Sedan",
+        "description": "Passenger car",
+        "icon": "car-front",
+        "vehicleCount": 12
+      }
+    ]
+  }
+  ```

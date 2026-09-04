@@ -23,6 +23,12 @@ public class FuelApiController {
     private final FuelRecordService fuelRecordService;
     private final AuthHelper authHelper;
 
+    @GetMapping("/fuel")
+    public ResponseEntity<List<FuelRecord>> getAllFuelRecords() {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(fuelRecordService.getAllFuelForUser(userId));
+    }
+
     @GetMapping("/vehicles/{vehicleId}/fuel")
     public ResponseEntity<List<FuelRecord>> getFuelRecords(
             @PathVariable Long vehicleId,

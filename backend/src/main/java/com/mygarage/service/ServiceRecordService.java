@@ -121,6 +121,19 @@ public class ServiceRecordService {
     }
 
     @Transactional(readOnly = true)
+    public List<ServiceRecord> getAllServicesForUser(Long userId, String search) {
+        if (search != null && !search.isBlank()) {
+            return serviceRecordRepository.searchAllByUserIdAndKeyword(userId, search.trim());
+        }
+        return serviceRecordRepository.findAllByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public java.math.BigDecimal getTotalServiceCostForUser(Long userId) {
+        return serviceRecordRepository.sumCostByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
     public long countForUser(Long userId) {
         return serviceRecordRepository.countByVehicleUserUserId(userId);
     }

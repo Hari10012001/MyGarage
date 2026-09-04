@@ -143,6 +143,21 @@ public class FuelRecordService {
     }
 
     @Transactional(readOnly = true)
+    public List<FuelRecord> getAllFuelForUser(Long userId) {
+        return fuelRecordRepository.findAllByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal totalFuelQuantityForUser(Long userId) {
+        return fuelRecordRepository.sumQuantityLitresByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Double averageEstimatedMileageForUser(Long userId) {
+        return fuelRecordRepository.avgEstimatedMileageByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
     public long countForUser(Long userId) {
         return fuelRecordRepository.countByVehicleUserUserId(userId);
     }

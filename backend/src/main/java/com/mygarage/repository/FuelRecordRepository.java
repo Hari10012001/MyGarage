@@ -41,6 +41,13 @@ public interface FuelRecordRepository extends JpaRepository<FuelRecord, Long> {
     @Query("SELECT AVG(f.estimatedMileageKmpl) FROM FuelRecord f WHERE f.vehicle.user.userId = :userId AND f.estimatedMileageKmpl IS NOT NULL")
     Double avgEstimatedMileageByUserId(@Param("userId") Long userId);
 
+    // Cross-vehicle user queries
+    @Query("SELECT f FROM FuelRecord f JOIN FETCH f.vehicle v WHERE v.user.userId = :userId ORDER BY f.fuelDate DESC")
+    List<FuelRecord> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COALESCE(SUM(f.quantityLitres), 0) FROM FuelRecord f WHERE f.vehicle.user.userId = :userId")
+    java.math.BigDecimal sumQuantityLitresByUserId(@Param("userId") Long userId);
+
     long countByVehicleUserUserId(Long userId);
     long countByVehicleVehicleId(Long vehicleId);
 }

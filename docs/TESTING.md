@@ -1,8 +1,8 @@
 # TESTING & VERIFICATION REPORT — MyGarage (APPJFS19)
 
 **System ID:** APPJFS19  
-**Total Automated Tests:** **218**  
-**Pass Rate:** **100% (218/218 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
+**Total Automated Tests:** **238**  
+**Pass Rate:** **100% (238/238 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
 **Regression Status:** **`BUILD SUCCESS`**
 
 ---
@@ -23,6 +23,8 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 [Layer 5: Analytics & Governance Tests] (Dashboard, Urgency Alerts, Admin)
         ↓
 [Layer 6: Quality Control & Live Verification] (E2E Integration, Real MySQL)
+        ↓
+[Layer 7: Global Record Logs & Monitoring] (Cross-Vehicle Aggregation, Admin Monitoring)
 ```
 
 ---
@@ -31,6 +33,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 
 | Test Suite | Class Name | Tests | Failures | Errors | Skipped | Status |
 |---|---|---|---|---|---|---|
+| **Global Records & Monitoring** | `GlobalRecordsModuleTest` | 20 | 0 | 0 | 0 | **PASS** |
 | **Quality Control Suite** | `QualityControlModuleTest` | 15 | 0 | 0 | 0 | **PASS** |
 | **Admin Module** | `AdminModuleTest` | 30 | 0 | 0 | 0 | **PASS** |
 | **Dashboard & Reporting** | `DashboardModuleTest` | 27 | 0 | 0 | 0 | **PASS** |
@@ -43,13 +46,13 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 | **Maintenance Service** | `MaintenanceServiceTest` | 5 | 0 | 0 | 0 | **PASS** |
 | **Password Encoder** | `PasswordEncoderTest` | 1 | 0 | 0 | 0 | **PASS** |
 | **Application Context** | `MyGarageApplicationTests` | 1 | 0 | 0 | 0 | **PASS** |
-| **TOTAL** | | **218** | **0** | **0** | **0** | **PASS** |
+| **TOTAL** | | **238** | **0** | **0** | **0** | **PASS** |
 
 ---
 
 ## 3. Test Command Execution
 
-To execute the entire 218-test regression suite:
+To execute the entire 238-test regression suite:
 
 ```powershell
 cd backend
@@ -60,13 +63,13 @@ mvn clean test "-Dspring.profiles.active=test"
 ```
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 218, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 238, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:42 min
-[INFO] Finished at: 2026-09-03T17:57:16+05:30
+[INFO] Total time:  01:50 min
+[INFO] Finished at: 2026-09-04T10:15:30+05:30
 [INFO] ------------------------------------------------------------------------
 ```
 

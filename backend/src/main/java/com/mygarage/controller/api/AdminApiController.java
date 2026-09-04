@@ -38,6 +38,11 @@ public class AdminApiController {
         ));
     }
 
+    @GetMapping("/records")
+    public ResponseEntity<Map<String, Object>> getRecordMonitoring() {
+        return ResponseEntity.ok(dashboardService.getAdminRecordMonitoring());
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) String search) {
         return ResponseEntity.ok(userService.searchUsers(search));

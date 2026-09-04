@@ -130,4 +130,15 @@ public class DashboardService {
         // System-wide count using direct JPA count
         return maintenanceRecordRepository.countByStatus(MaintenanceStatus.OVERDUE);
     }
+
+    public java.util.Map<String, Object> getAdminRecordMonitoring() {
+        java.util.Map<String, Object> monitoring = new java.util.HashMap<>();
+        monitoring.put("totalUsers", getAdminTotalUsers());
+        monitoring.put("totalVehicles", getAdminTotalVehicles());
+        monitoring.put("totalServiceRecords", getAdminTotalServiceRecords());
+        monitoring.put("totalFuelRecords", getAdminTotalFuelRecords());
+        monitoring.put("totalMaintenanceRecords", getAdminTotalMaintenanceRecords());
+        monitoring.put("overdueMaintenanceCount", getAdminOverdueMaintenanceCount());
+        return monitoring;
+    }
 }

@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-04  
-**Current Phase:** **ALL MILESTONES (M1 THROUGH M10) 100% COMPLETE & VERIFIED**
+**Current Phase:** **MILESTONE 11 (M11) COMPLETE & FULLY VERIFIED**
 
 ---
 
@@ -34,23 +34,24 @@
 | **M6** | `e8f78a8` | Fuel Module & Mileage Calc | `FuelModuleTest` | 28 | 116 | **PASS** |
 | **M7** | `a5d9940` | Maintenance Status & Alerts | `MaintenanceModuleTest`, `MaintenanceServiceTest` | 30 | 146 | **PASS** |
 | **M8** | `26a76d2` | Dashboard & Real Analytics | `DashboardModuleTest` | 27 | 173 | **PASS** |
-| **M9** | `8a28750` | Admin Governance & System Mgmt | `AdminModuleTest` | 30 | **203** | **PASS** |
-| **M10** | `2b48ae9` | Polish, 6-Layer QC & Profile APIs | `QualityControlModuleTest` | 15 | **218** | **PASS** |
+| **M9** | `8a28750` | Admin Governance & System Mgmt | `AdminModuleTest` | 30 | 203 | **PASS** |
+| **M10** | `2b48ae9` / `5bef344` | Polish, 6-Layer QC & Profile APIs | `QualityControlModuleTest` | 15 | 218 | **PASS** |
+| **M11** | `HEAD` | Global Record Logs & Monitoring | `GlobalRecordsModuleTest` | 20 | **238** | **PASS** |
 
 ---
 
-## 3. Milestone 10 (M10) Quality Control & Finalization Matrix
+## 3. Milestone 11 (M11) Verification Matrix
 
 | Check / Requirement | Specification | Status |
 |---|---|---|
-| **Layer 1: Code Quality** | Clean 3-tier separation, proper logging, safe exception handling | **PASS** |
-| **Layer 2: Database & JPA** | 6 tables, foreign keys, cascade deletes, indexes, no N+1 | **PASS** |
-| **Layer 3: Security & RBAC** | Spring Security matcher ordering, BCrypt, session auth, CSRF, admin guard | **PASS** |
-| **Layer 4: Business Logic** | Vehicle CRUD, Fuel Mileage, Maintenance status, Garage Spend analytics | **PASS** |
-| **Layer 5: UI & REST APIs** | 20 responsive Thymeleaf pages, full REST API parity, structured error JSON | **PASS** |
-| **Layer 6: Automation & Docs**| Complete test harness, README, API Docs, Tanglish Viva Guide, Batch scripts | **PASS** |
-| **Regression Test Suite** | 218 automated tests across 12 test classes | **PASS (218/218, 0 failures, 0 errors)** |
-| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all modules and user journeys | **PASS** |
+| **Web MVC Routes** | `/services`, `/fuel`, `/maintenance`, `/admin/records` | **PASS** |
+| **REST APIs** | `GET /api/services`, `GET /api/fuel`, `GET /api/maintenance`, `GET /api/admin/records` | **PASS** |
+| **Cross-Vehicle Aggregation**| Centralized spend, volume, mileage and urgency calculations | **PASS** |
+| **Security & RBAC** | Admin isolation from user garage; Normal user blocked from admin monitoring | **PASS** |
+| **Data Isolation & CSRF** | User A cannot view or complete User B records; CSRF on complete | **PASS** |
+| **Automated Tests** | 20 dedicated tests in `GlobalRecordsModuleTest` | **PASS (20/20)** |
+| **Full Regression Suite** | 238 automated tests across 13 test classes | **PASS (238/238, 0 failures, 0 errors)** |
+| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all routes and API calls | **PASS** |
 
 ---
 
@@ -68,11 +69,12 @@
 10. [`docs/DASHBOARD_REPORTING_DESIGN.md`](docs/DASHBOARD_REPORTING_DESIGN.md) — Dashboard and financial analytics specification.
 11. [`docs/ADMIN_MODULE_DESIGN.md`](docs/ADMIN_MODULE_DESIGN.md) — Admin governance and primary admin protection specification.
 12. [`docs/M10_POLISH_AND_QC_DESIGN.md`](docs/M10_POLISH_AND_QC_DESIGN.md) — M10 polish, 6-layer QC framework, and profile API specification.
-13. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
-14. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
-15. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
-16. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
+13. [`docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md`](docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md) — M11 cross-vehicle records and monitoring specification.
+14. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
+15. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
+16. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
+17. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
 
 ---
 
-## Project Status: FINAL COMPLETE & READY FOR VIVA PRESENTATION
+## Project Status: M11 COMPLETE & READY FOR M12

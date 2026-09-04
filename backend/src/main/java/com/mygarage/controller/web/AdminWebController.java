@@ -110,4 +110,12 @@ public class AdminWebController {
         model.addAttribute("categories", categoryService.findAll());
         return "admin/statistics";
     }
+
+    @GetMapping("/records")
+    public String recordMonitoring(Model model) {
+        model.addAttribute("user", authHelper.getCurrentUser());
+        model.addAttribute("monitoring", dashboardService.getAdminRecordMonitoring());
+        model.addAttribute("categories", categoryService.findAll());
+        return "admin/records";
+    }
 }

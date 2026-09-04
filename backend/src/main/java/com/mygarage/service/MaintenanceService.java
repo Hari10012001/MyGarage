@@ -155,6 +155,19 @@ public class MaintenanceService {
         return maintenanceRecordRepository.countByVehicleUserUserId(userId);
     }
 
+    @Transactional(readOnly = true)
+    public List<MaintenanceRecord> getAllMaintenanceForUser(Long userId, MaintenanceStatus status) {
+        if (status != null) {
+            return maintenanceRecordRepository.findAllByUserIdAndStatus(userId, status);
+        }
+        return maintenanceRecordRepository.findAllByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public long countMaintenanceForUserAndStatus(Long userId, MaintenanceStatus status) {
+        return maintenanceRecordRepository.countByVehicleUserUserIdAndStatus(userId, status);
+    }
+
     /**
      * Refreshes the status of all non-completed records in the database.
      * Can be called periodically or on dashboard load.

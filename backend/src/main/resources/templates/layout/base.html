@@ -40,6 +40,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'services'} ? 'active'" th:href="@{/services}">
+                        <i class="bi bi-tools"></i> All Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'fuel'} ? 'active'" th:href="@{/fuel}">
+                        <i class="bi bi-fuel-pump"></i> All Fuel Logs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'maintenance'} ? 'active'" th:href="@{/maintenance}">
+                        <i class="bi bi-calendar-check"></i> All Maintenance
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link sidebar-link" th:classappend="${activePage == 'profile'} ? 'active'" th:href="@{/profile}">
                         <i class="bi bi-person-circle"></i> My Profile
                     </a>
@@ -61,6 +76,11 @@
                 <li class="nav-item">
                     <a class="nav-link sidebar-link" th:classappend="${activePage == 'admin-categories'} ? 'active'" th:href="@{/admin/categories}">
                         <i class="bi bi-tags"></i> Vehicle Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link sidebar-link" th:classappend="${activePage == 'admin-records'} ? 'active'" th:href="@{/admin/records}">
+                        <i class="bi bi-folder2-open"></i> Record Monitoring
                     </a>
                 </li>
                 <li class="nav-item">

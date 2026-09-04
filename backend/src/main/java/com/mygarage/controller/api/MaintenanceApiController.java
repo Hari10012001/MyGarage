@@ -23,6 +23,13 @@ public class MaintenanceApiController {
     private final MaintenanceService maintenanceService;
     private final AuthHelper authHelper;
 
+    @GetMapping("/maintenance")
+    public ResponseEntity<List<MaintenanceRecord>> getAllMaintenance(
+            @RequestParam(required = false) com.mygarage.model.enums.MaintenanceStatus status) {
+        Long userId = authHelper.getCurrentUserId();
+        return ResponseEntity.ok(maintenanceService.getAllMaintenanceForUser(userId, status));
+    }
+
     @GetMapping("/vehicles/{vehicleId}/maintenance")
     public ResponseEntity<List<MaintenanceRecord>> getMaintenance(@PathVariable Long vehicleId) {
         Long userId = authHelper.getCurrentUserId();
