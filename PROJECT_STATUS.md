@@ -53,7 +53,7 @@
 | **Data Isolation & Tampering** | User A accessing User B vehicle dossier or export strictly blocked (403) | **PASS** |
 | **Automated Tests** | 26 dedicated tests in `VehicleReportAndExportModuleTest` | **PASS (26/26)** |
 | **Full Regression Suite** | 264 automated tests across 14 test classes | **PASS (264/264, 0 failures, 0 errors)** |
-| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all 13 checks | **PASS** |
+| **Live Verification** | End-to-end Tomcat + MySQL verification passed across all 16 acceptance criteria checks | **PASS** |
 
 ---
 

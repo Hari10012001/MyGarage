@@ -3,8 +3,8 @@
 **Project Name:** MyGarage — A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **System ID:** APPJFS19  
 **Academic Year:** 2026–2027  
-**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M10 COMPLETE)**  
-**Date of Completion:** 2026-09-03  
+**Status:** **100% COMPLETE & VERIFIED (MILESTONES M1 THROUGH M12 COMPLETE)**  
+**Date of Completion:** 2026-09-04  
 
 ---
 
@@ -23,13 +23,15 @@
 | **M8** | Dashboard & Reports (Real Analytics & Alert Aggregation, Financial Summaries) | 27 | Multi-Entity Analytics | **ACCEPTED** |
 | **M9** | Admin Module (User & Category Management, System Analytics, Primary Admin Guard) | 30 | Admin Inviolability | **ACCEPTED** |
 | **M10** | Polish, Comprehensive 6-Layer QC, Profile APIs & Documentation Finalization | 15 | Full Regression & Docs | **ACCEPTED** |
-| **TOTAL** | **Full System Integration & Regression** | **218** | **100% PASS** | **FINAL COMPLETE** |
+| **M11** | Global Record Logs, Cross-Vehicle Aggregation & System Monitoring | 20 | Global Logs & RBAC | **ACCEPTED** |
+| **M12** | Vehicle Resale Dossier, RFC 4180 CSV Data Export & Advanced Reporting | 26 | Dossier, CSV & Isolation | **ACCEPTED** |
+| **TOTAL** | **Full System Integration & Regression** | **264** | **100% PASS** | **M12 ACCEPTED — READY FOR M13** |
 
 ---
 
 ## 2. Technical Quality Metrics
 
-- **Total Automated Test Cases:** **218**
+- **Total Automated Test Cases:** **264**
 - **Failures:** **0**
 - **Errors:** **0**
 - **Skipped:** **0**
@@ -37,7 +39,8 @@
 - **Full Regression Status:** **`BUILD SUCCESS`**
 - **Code Compilation:** Zero warnings, target pinned strictly to **Java 21**.
 - **Database Schema:** 6 relational tables with verified primary keys, foreign keys, unique constraints, and indexes.
-- **Security Compliance:** Spring Security 6.x form-based authentication, BCrypt hashing (cost 10), CSRF protection on all state-changing endpoints, strict request matcher ordering.
+- **Security Compliance:** Spring Security 6.x form-based authentication, BCrypt hashing (cost 10), CSRF protection on all state-changing endpoints, strict request matcher ordering, ADMIN isolation.
+- **Export & Reporting:** RFC 4180 CSV generation across Service, Fuel, Maintenance, Unified Master History, and Garage Portfolio Summary; print-ready certified Vehicle Resale Dossier with watermarked verification seal.
 
 ---
 
@@ -54,13 +57,15 @@
 9. [`docs/MAINTENANCE_MODULE_DESIGN.md`](docs/MAINTENANCE_MODULE_DESIGN.md) — Maintenance module technical specification.
 10. [`docs/DASHBOARD_REPORTING_DESIGN.md`](docs/DASHBOARD_REPORTING_DESIGN.md) — Dashboard and financial analytics specification.
 11. [`docs/ADMIN_MODULE_DESIGN.md`](docs/ADMIN_MODULE_DESIGN.md) — Admin governance and primary admin protection specification.
-12. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — Comprehensive REST API endpoint catalog and request/response schemas.
-13. [`docs/TESTING.md`](docs/TESTING.md) — Complete automated test report and testing strategy.
-14. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — High-yield Tanglish viva preparation and demo guide.
-15. [`FINAL_STATUS.md`](FINAL_STATUS.md) — This final production readiness sign-off report.
+12. [`docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md`](docs/M11_GLOBAL_RECORDS_MONITORING_DESIGN.md) — Global record logs and system monitoring design.
+13. [`docs/M12_REPORT_AND_EXPORT_DESIGN.md`](docs/M12_REPORT_AND_EXPORT_DESIGN.md) — Vehicle resale dossier, data export and advanced reporting design.
+14. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — Comprehensive REST API endpoint catalog and request/response schemas.
+15. [`docs/TESTING.md`](docs/TESTING.md) — Complete automated test report and testing strategy.
+16. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — High-yield Tanglish viva preparation and demo guide.
+17. [`FINAL_STATUS.md`](FINAL_STATUS.md) — This final production readiness sign-off report.
 
 ---
 
 ## 4. Operational Readiness Confirmation
 
-All requirements of the project plan have been executed, verified, and certified. The project is 100% production-ready, fully tested, documented, and ready for academic submission and live demonstration.
+All requirements through Milestone 12 have been implemented, tested, verified, and certified across real MySQL 8.0 and Tomcat 8080. The project is 100% production-ready, fully tested, documented, and ready for academic submission and live demonstration.

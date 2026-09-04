@@ -44,35 +44,35 @@ public class ReportWebController {
         return "report/dossier";
     }
 
-    @GetMapping("/vehicles/{vehicleId}/export/services/csv")
+    @GetMapping({"/vehicles/{vehicleId}/export/services", "/vehicles/{vehicleId}/export/services/csv"})
     public ResponseEntity<byte[]> exportServicesCsv(@PathVariable Long vehicleId) {
         User user = authHelper.getCurrentUser();
         String csv = reportService.exportVehicleServicesCsv(vehicleId, user.getUserId());
         return createCsvResponse(csv, "vehicle-" + vehicleId + "-services.csv");
     }
 
-    @GetMapping("/vehicles/{vehicleId}/export/fuel/csv")
+    @GetMapping({"/vehicles/{vehicleId}/export/fuel", "/vehicles/{vehicleId}/export/fuel/csv"})
     public ResponseEntity<byte[]> exportFuelCsv(@PathVariable Long vehicleId) {
         User user = authHelper.getCurrentUser();
         String csv = reportService.exportVehicleFuelCsv(vehicleId, user.getUserId());
         return createCsvResponse(csv, "vehicle-" + vehicleId + "-fuel.csv");
     }
 
-    @GetMapping("/vehicles/{vehicleId}/export/maintenance/csv")
+    @GetMapping({"/vehicles/{vehicleId}/export/maintenance", "/vehicles/{vehicleId}/export/maintenance/csv"})
     public ResponseEntity<byte[]> exportMaintenanceCsv(@PathVariable Long vehicleId) {
         User user = authHelper.getCurrentUser();
         String csv = reportService.exportVehicleMaintenanceCsv(vehicleId, user.getUserId());
         return createCsvResponse(csv, "vehicle-" + vehicleId + "-maintenance.csv");
     }
 
-    @GetMapping("/vehicles/{vehicleId}/export/all/csv")
+    @GetMapping({"/vehicles/{vehicleId}/export/all", "/vehicles/{vehicleId}/export/all/csv"})
     public ResponseEntity<byte[]> exportMasterHistoryCsv(@PathVariable Long vehicleId) {
         User user = authHelper.getCurrentUser();
         String csv = reportService.exportVehicleAllCsv(vehicleId, user.getUserId());
         return createCsvResponse(csv, "vehicle-" + vehicleId + "-master-history.csv");
     }
 
-    @GetMapping("/export/garage/csv")
+    @GetMapping({"/export/garage/csv", "/export/garage"})
     public ResponseEntity<byte[]> exportGarageCsv() {
         User user = authHelper.getCurrentUser();
         String csv = reportService.exportUserGarageCsv(user.getUserId());
