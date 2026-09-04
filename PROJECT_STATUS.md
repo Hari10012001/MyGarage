@@ -3,7 +3,7 @@
 **Project:** MyGarage – A Vehicle Service History, Fuel Record and Maintenance Tracking Platform  
 **Project ID:** APPJFS19  
 **Last Updated:** 2026-09-04  
-**Current Phase:** **MILESTONE 15 (M15) COMPLETE & FULLY VERIFIED**
+**Current Phase:** **PLAYWRIGHT BROWSER QC AUDIT COMPLETE — ALL 40/40 SCENARIOS PASS — READY FOR M16 PLANNING**
 
 ---
 
@@ -102,10 +102,40 @@
 16. [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 predictive maintenance forecasting, vehicle health scoring, and smart service planner specification.
 17. [`docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md`](docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md) — M15 Total Cost of Ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, and carbon ESG intelligence specification.
 18. [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API endpoint catalog and schemas.
-19. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics.
-20. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
-21. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
+19. [`docs/TESTING.md`](docs/TESTING.md) — Automated testing strategy and regression metrics (Layers 1–12).
+20. [`docs/PLAYWRIGHT_QC_M1_M15.md`](docs/PLAYWRIGHT_QC_M1_M15.md) — Playwright browser QC audit report (40 scenarios, M1–M15).
+21. [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Tanglish viva preparation and demo guide.
+22. [`FINAL_STATUS.md`](FINAL_STATUS.md) — Final production readiness sign-off report.
 
 ---
 
-## Project Status: M15 COMPLETE & FULLY VERIFIED
+## 6. Playwright Browser QC Audit (M1–M15) — Post-M15 Quality Gate
+
+| Metric | Result |
+|---|---|
+| **Suite** | `e2e/playwright_qc_suite.py` |
+| **Engine** | Playwright 1.49+ / Headless Chromium |
+| **Target** | http://localhost:8080 (live MySQL 8.0 + Spring Boot/Tomcat) |
+| **Scenarios** | 40 |
+| **Passed** | **40** |
+| **Failed** | **0** |
+| **Console Errors** | **0** |
+| **Network Failures (unexpected)** | **0** |
+| **Verdict** | **CLEAN PASS** |
+
+### Defects Found & Fixed During QC
+| # | Component | Defect | Fix |
+|---|---|---|---|
+| D1 | `fuel/index.html` | CSS not loading: missing `th:` prefix on `href` | Added `th:href` |
+| D2 | S15 | Wrong form field name `odometerReading` | Corrected to `odometerAtService` |
+| D3 | S24 | CSV test used wrong URL patterns | Fixed to match `ReportWebController` routes |
+| D4 | S28 | Schedule modal submit not visible | Added modal trigger click before submit |
+| D5 | S29 | Disclaimer assertion too literal | Updated to match actual TCO disclaimer text |
+| D6 | S34 | Admin toggle test used wrong approach | Rewrote as browser-context form POST |
+| D7 | S40 | Admin session leaked across test scenarios | Explicit User A re-authentication |
+| D8 | Suite | Console listener per-scenario inflation | Refactored to single page-level listener |
+| D9 | Suite | All HTTP 4xx counted as network failures | Added context-aware status-code filter |
+
+---
+
+## Project Status: PLAYWRIGHT QC COMPLETE — READY FOR M16 PLANNING

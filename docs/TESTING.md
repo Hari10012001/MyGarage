@@ -33,6 +33,8 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 [Layer 10: Predictive Maintenance & Vehicle Health Scoring] (Velocity Engine, Repeating PMS, VHI Clamping, Expense Horizons)
         â†“
 [Layer 11: TCO Lifecycle Modeling & Economic Replacement Advisory] (Declining-Balance Depreciation, RRVR, Salvage Floor, ESG Footprint)
+        â†“
+[Layer 12: Playwright Browser QC Audit] (40 E2E Browser Scenarios, Headless Chromium, Real MySQL+Tomcat, RBAC+CSRF+Responsive)
 ```
 
 ---
@@ -111,3 +113,40 @@ mvn clean test "-Dspring.profiles.active=test"
 | Economic Replacement Advisory | Trailing 12-month RRVR ratio triggers optimal vs replacement status | Verified | **PASS** |
 | Direct Tailpipe Carbon ESG | Calculates fuel combustion GHG footprint with EV zero emissions | Verified | **PASS** |
 | TCO RBAC & Isolation | ADMIN blocked from personal TCO (403); cross-user tampering blocked | Verified | **PASS** |
+---
+
+## 5. Layer 12: Playwright Browser QC Audit (M1–M15)
+
+**Suite:** `e2e/playwright_qc_suite.py` | **Report:** `e2e/reports/qc_audit_summary.json`
+**Runtime:** Headless Chromium (Playwright) | **Target:** http://localhost:8080 (live MySQL 8.0 + Tomcat)
+**Full Report:** See `docs/PLAYWRIGHT_QC_M1_M15.md`
+
+| Metric | Result |
+|---|---|
+| Total Scenarios | 40 |
+| Passed | **40** |
+| Failed | **0** |
+| Console Errors | **0** |
+| Network Failures (unexpected) | **0** |
+| Verdict | **CLEAN PASS** |
+
+### Playwright QC Scenario Groups
+
+| Group | Scenarios | Coverage |
+|---|---|---|
+| Application Shell | S01–S02 | Startup, unauthenticated redirect |
+| Authentication | S03–S06, S40 | Registration, login, invalid creds, logout + session invalidation |
+| Dashboard & Navigation | S07–S08 | Empty state, sidebar/header all links |
+| Vehicle CRUD | S09–S14 | Form validation, creation, uniqueness, detail, edit |
+| Service Records | S15–S16 | Create service record, global feed |
+| Fuel Records | S17–S18 | Create two fill-ups, dynamic km/L, global feed |
+| Maintenance | S19–S21 | Create upcoming/overdue, urgency badge, one-click complete |
+| Reports & Exports | S22–S24 | Reports hub, resale dossier, RFC 4180 CSV (5 endpoints) |
+| Comparative Analytics (M13) | S25 | Side-by-side comparison matrix |
+| Predictive Maintenance (M14) | S26–S28 | VHI forecast, service planner, milestone conversion + duplicate guard |
+| TCO & Asset Advisory (M15) | S29–S30 | TCO dashboard, garage TCO overview |
+| Profile | S31 | Profile view + update |
+| Security – Cross-User | S32 | URL tampering for vehicles, dossiers, forecasts, TCO ? 400/403/404 |
+| Admin Governance | S33–S37 | Admin auth, user mgmt + inviolability, categories, monitoring, privacy |
+| Responsive Layout | S38 | 4 viewports (Mobile?Desktop) across 4 pages |
+| Boundary/404 | S39 | Unknown routes handled cleanly |
