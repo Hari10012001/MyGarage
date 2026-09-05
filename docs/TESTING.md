@@ -226,14 +226,15 @@ mvn clean test "-Dspring.profiles.active=test"
   - Discrete completed calendar months window $N = \min(12, \max(1, \text{monthsActive}))$, excluding partial current month.
   - Explicit zero-spend months materialization with $0.00.
   - Deterministic historical deduplication (same vehicle, $\le 2$ calendar days, same normalized subsystem, $|m.\text{cost} - s.\text{cost}| < 0.01$ or missing cost resolution).
-  - Expense Volatility & Risk Index (EVRI 0–100) coefficient of variation scaling and mathematical boundary guards ($\bar{B} == 0 \implies 0.0$, $N == 1 \implies 0.0$).
+  - Expense Volatility & Risk Index (EVRI 0–100) coefficient of variation scaling with approved tiers (`STABLE`, `MODERATE`, `ELEVATED`, `VOLATILE`) and mathematical boundary guards ($\bar{B} == 0 \implies 0.0$, $N == 1 \implies 0.0$).
+  - Non-persistent Data Confidence Rating (`HIGH`, `MEDIUM`, `LOW`, `BASELINE_ONLY`).
   - 12-month forward cash-flow forecasting combining 4-tier fuel fallback hierarchy and predictive wear intervals.
   - Direct reuse of M14 `PredictiveMaintenanceService` without duplicate wear engines.
   - Future obligation identity deduplication via `NormalizedSubsystem + NormalizedScopeCode`.
   - Authoritative maintenance benchmark costs and category fuel benchmark assumptions.
-  - Recommended Liquidity Reserve advisory buffer formula.
+  - Recommended Liquidity Buffer advisory formula: $L_{\text{rec}} = \max(\$250, \max(\text{historicalPeakSingleSpend}, \bar{B} \times 1.5) \times (1 + \text{EVRI}/100) \times \text{AgeFactor})$.
   - Garage fleet fiscal matrix rollup, fleet vehicle rankings, and consolidated cash-flow calendar.
-  - Chronological odometer anomaly handling (`ROLLBACK_DETECTED`, `STATIONARY_USAGE`).
+  - Chronological odometer anomaly handling (`ROLLBACK_DETECTED`, `ZERO_DELTA`).
   - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
 
 

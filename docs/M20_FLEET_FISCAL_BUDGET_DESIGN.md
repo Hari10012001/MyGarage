@@ -14,11 +14,15 @@ While prior milestones deliver predictive maintenance wear dates (M14), reliabil
 Milestone 20 introduces the **Vehicle Operational Budgeting, Predictive Cash-Flow Forecast & Maintenance Expense Burn-Rate Engine**:
 - **Discrete Completed Calendar Window**: Analyzes historical spend across $N$ full completed calendar months ($N = \min(12, \max(1, \text{monthsActive}))$, excluding the current partial month) and explicitly materializes zero-spend months with $0.00.
 - **Deterministic Historical Event Deduplication**: Prevents double-counting when completed service records and maintenance records represent the same physical service event (matching same vehicle, $\le 2$ calendar days apart, mandatory identical normalized subsystem, and cost difference $< \$0.01$ or missing-cost resolution).
-- **Expense Volatility & Risk Index (EVRI, 0–100)**: Evaluates monthly burn variation via the coefficient of variation ($\text{CV} = s / \bar{B}$), scaled to a 0–100 index with mathematical boundary guards ($\bar{B} == 0 \implies 0.0$; $N == 1 \implies 0.0$ with `LOW` confidence).
+- **Expense Volatility & Risk Index (EVRI, 0–100)**: Evaluates monthly burn variation via the coefficient of variation ($\text{CV} = s / \bar{B}$), scaled to a 0–100 index with mathematical boundary guards ($\bar{B} == 0 \implies 0.0$; $N == 1 \implies 0.0$ with `LOW` confidence) and four standardized tiers: `STABLE`, `MODERATE`, `ELEVATED`, and `VOLATILE`.
 - **12-Month Forward Cash-Flow Projections**: Forecasts exact monthly operational outlays across discrete calendar months $[M+1, M+12]$ combining 4-tier fuel forecast fallbacks and predictive maintenance obligations.
 - **Shared Analytical Dependency**: Reuses M14 `PredictiveMaintenanceService` directly for velocity and wear projections without duplicate wear engines.
 - **Deterministic Future Obligation Deduplication**: Deduplicates maintenance obligations in the same calendar month using `NormalizedSubsystem + NormalizedScopeCode`.
-- **Recommended Liquidity Reserve Advisory**: Calculates necessary working capital buffer to absorb peak cash-flow crunches and expense variance.
+- **Recommended Liquidity Buffer Advisory**: Calculates necessary working capital buffer using the approved multi-factor formula:
+  \[
+  L_{\text{rec}} = \max\left(\$250.00, \max(\text{historicalPeakSingleSpend}, \bar{B} \times 1.5) \times \left(1 + \frac{\text{EVRI}}{100}\right) \times \text{AgeFactor}\right)
+  \]
+- **Evidence-Based Data Confidence Rating**: Non-persistent data confidence classification (`HIGH`, `MEDIUM`, `LOW`, `BASELINE_ONLY`) reflecting the volume and continuity of underlying records.
 - **Garage Fleet Budget Matrix**: Aggregates fleet-wide monthly cash flows, identifies highest burn vehicles, and summarizes 12-month consolidated liquidity requirements.
 
 ---
@@ -88,21 +92,21 @@ The EVRI quantifies financial predictability of monthly operational cash-flows o
    \]
 3. **Coefficient of Variation ($\text{CV}$)**:
    \[
-   \text{CV} = \frac{s}{\bar{B}}
+   \text{CV} = \frac{s}{\max(1.0, \bar{B})}
    \]
 4. **EVRI Calculation**:
    \[
-   \text{EVRI} = \min\left(100.0, \frac{\text{CV}}{1.5} \times 100.0\right)
+   \text{EVRI} = \min\left(100.0, \max\left(0.0, \text{CV} \times 50.0\right)\right)
    \]
 
-### 4.1 Boundary Guards & Tiers
-- **Zero-Mean Guard**: If $\bar{B} == 0.0 \implies \text{EVRI} = 0.0$.
-- **Single-Month Guard**: If $N == 1 \implies s = 0.0, \text{EVRI} = 0.0$, and confidence tier is clamped to `LOW`.
-- **Volatility Tiers**:
-  - `LOW` (0.00 – 29.99): Highly predictable operational cash-flows.
-  - `MODERATE` (30.00 – 59.99): Typical operational fluctuations.
-  - `HIGH` (60.00 – 84.99): Significant expense spikes requiring attention.
-  - `CRITICAL` (85.00 – 100.00): Extreme variance and cash-flow unpredictability.
+### 4.1 Boundary Guards & Standard Tiers
+- **Zero-Mean Guard**: If $\bar{B} == 0.0 \implies \text{EVRI} = 0.0$ (`STABLE`).
+- **Single-Month Guard**: If $N == 1 \implies s = 0.0, \text{EVRI} = 0.0$ (`STABLE`), and confidence tier is clamped to `LOW`.
+- **Approved Volatility Tiers**:
+  - `STABLE` ($0.0 \le \text{EVRI} < 25.0$): Highly predictable operational cash-flows.
+  - `MODERATE` ($25.0 \le \text{EVRI} < 50.0$): Typical operational fluctuations.
+  - `ELEVATED` ($50.0 \le \text{EVRI} < 75.0$): Significant expense spikes requiring attention.
+  - `VOLATILE` ($75.0 \le \text{EVRI} \le 100.0$): Extreme variance and cash-flow unpredictability.
 
 ---
 
@@ -111,16 +115,15 @@ The EVRI quantifies financial predictability of monthly operational cash-flows o
 Forward cash-flows are generated for 12 discrete calendar months $[M+1, M+12]$:
 
 ### 5.1 Fuel Cost Forecast Hierarchy
-1. **Tier 1 (Empirical 90-Day Velocity)**: If $\ge 2$ fuel records exist within the past 90 days, use the rolling 90-day per-km fuel expenditure rate multiplied by projected monthly mileage.
-2. **Tier 2 (Empirical Lifetime Velocity)**: If $\ge 2$ fuel records exist overall, use the lifetime per-km fuel expenditure rate multiplied by projected monthly mileage.
-3. **Tier 3 (Category Benchmark Assumption)**: If daily velocity is available but fuel data is sparse, apply application-level fuel cost benchmarks:
-   - Car: $\$89.29$ / month (based on 1,000 km/mo @ 7.0 L/100km, $1.25/L)
-   - SUV: $\$122.73$ / month (1,000 km/mo @ 9.5 L/100km, $1.25/L)
-   - Motorcycle / Bike: $\$16.45$ / month (1,000 km/mo @ 3.5 L/100km, $1.25/L)
-   - Scooter: $\$14.29$ / month (1,000 km/mo @ 2.5 L/100km, $1.25/L)
-   - Electric (EV): $\$30.00$ / month (1,000 km/mo @ 16 kWh/100km, $0.18/kWh)
+1. **Tier 1 (Empirical 90-Day Velocity - `TRAILING_90_DAYS`)**: If $\ge 2$ fuel records exist within the past 90 days, use the rolling 90-day per-km fuel expenditure rate multiplied by projected monthly mileage.
+2. **Tier 2 (Empirical Lifetime Velocity - `LIFETIME_AVERAGE`)**: If $\ge 1$ fuel records exist overall, use the lifetime per-km fuel expenditure rate multiplied by projected monthly mileage.
+3. **Tier 3 (Category Benchmark Assumption - `CATEGORY_BENCHMARK`)**: If 0 fuel records exist, apply application-level category monthly fuel benchmarks:
+   - Car / Sedan: $\$89.29$ / month
+   - SUV / Truck: $\$122.73$ / month
+   - Motorcycle / Bike: $\$16.45$ / month
+   - Scooter: $\$14.29$ / month
+   - Electric (EV): $\$30.00$ / month
    - Default: $\$100.00$ / month
-4. **Tier 4 (Static Category Default)**: If mileage velocity is zero or unavailable, apply the static monthly category benchmark.
 
 ### 5.2 Authoritative Immutable Maintenance Benchmark Costs
 | Subsystem Domain | Benchmark Cost |
@@ -141,22 +144,37 @@ Explicit scheduled maintenance records take precedence over consumable wear proj
 
 ---
 
-## 6. Recommended Liquidity Reserve Advisory
+## 6. Recommended Liquidity Buffer Advisory
 
-To ensure fleet financial resilience against operational volatility and unforeseen repair spikes:
+To ensure fleet financial resilience against operational volatility and unforeseen repair spikes, the engine calculates the recommended liquidity buffer:
 \[
-\text{RecommendedLiquidityReserve} = \text{PeakHistoricalMonthlySpend} + (1.5 \times s) + \text{UrgentNearTerm30DaySpend}
+L_{\text{rec}} = \max\left(\$250.00, \max(\text{historicalPeakSingleSpend}, \bar{B} \times 1.5) \times \left(1 + \frac{\text{EVRI}}{100}\right) \times \text{AgeFactor}\right)
 \]
 Where:
-- $\text{PeakHistoricalMonthlySpend}$ is the highest single-month expense in the historical window.
-- $s$ is the historical sample standard deviation.
-- $\text{UrgentNearTerm30DaySpend}$ represents maintenance tasks due or overdue within the next 30 days.
+- $L_{\text{floor}} = \$250.00$ (minimum reserve floor).
+- $\text{historicalPeakSingleSpend}$ is the highest single deduplicated historical expenditure event.
+- $\bar{B}$ is the rolling monthly burn rate.
+- $\text{AgeFactor} = 1.0 + \min\left(0.50, \frac{\max(0, \text{CurrentYear} - \text{VehicleYear})}{20.0}\right)$.
+- $\text{EVRIFactor} = 1.0 + \left(\frac{\text{EVRI}}{100.0}\right)$.
 
 ---
 
-## 7. Garage Fleet Budget Matrix
+## 7. Data Confidence & Evidence Metadata
+
+Non-persistent data confidence communicates forecast reliability based on historical record volume and integrity:
+- **`confidenceRating`**:
+  - `HIGH`: $\ge 6$ completed months evaluated, $\ge 3$ fuel records, and valid distance metric available.
+  - `MEDIUM`: $\ge 3$ completed months evaluated and $\ge 1$ fuel record.
+  - `LOW`: $< 3$ completed months evaluated or single record.
+  - `BASELINE_ONLY`: 0 historical records logged for the vehicle.
+- **`fuelEstimationTier`**: `TRAILING_90_DAYS`, `LIFETIME_AVERAGE`, or `CATEGORY_BENCHMARK`.
+- **`odometerStatus`**: `NORMAL`, `ROLLBACK_DETECTED`, `ZERO_DELTA`, or `NO_DATA`.
+
+---
+
+## 8. Garage Fleet Budget Matrix
 
 The fleet matrix aggregates all active vehicles owned by the user:
 - **Consolidated Monthly Cash Flows**: Sum of projected fuel and maintenance costs across the entire fleet for each of the next 12 months.
-- **Fleet Allocation Metrics**: Total projected 12-month spend, average monthly fleet burn, fleet-wide liquidity reserve requirements, and risk distribution.
-- **Fleet Vehicle Ranking**: Ranked by total 12-month budget descending to identify highest-cost assets.
+- **Fleet Allocation Metrics**: Total portfolio monthly burn, total 12-month annual projected outlay, and consolidated recommended fleet liquidity buffer.
+- **Fleet Vehicle Ranking**: Ranked with individual monthly burn, annual projection, liquidity buffer, budget share percentage, and EVRI volatility tier.

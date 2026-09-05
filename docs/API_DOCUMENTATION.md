@@ -622,162 +622,8 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
 
----
-
-### L. Fuel Efficiency Intelligence & Historical Price Analytics APIs (M16)
-
-#### 1. Vehicle Fuel Analytics Report
-- **Method:** `GET /api/vehicles/{id}/fuel-analytics`
-- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
-- **Response:** `200 OK`
-  ```json
-  {
-    "vehicleId": 1,
-    "plateNumber": "TN01-AB-1234",
-    "make": "Honda",
-    "model": "City",
-    "fuelType": "PETROL",
-    "currentOdometer": 15000,
-    "lifetimeFuelCost": 12500.00,
-    "lifetimeLiters": 125.00,
-    "lifetimeAvgMileageKmpl": 14.8,
-    "bestMileageKmpl": 17.5,
-    "worstMileageKmpl": 12.2,
-    "mileageStdDev": 1.45,
-    "rolling30DayAvgKmpl": 15.2,
-    "rolling90DayAvgKmpl": 14.9,
-    "monthlyBreakdowns": [
-      {
-        "yearMonth": "2025-08",
-        "totalVolumeLiters": 45.00,
-        "totalCost": 4500.00,
-        "fillUpCount": 2,
-        "averagePricePerLiter": 100.00
-      }
-    ]
-  }
-  ```
-- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
-
-#### 2. Garage-Wide Fleet Fuel Intelligence
-- **Method:** `GET /api/analytics/garage-fuel`
-- **Access:** `ROLE_NORMAL_USER`
-- **Response:** `200 OK`
-  ```json
-  {
-    "garageTotalFuelCost": 25000.00,
-    "garageTotalLiters": 250.00,
-    "garageAverageKmpl": 15.1,
-    "vehicles": [
-      {
-        "vehicleId": 1,
-        "plateNumber": "TN01-AB-1234",
-        "make": "Honda",
-        "model": "City",
-        "averageKmpl": 14.8,
-        "efficiencyBadge": "ECO_CHAMPION"
-      }
-    ]
-  }
-  ```
 
 ---
-
-### M. Vehicle Reliability Engineering, Component Failure Risk & Chronic Defect APIs (M17)
-
-#### 1. Vehicle Reliability Engineering Report
-- **Method:** `GET /api/vehicles/{id}/reliability`
-- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
-- **Response:** `200 OK`
-  ```json
-  {
-    "vehicleId": 1,
-    "plateNumber": "TN07-RELIAB01",
-    "make": "Toyota",
-    "model": "Innova",
-    "year": 2020,
-    "currentOdometer": 45000,
-    "vriScore": 92,
-    "reliabilityGrade": "EXCELLENT",
-    "totalServiceVisits": 4,
-    "totalServiceSpend": 18500.00,
-    "mdbfKm": 11250.0,
-    "mtbsDays": 120.5,
-    "unscheduledBreakdownCount": 1,
-    "unscheduledBreakdownSpend": 4500.00,
-    "correctiveServiceRatio": 24.3,
-    "routineMaintenanceCount": 3,
-    "routineMaintenanceSpend": 14000.00,
-    "subsystemBreakdowns": [
-      {
-        "subsystem": "BRAKING_TIRES",
-        "displayName": "Braking & Tires",
-        "recordCount": 1,
-        "totalCost": 4500.00,
-        "spendPercentage": 24.3,
-        "lastRepairDate": "2025-08-15"
-      },
-      {
-        "subsystem": "POWERTRAIN_ENGINE",
-        "displayName": "Powertrain & Engine",
-        "recordCount": 3,
-        "totalCost": 14000.00,
-        "spendPercentage": 75.7,
-        "lastRepairDate": "2025-06-10"
-      }
-    ],
-    "chronicDefectAlerts": [],
-    "workshops": [
-      {
-        "workshopName": "Toyota Authorized Dealership",
-        "visitCount": 3,
-        "totalSpend": 14000.00,
-        "averageCostPerVisit": 4666.67,
-        "meanReturnIntervalDays": 130.0
-      }
-    ],
-    "serviceAccelerationStatus": "STABLE",
-    "disclaimer": "Reliability classification, subsystem identification, chronic-defect detection, and VRI are deterministic rule-based analytical models derived from existing service and maintenance records, not OEM diagnostic or sensor-confirmed failure data."
-  }
-  ```
-- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
-
-#### 2. Garage-Wide Fleet Reliability Matrix
-- **Method:** `GET /api/analytics/garage-reliability`
-- **Access:** `ROLE_NORMAL_USER`
-- **Response:** `200 OK`
-  ```json
-  {
-    "averageGarageVri": 88,
-    "fleetReliabilityGrade": "GOOD",
-    "fleetMdbfKm": 9800.5,
-    "fleetTotalBreakdownSpend": 12000.00,
-    "fleetTotalServiceVisits": 8,
-    "mostReliableVehicle": {
-      "vehicleId": 1,
-      "plateNumber": "TN07-RELIAB01",
-      "make": "Toyota",
-      "model": "Innova",
-      "year": 2020,
-      "vriScore": 92,
-      "reliabilityGrade": "EXCELLENT",
-      "totalVisits": 4,
-      "mdbfKm": 11250.0,
-      "breakdownRisk": "LOW"
-    },
-    "highestRiskVehicle": {
-      "vehicleId": 2,
-      "plateNumber": "TN07-OTHER99",
-      "make": "Hyundai",
-      "model": "Verna",
-      "year": 2021,
-      "vriScore": 65,
-      "reliabilityGrade": "MODERATE",
-      "totalVisits": 4,
-- **Error Responses:** `403 Forbidden` (admin access)
-
----
-
 ### L. Fuel Efficiency Intelligence & Historical Price Analytics APIs (M16)
 
 #### 1. Vehicle Fuel Analytics Report
@@ -1052,7 +898,7 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 
 ---
 
-### T. Milestone 19 — Vehicle Maintenance Deficit Index & Deferred Backlog Debt Engine (`/api/vehicles/{id}/maintenance-deficit`, `/api/analytics/garage-maintenance-deficit`)
+### O. Milestone 19 — Vehicle Maintenance Deficit Index & Deferred Backlog Debt Engine (`/api/vehicles/{id}/maintenance-deficit`, `/api/analytics/garage-maintenance-deficit`)
 *Accessible by: Authenticated Vehicle Owner (`ROLE_NORMAL_USER`)*  
 *Two-Tier Security: Cross-user access returns `403 Forbidden`; `ROLE_ADMIN` returns `403 Forbidden`*
 
@@ -1180,7 +1026,7 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 
 ---
 
-### U. Milestone 20 — Vehicle Operational Budgeting, Predictive Cash-Flow Forecast & Maintenance Expense Burn-Rate Engine (`/api/vehicles/{id}/fiscal-budget`, `/api/analytics/garage-fiscal-budget`)
+### P. Milestone 20 — Vehicle Operational Budgeting, Predictive Cash-Flow Forecast & Maintenance Expense Burn-Rate Engine (`/api/vehicles/{id}/fiscal-budget`, `/api/analytics/garage-fiscal-budget`)
 *Accessible by: Authenticated Vehicle Owner (`ROLE_NORMAL_USER`)*  
 *Two-Tier Security: Cross-user access returns `403 Forbidden`; `ROLE_ADMIN` returns `403 Forbidden`*
 
@@ -1191,62 +1037,54 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   ```json
   {
     "vehicleId": 1,
+    "vehicleName": "2021 Toyota Camry",
     "plateNumber": "TN09-FISCAL01",
-    "make": "Toyota",
-    "model": "Camry",
-    "year": 2021,
-    "currentOdometer": 30000,
-    "categoryName": "Car",
-    "averageMonthlyBurn": 250.00,
-    "peakMonthlySpend": 450.00,
-    "lowestMonthlySpend": 100.00,
-    "expenseVolatilityIndex": 42.50,
+    "currency": "$",
+    "rollingMonthlyBurnRate": 250.00,
+    "dailyBurnRate": 8.21,
+    "distanceBurnRatePer100Km": 15.50,
+    "fuelBurnRate": 100.00,
+    "maintenanceBurnRate": 95.00,
+    "repairBurnRate": 55.00,
+    "expenditureVolatilityIndex": 32.5,
     "volatilityTier": "MODERATE",
-    "recommendedLiquidityReserve": 620.00,
-    "projected12MonthTotalBudget": 2800.00,
-    "projected12MonthFuelBudget": 1200.00,
-    "projected12MonthMaintenanceBudget": 1600.00,
-    "cashFlowProjections": [
+    "recommendedLiquidityBuffer": 375.00,
+    "historicalPeakSingleSpend": 450.00,
+    "projectedNextMonthExpense": 195.00,
+    "projectedNextQuarterExpense": 585.00,
+    "projectedNextYearExpense": 2340.00,
+    "historicalSpendTrend": [
       {
-        "monthIndex": 1,
-        "yearMonth": "2026-10",
-        "monthName": "October 2026",
-        "projectedFuelSpend": 100.00,
-        "projectedMaintenanceSpend": 95.00,
-        "totalProjectedSpend": 195.00,
-        "isPeakSpendMonth": false,
-        "scheduledEvents": [
-          {
-            "eventKey": "ENGINE_OIL_AND_FILTER:ROUTINE",
-            "title": "Engine Oil & Filter Scheduled Service",
-            "subsystem": "ENGINE_OIL_AND_FILTER",
-            "projectedCost": 95.00,
-            "originType": "EXPLICIT_MAINTENANCE"
-          }
+        "month": "Aug 2026",
+        "fuelSpend": 100.00,
+        "repairSpend": 55.00,
+        "maintenanceSpend": 95.00,
+        "totalSpend": 250.00
+      }
+    ],
+    "twelveMonthForecast": [
+      {
+        "month": "Oct 2026",
+        "projectedFuelExpense": 100.00,
+        "projectedMaintenanceExpense": 95.00,
+        "totalProjectedExpense": 195.00,
+        "peakExpenseMonth": false,
+        "scheduledMilestones": [
+          "Engine Oil & Filter Service ($95.00)"
         ]
       }
     ],
-    "historicalSpends": [
-      {
-        "yearMonth": "2026-08",
-        "fuelSpend": 120.00,
-        "maintenanceSpend": 0.00,
-        "serviceSpend": 0.00,
-        "totalSpend": 120.00
-      }
-    ],
     "dataConfidence": {
-      "confidenceTier": "HIGH",
-      "completedMonthsEvaluated": 12,
-      "fuelRecordsCount": 15,
-      "maintenanceRecordsCount": 4,
-      "serviceRecordsCount": 3,
-      "distanceIntensityTier": "NORMAL_COMMUTE",
-      "hasOdometerAnomaly": false
+      "confidenceRating": "HIGH",
+      "fuelRecordCount": 15,
+      "serviceRecordCount": 3,
+      "maintenanceRecordCount": 4,
+      "historyMonthsEvaluated": 12,
+      "fuelEstimationTier": "TRAILING_90_DAYS",
+      "distanceMetricAvailable": true,
+      "odometerStatus": "NORMAL"
     },
-    "budgetaryAdvisory": "Operational burn rate is moderate. Maintain liquidity reserve of $620.00 to buffer against scheduled maintenance peaks.",
-    "analyticalDisclaimer": "Operational cash-flow forecasts, expense volatility indices, and liquidity reserve recommendations are MyGarage analytical modeling heuristics...",
-    "benchmarkAssumptionsNote": "Benchmark maintenance costs and fuel rates are authoritative configurable model assumptions..."
+    "disclaimer": "The Operational Budget, Burn Rate, EVRI, and Liquidity Buffer are deterministic analytical heuristics calculated by MyGarage based on recorded vehicle history, benchmark maintenance intervals, and category fuel models. They do not constitute certified accounting, financial planning, or mechanical guarantees."
   }
   ```
 - **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
@@ -1257,43 +1095,35 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
 - **Response:** `200 OK`
   ```json
   {
-    "totalFleetProjected12MonthBudget": 5600.00,
-    "fleetAverageMonthlyBurn": 466.67,
-    "fleetRecommendedLiquidityReserve": 1240.00,
-    "totalVehiclesEvaluated": 2,
-    "lowVolatilityVehiclesCount": 1,
-    "moderateVolatilityVehiclesCount": 1,
-    "highVolatilityVehiclesCount": 0,
-    "criticalVolatilityVehiclesCount": 0,
-    "vehicleBudgets": [
+    "userId": 1,
+    "totalVehicles": 2,
+    "currency": "$",
+    "totalPortfolioMonthlyBurn": 500.00,
+    "totalPortfolioAnnualProjected": 4680.00,
+    "totalRecommendedFleetBuffer": 750.00,
+    "vehicleBreakdown": [
       {
         "vehicleId": 1,
+        "vehicleName": "2021 Toyota Camry",
         "plateNumber": "TN09-FISCAL01",
-        "make": "Toyota",
-        "model": "Camry",
-        "categoryName": "Car",
-        "averageMonthlyBurn": 250.00,
-        "evriScore": 42.50,
-        "volatilityTier": "MODERATE",
-        "recommendedLiquidityReserve": 620.00,
-        "projected12MonthTotal": 2800.00,
-        "confidenceTier": "HIGH"
+        "monthlyBurnRate": 250.00,
+        "annualProjectedExpense": 2340.00,
+        "recommendedLiquidityBuffer": 375.00,
+        "budgetSharePercentage": 50.0,
+        "volatilityTier": "MODERATE"
       }
     ],
-    "consolidatedFleetCashFlow": [
+    "consolidatedFleetForecast": [
       {
-        "monthIndex": 1,
-        "yearMonth": "2026-10",
-        "monthName": "October 2026",
-        "totalFleetFuelSpend": 200.00,
-        "totalFleetMaintenanceSpend": 190.00,
-        "totalFleetProjectedSpend": 390.00
+        "month": "Oct 2026",
+        "projectedFuelExpense": 200.00,
+        "projectedMaintenanceExpense": 190.00,
+        "totalProjectedExpense": 390.00,
+        "peakExpenseMonth": false,
+        "scheduledMilestones": []
       }
     ],
-    "portfolioAdvisory": "Fleet cash flows exhibit moderate predictable variance. Consolidated recommended liquidity reserve is $1,240.00 across 2 active assets.",
-    "analyticalDisclaimer": "Operational cash-flow forecasts, expense volatility indices, and liquidity reserve recommendations are MyGarage analytical modeling heuristics...",
-    "benchmarkAssumptionsNote": "Benchmark maintenance costs and fuel rates are authoritative configurable model assumptions..."
+    "disclaimer": "The Operational Budget, Burn Rate, EVRI, and Liquidity Buffer are deterministic analytical heuristics calculated by MyGarage based on recorded vehicle history, benchmark maintenance intervals, and category fuel models. They do not constitute certified accounting, financial planning, or mechanical guarantees."
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
-
