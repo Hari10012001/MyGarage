@@ -208,7 +208,7 @@ public class WorkshopAnalyticsServiceImpl implements WorkshopAnalyticsService {
                 totalUniqueWorkshops, concentrationTier.toLowerCase().replace('_', ' '), fleetHhi));
 
         if ("None (No Tier-1 Preferred Workshop Qualified)".equals(topPreferredWorkshopName)) {
-            insights.add("No workshop currently meets Tier-1 Preferred standards (requires >= 2 visits, VRP <= 10.0%, WPI <= 135.0, WVS >= 80.0).");
+            insights.add("No workshop currently meets Tier-1 Preferred standards (requires >= 3 visits, VRP <= 10.0%, WPI <= 105.0).");
         } else {
             insights.add(String.format("Top preferred provider '%s' qualified under Tier-1 benchmark standards.", topPreferredWorkshopName));
         }
@@ -330,10 +330,10 @@ public class WorkshopAnalyticsServiceImpl implements WorkshopAnalyticsService {
                         .divide(BigDecimal.valueOf(totalVisits), 1, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO.setScale(1, RoundingMode.HALF_UP);
 
-        boolean isPreliminaryData = totalVisits < 2;
+        boolean isPreliminaryData = totalVisits < 3;
 
         // 3. Workshop Value Score (WVS)
-        // WVS = max(0, min(100, 100 - (WPI - 100) * 0.35 - (VRP * 0.65)))
+        // WVS = clamp(100 - (WPI - 100) * 0.35 - (VRP * 0.65), 0, 100)
         double wpiDiff = wpi.doubleValue() - 100.0;
         double vrpVal = vrp.doubleValue();
         double wvsRaw = 100.0 - (wpiDiff * 0.35) - (vrpVal * 0.65);
@@ -341,16 +341,20 @@ public class WorkshopAnalyticsServiceImpl implements WorkshopAnalyticsService {
         BigDecimal workshopValueScore = BigDecimal.valueOf(wvsClamped).setScale(1, RoundingMode.HALF_UP);
 
         // 4. Strict Deterministic 5-Stage Tier Precedence
+        // Rule 1: visits < 3 → TIER_3_EVALUATING
+        // Rule 2: VRP > 25 → TIER_5_CAUTION_HIGH_REWORK
+        // Rule 3: VRP <= 25 AND WPI > 125 → TIER_4_CAUTION_EXPENSIVE
+        // Rule 4: WPI <= 105 AND VRP <= 10 → TIER_1_PREFERRED
+        // Rule 5: otherwise → TIER_2_APPROVED
         String valueTier;
-        if (totalVisits < 2) {
+        if (totalVisits < 3) {
             valueTier = "TIER_3_EVALUATING"; // Rule 1: Insufficient Sample
         } else if (vrp.compareTo(new BigDecimal("25.0")) > 0) {
             valueTier = "TIER_5_CAUTION_HIGH_REWORK"; // Rule 2: Defect Risk Trumps Cost
-        } else if (wpi.compareTo(new BigDecimal("135.0")) > 0) {
+        } else if (wpi.compareTo(new BigDecimal("125.0")) > 0) {
             valueTier = "TIER_4_CAUTION_EXPENSIVE"; // Rule 3: Premium Cost Outlier
-        } else if (vrp.compareTo(new BigDecimal("10.0")) <= 0 &&
-                   workshopValueScore.compareTo(new BigDecimal("80.0")) >= 0 &&
-                   wpi.compareTo(new BigDecimal("135.0")) <= 0) {
+        } else if (wpi.compareTo(new BigDecimal("105.0")) <= 0 &&
+                   vrp.compareTo(new BigDecimal("10.0")) <= 0) {
             valueTier = "TIER_1_PREFERRED"; // Rule 4: Preferred Value Partner
         } else {
             valueTier = "TIER_2_APPROVED"; // Rule 5: Standard Market Provider
@@ -362,10 +366,10 @@ public class WorkshopAnalyticsServiceImpl implements WorkshopAnalyticsService {
         // Recommendation
         String recommendation;
         switch (valueTier) {
-            case "TIER_1_PREFERRED" -> recommendation = "Highly Recommended: Demonstrates superior quality control and competitive market pricing.";
+            case "TIER_1_PREFERRED" -> recommendation = "Highly Recommended: Demonstrates superior quality control and competitive market pricing (WPI <= 105.0, VRP <= 10.0%).";
             case "TIER_2_APPROVED" -> recommendation = "Approved Provider: Reliable standard market service center aligned with expected cost benchmarks.";
-            case "TIER_3_EVALUATING" -> recommendation = "Preliminary Assessment: Insufficient service visit history to establish a verified quality rating (minimum 2 visits required).";
-            case "TIER_4_CAUTION_EXPENSIVE" -> recommendation = "Cost Caution: Premium pricing detected significantly above reference benchmarks (>35% markup). Review itemized labor/part estimates.";
+            case "TIER_3_EVALUATING" -> recommendation = "Preliminary Assessment: Insufficient service visit history to establish a verified quality rating (minimum 3 visits required).";
+            case "TIER_4_CAUTION_EXPENSIVE" -> recommendation = "Cost Caution: Premium pricing detected significantly above reference benchmarks (>25% markup). Review itemized labor/part estimates.";
             case "TIER_5_CAUTION_HIGH_REWORK" -> recommendation = "Quality Caution: Elevated rework probability (>25%) detected within 60 days of service. Inspect mechanical workmanship standards.";
             default -> recommendation = "Standard automotive service center.";
         }

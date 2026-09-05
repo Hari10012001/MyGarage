@@ -458,16 +458,17 @@ public class WorkshopAnalyticsModuleTest {
         assertThat(report.reworkEvents().get(0).kmBetweenServices()).isNull();
     }
 
-    // 23. Tier Precedence Rule 1: Single visit assigns TIER_3_EVALUATING
+    // 23. Tier Precedence Rule 1: Visits < 3 assigns TIER_3_EVALUATING
     @Test
-    @DisplayName("23. Rule 1: Single visit assigns TIER_3_EVALUATING even with high WPI")
+    @DisplayName("23. Rule 1: Visits < 3 assigns TIER_3_EVALUATING even with high WPI")
     void testTierPrecedence_Rule1_SingleVisitEvaluating() {
         LocalDate today = LocalDate.now();
-        // High cost oil change: 190 on 95 benchmark -> WPI = 200.0%
-        createService(userVehicle, "Single Shot", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(5), 10000);
+        // 2 visits with high cost: 190 on 95 benchmark -> WPI = 200.0%
+        createService(userVehicle, "Short History", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(10), 10000);
+        createService(userVehicle, "Short History", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(5), 11000);
 
-        WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "SINGLE_SHOT");
-        assertThat(report.totalVisits()).isEqualTo(1);
+        WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "SHORT_HISTORY");
+        assertThat(report.totalVisits()).isEqualTo(2);
         assertThat(report.valueTier()).isEqualTo("TIER_3_EVALUATING");
         assertThat(report.isPreliminaryData()).isTrue();
     }
@@ -477,27 +478,30 @@ public class WorkshopAnalyticsModuleTest {
     @DisplayName("24. Rule 2: VRP > 25% trumps WPI (assigns TIER_5_CAUTION_HIGH_REWORK)")
     void testTierPrecedence_Rule2_HighReworkTrumpsHighWpi() {
         LocalDate today = LocalDate.now();
-        // 2 visits, 1 rework event -> VRP = 50.0%
+        // 3 visits, 1 rework event -> VRP = 33.3% > 25.0%
         // WPI is also high (150.0)
         createService(userVehicle, "Dangerous Shop", "Brake Overhaul", "Pads and rotors", new BigDecimal("270.00"), today.minusDays(30), 15000);
         createService(userVehicle, "Dangerous Shop", "Brake Defect Repair", "Fix broken brake line leak", new BigDecimal("270.00"), today.minusDays(10), 15500);
+        createService(userVehicle, "Dangerous Shop", "Brake Inspection", "Routine check", new BigDecimal("270.00"), today.minusDays(2), 16000);
 
         WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "DANGEROUS_SHOP");
-        assertThat(report.totalVisits()).isEqualTo(2);
-        assertThat(report.vendorReworkProbability()).isEqualByComparingTo("50.0");
+        assertThat(report.totalVisits()).isEqualTo(3);
+        assertThat(report.vendorReworkProbability()).isEqualByComparingTo("33.3");
         assertThat(report.valueTier()).isEqualTo("TIER_5_CAUTION_HIGH_REWORK");
     }
 
     // 25. Tier Precedence Rule 3: Expensive tier
     @Test
-    @DisplayName("25. Rule 3: WPI > 135 with low rework assigns TIER_4_CAUTION_EXPENSIVE")
+    @DisplayName("25. Rule 3: WPI > 125 with low rework assigns TIER_4_CAUTION_EXPENSIVE")
     void testTierPrecedence_Rule3_ExpensiveTier() {
         LocalDate today = LocalDate.now();
-        // 2 oil changes at $142.50 on $95 benchmark -> WPI = 150.0%, 0 rework
+        // 3 oil changes at $142.50 on $95 benchmark -> WPI = 150.0%, 0 rework
         createService(userVehicle, "Luxury Dealer", "Oil Change", "Routine synthetic oil", new BigDecimal("142.50"), today.minusDays(80), 20000);
+        createService(userVehicle, "Luxury Dealer", "Oil Change", "Routine synthetic oil", new BigDecimal("142.50"), today.minusDays(40), 23000);
         createService(userVehicle, "Luxury Dealer", "Oil Change", "Routine synthetic oil", new BigDecimal("142.50"), today.minusDays(10), 25000);
 
         WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "LUXURY_DEALER");
+        assertThat(report.totalVisits()).isEqualTo(3);
         assertThat(report.workshopPriceIndex()).isEqualByComparingTo("150.0");
         assertThat(report.vendorReworkProbability()).isEqualByComparingTo("0.0");
         assertThat(report.valueTier()).isEqualTo("TIER_4_CAUTION_EXPENSIVE");
@@ -505,14 +509,16 @@ public class WorkshopAnalyticsModuleTest {
 
     // 26. Tier Precedence Rule 4: Preferred tier
     @Test
-    @DisplayName("26. Rule 4: Low rework (<=10%), WPI <= 135, WVS >= 80 assigns TIER_1_PREFERRED")
+    @DisplayName("26. Rule 4: Low rework (<=10%), WPI <= 105 assigns TIER_1_PREFERRED")
     void testTierPrecedence_Rule4_PreferredTier() {
         LocalDate today = LocalDate.now();
-        // 2 visits at exact benchmark ($95 oil), 0 rework -> WPI = 100.0, VRP = 0.0%, WVS = 100.0
+        // 3 visits at exact benchmark ($95 oil), 0 rework -> WPI = 100.0, VRP = 0.0%, WVS = 100.0
         createService(userVehicle, "Golden Auto", "Oil Change", "Routine oil", new BigDecimal("95.00"), today.minusDays(100), 20000);
+        createService(userVehicle, "Golden Auto", "Oil Change", "Routine oil", new BigDecimal("95.00"), today.minusDays(60), 23000);
         createService(userVehicle, "Golden Auto", "Oil Change", "Routine oil", new BigDecimal("95.00"), today.minusDays(20), 26000);
 
         WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "GOLDEN_AUTO");
+        assertThat(report.totalVisits()).isEqualTo(3);
         assertThat(report.workshopPriceIndex()).isEqualByComparingTo("100.0");
         assertThat(report.vendorReworkProbability()).isEqualByComparingTo("0.0");
         assertThat(report.workshopValueScore()).isEqualByComparingTo("100.0");
@@ -581,12 +587,14 @@ public class WorkshopAnalyticsModuleTest {
     @DisplayName("30. Multi-stage tie breaking sorts Tier -> WVS -> Visits -> Spend -> Key")
     void testMultiStageTieBreaking_DeterministicSorting() {
         LocalDate today = LocalDate.now();
-        // Shop 1: Preferred, WVS 100.0
+        // Shop 1: Preferred (3 visits, WPI 100.0, VRP 0.0%) -> Tier 1
         createService(userVehicle, "AAA Preferred", "Oil", "Routine oil", new BigDecimal("95.00"), today.minusDays(50), 10000);
-        createService(userVehicle, "AAA Preferred", "Oil", "Routine oil", new BigDecimal("95.00"), today.minusDays(20), 15000);
+        createService(userVehicle, "AAA Preferred", "Oil", "Routine oil", new BigDecimal("95.00"), today.minusDays(30), 12000);
+        createService(userVehicle, "AAA Preferred", "Oil", "Routine oil", new BigDecimal("95.00"), today.minusDays(10), 15000);
 
-        // Shop 2: Approved, WVS 90.0
-        createService(userVehicle, "BBB Approved", "Brakes", "Pads", new BigDecimal("200.00"), today.minusDays(40), 12000);
+        // Shop 2: Approved (3 visits, WPI 111.1% on Brakes, VRP 0.0%) -> Tier 2
+        createService(userVehicle, "BBB Approved", "Brakes", "Pads", new BigDecimal("200.00"), today.minusDays(50), 10000);
+        createService(userVehicle, "BBB Approved", "Brakes", "Pads", new BigDecimal("200.00"), today.minusDays(30), 12000);
         createService(userVehicle, "BBB Approved", "Brakes", "Pads", new BigDecimal("200.00"), today.minusDays(10), 16000);
 
         GarageWorkshopEcosystemMatrixDTO matrix = workshopAnalyticsService.getGarageWorkshopEcosystem(testUser);
