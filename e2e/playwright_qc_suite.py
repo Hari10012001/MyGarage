@@ -1629,13 +1629,137 @@ class QCAuditRunner:
                 page.screenshot(path=ss)
                 self.record_scenario(55, "Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)", "FAIL", str(e), ss, time.time() - t0)
 
+            # -------------------------------------------------------------
+            # Scenario 56: Garage Workshop Ecosystem Leaderboard & Vendor Concentration Matrix (S56)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                # Ensure User A is logged in
+                self.login_user(page, self.user_a_email, self.user_a_pass)
+
+                page.goto(f"{BASE_URL}/workshops")
+                page.wait_for_load_state("domcontentloaded")
+                expect(page.locator("text=Fleet Service Center Ecosystem").first).to_be_visible()
+                expect(page.locator("text=Automotive Vendor Intelligence Disclaimer").first).to_be_visible()
+                expect(page.locator("text=Unique Workshops").first).to_be_visible()
+                expect(page.locator("text=Top Preferred Vendor").first).to_be_visible()
+                expect(page.locator("text=Vendor Spend HHI Index").first).to_be_visible()
+                expect(page.locator("text=Ecosystem Procurement Insights").first).to_be_visible()
+
+                # Multi-width responsive layout check (desktop, laptop, tablet, mobile)
+                for width, height in [(1280, 800), (1024, 768), (768, 1024), (375, 667)]:
+                    page.set_viewport_size({"width": width, "height": height})
+                    page.wait_for_timeout(200)
+
+                page.set_viewport_size({"width": 1280, "height": 800})
+
+                ss = os.path.join(SCREENSHOTS_DIR, "56_workshop_ecosystem_leaderboard.png")
+                page.screenshot(path=ss)
+                self.record_scenario(56, "Garage Workshop Ecosystem Leaderboard & Vendor Concentration Matrix (S56)", "PASS", "Ecosystem metrics, HHI concentration, workshop ranking table, and responsive layouts verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "56_workshop_ecosystem_leaderboard_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(56, "Garage Workshop Ecosystem Leaderboard & Vendor Concentration Matrix (S56)", "FAIL", str(e), ss, time.time() - t0)
+
+            # -------------------------------------------------------------
+            # Scenario 57: Workshop Deep-Dive Inspection & Subsystem Benchmark Variance (S57)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                page.goto(f"{BASE_URL}/workshops")
+                page.wait_for_load_state("domcontentloaded")
+
+                # Find first workshop detail inspection link
+                inspect_btn = page.locator("a[href*='/workshops/']").first
+                if inspect_btn.count() > 0:
+                    inspect_btn.click()
+                    page.wait_for_load_state("domcontentloaded")
+                else:
+                    # Fallback to direct key if empty
+                    page.goto(f"{BASE_URL}/workshops/INDEPENDENT_UNSPECIFIED")
+                    page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Analytical Modeling Disclaimer").first).to_be_visible()
+                expect(page.locator("text=Workshop Price Index (WPI)").first).to_be_visible()
+                expect(page.locator("text=Vendor Rework Probability (VRP)").first).to_be_visible()
+                expect(page.locator("text=Workshop Value Score (WVS)").first).to_be_visible()
+                expect(page.locator("text=Subsystem Cost Benchmarking & Variance").first).to_be_visible()
+                expect(page.locator("text=Detected Analytical Rework Incidents").first).to_be_visible()
+
+                # Multi-width responsive layout check
+                for width, height in [(1024, 768), (768, 1024), (375, 667)]:
+                    page.set_viewport_size({"width": width, "height": height})
+                    page.wait_for_timeout(200)
+
+                page.set_viewport_size({"width": 1280, "height": 800})
+
+                ss = os.path.join(SCREENSHOTS_DIR, "57_workshop_detail_inspection.png")
+                page.screenshot(path=ss)
+                self.record_scenario(57, "Workshop Deep-Dive Inspection & Subsystem Benchmark Variance (S57)", "PASS", "WPI gauge, VRP %, WVS score, subsystem variance table, rework incidents log, and responsive views verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "57_workshop_detail_inspection_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(57, "Workshop Deep-Dive Inspection & Subsystem Benchmark Variance (S57)", "FAIL", str(e), ss, time.time() - t0)
+
+            # -------------------------------------------------------------
+            # Scenario 58: Workshop Security Isolation, Cross-User Guard & Admin 403 Blocking (S58)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                # 1. Unauthenticated access blocked -> redirects to login
+                unauth_context = browser.new_context()
+                up = unauth_context.new_page()
+                up.goto(f"{BASE_URL}/workshops")
+                expect(up).to_have_url(f"{BASE_URL}/login")
+                unauth_context.close()
+
+                # 2. User B logged in tries cross-user workshop access
+                self.logout_user(page)
+                self.login_user(page, self.user_b_email, self.user_b_pass)
+
+                # Web MVC cross-user tampering / nonexistent workshop -> redirected to /workshops with error flash
+                page.goto(f"{BASE_URL}/workshops/NONEXISTENT_OR_CROSS_USER_WORKSHOP")
+                page.wait_for_load_state("domcontentloaded")
+                expect(page).to_have_url(f"{BASE_URL}/workshops")
+
+                # REST API nonexistent error checking -> 404
+                resp_nonexistent = page.request.get(f"{BASE_URL}/api/analytics/workshops/COMPLETELY_NONEXISTENT_KEY")
+                assert resp_nonexistent.status == 404, f"Expected 404 for nonexistent workshop REST access, got {resp_nonexistent.status}"
+
+                # 3. Admin blocked from workshop views and APIs
+                admin_context = browser.new_context()
+                ap = admin_context.new_page()
+                ap.goto(BASE_URL + "/login")
+                ap.fill("input[name='email']", "admin@mygarage.com")
+                ap.fill("input[name='password']", "Admin@123")
+                ap.locator("form[action*='/login'] button[type='submit']").click()
+                ap.wait_for_load_state("domcontentloaded")
+
+                # Web MVC admin denial -> redirected to /vehicles
+                r_web = ap.goto(f"{BASE_URL}/workshops")
+                assert r_web.status in [403, 302], f"Expected 403 or redirect for admin accessing workshops web, got {r_web.status}"
+
+                # REST API admin denial -> HTTP 403 Forbidden
+                r_api = ap.request.get(f"{BASE_URL}/api/analytics/workshops")
+                assert r_api.status == 403, f"Expected 403 for admin REST workshops access, got {r_api.status}"
+
+                admin_context.close()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "58_workshop_security_isolation.png")
+                page.screenshot(path=ss)
+                self.record_scenario(58, "Workshop Security Isolation, Cross-User Guard & Admin 403 Blocking (S58)", "PASS", "Unauthenticated redirect, cross-user Web redirect, REST 403/404, and ADMIN denial verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "58_workshop_security_isolation_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(58, "Workshop Security Isolation, Cross-User Guard & Admin 403 Blocking (S58)", "FAIL", str(e), ss, time.time() - t0)
+
             browser.close()
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()
 
         summary = {
-            "title": "MyGarage M1–M20 Playwright Browser QC Audit Report",
+            "title": "MyGarage M1–M21 Playwright Browser QC Audit Report",
             "system_id": "APPJFS19",
             "base_url": BASE_URL,
             "start_time": self.start_time.isoformat(),

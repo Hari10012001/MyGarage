@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${report.workshopName + ' - Service Intelligence - MyGarage'}">Service Center Intelligence - MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        .tier-preferred { background-color: #198754; color: white; }
+        .tier-approved { background-color: #0d6efd; color: white; }
+        .tier-evaluating { background-color: #6c757d; color: white; }
+        .tier-expensive { background-color: #ffc107; color: #000; }
+        .tier-rework { background-color: #dc3545; color: white; }
+        .card-metric { border-radius: 0.75rem; transition: transform 0.15s ease-in-out; }
+        .card-metric:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/workshops}"><i class="bi bi-shop"></i> Service Centers</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fiscal-budget}"><i class="bi bi-wallet2"></i> Fiscal Budget</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/maintenance-deficit}"><i class="bi bi-exclamation-triangle-fill"></i> Deficit Matrix</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/dispatch}"><i class="bi bi-geo-alt-fill"></i> Trip Dispatch</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+                <a th:href="@{/workshops}" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back to Service Centers</a>
+                <span class="fw-semibold" th:text="${report.workshopName}">Workshop Intelligence</span>
+            </div>
+            <div class="ms-auto">
+                <i class="bi bi-person-circle me-2 text-primary"></i>
+                <span class="small text-muted" th:text="${user?.fullName}">User</span>
+            </div>
+        </nav>
+
+        <div class="page-content px-4 pb-4">
+
+            <!-- Disclaimer Alert -->
+            <div class="alert alert-warning border-0 shadow-sm mt-3 mb-4 d-flex align-items-start gap-3">
+                <i class="bi bi-shield-exclamation fs-4 text-warning flex-shrink-0 mt-1"></i>
+                <div class="small">
+                    <strong>Analytical Modeling Disclaimer:</strong>
+                    <span th:text="${report.disclaimer}"></span>
+                </div>
+            </div>
+
+            <!-- Workshop Hero Banner -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-primary text-white rounded-3 fs-3"><i class="bi bi-tools"></i></div>
+                            <div>
+                                <h4 class="fw-bold mb-1" th:text="${report.workshopName}">Workshop Name</h4>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="badge" th:classappend="${report.valueTier == 'TIER_1_PREFERRED' ? 'tier-preferred' : (report.valueTier == 'TIER_2_APPROVED' ? 'tier-approved' : (report.valueTier == 'TIER_3_EVALUATING' ? 'tier-evaluating' : (report.valueTier == 'TIER_4_CAUTION_EXPENSIVE' ? 'tier-expensive' : 'tier-rework')))}"
+                                          th:text="${#strings.replace(report.valueTier, '_', ' ')}">Tier</span>
+                                    <span class="badge bg-light text-dark border" th:text="${report.totalVisits + ' Service Visits'}">0 Visits</span>
+                                    <span th:if="${report.firstVisitDate != null}" class="badge bg-light text-muted border"
+                                          th:text="'Active: ' + ${report.firstVisitDate} + ' to ' + ${report.mostRecentVisitDate}">Date Range</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small text-muted mb-1">Total Lifetime Spend</div>
+                            <span class="display-6 fw-bold text-primary" th:text="'$' + ${report.totalSpend}">$0.00</span>
+                            <div class="small text-muted" th:text="'Avg. $' + ${report.averageVisitCost} + ' / visit'">Avg $0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metric Gauges -->
+            <div class="row g-3 mb-4">
+                <!-- WPI Card -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Workshop Price Index (WPI)</span>
+                                <span class="badge" th:classappend="${report.pricingCategory == 'COMPETITIVE_DISCOUNT' ? 'bg-success-subtle text-success' : (report.pricingCategory == 'MARKET_PARITY' ? 'bg-primary-subtle text-primary' : (report.pricingCategory == 'PREMIUM_PRICING' ? 'bg-warning-subtle text-warning' : 'bg-danger-subtle text-danger'))}"
+                                      th:text="${#strings.replace(report.pricingCategory, '_', ' ')}">Parity</span>
+                            </div>
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <h2 class="fw-bold text-dark mb-0" th:text="${report.workshopPriceIndex}">100.0</h2>
+                                <span class="text-muted small">/ 100.0 Benchmark Parity</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar" th:classappend="${report.workshopPriceIndex.doubleValue() > 135.0 ? 'bg-danger' : (report.workshopPriceIndex.doubleValue() > 115.0 ? 'bg-warning' : 'bg-success')}"
+                                     th:style="'width: ' + ${#numbers.formatDecimal(report.workshopPriceIndex.doubleValue() > 150 ? 100 : (report.workshopPriceIndex.doubleValue() / 1.5), 1, 0)} + '%'"></div>
+                            </div>
+                            <div class="small text-muted">Reference baseline is 100.0 (MyGarage standard rates).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VRP % Card -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Vendor Rework Probability (VRP)</span>
+                                <span th:if="${report.isPreliminaryData}" class="badge bg-light text-muted border">Preliminary Data</span>
+                                <span th:if="${not report.isPreliminaryData}" class="badge bg-secondary-subtle text-secondary">Verified Sample</span>
+                            </div>
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <h2 class="fw-bold mb-0" th:classappend="${report.vendorReworkProbability.doubleValue() > 25.0 ? 'text-danger' : (report.vendorReworkProbability.doubleValue() > 10.0 ? 'text-warning' : 'text-success')}"
+                                    th:text="${report.vendorReworkProbability + '%'}">0.0%</h2>
+                                <span class="text-muted small" th:text="${report.reworkEventCount + ' rework incidents'}">0 rework</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar" th:classappend="${report.vendorReworkProbability.doubleValue() > 25.0 ? 'bg-danger' : (report.vendorReworkProbability.doubleValue() > 10.0 ? 'bg-warning' : 'bg-success')}"
+                                     th:style="'width: ' + ${report.vendorReworkProbability} + '%'"></div>
+                            </div>
+                            <div class="small text-muted">Premature failure/corrective repair within 60 days.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workshop Value Score Card -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Workshop Value Score (WVS)</span>
+                                <span class="badge bg-primary-subtle text-primary">Composite Score</span>
+                            </div>
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <h2 class="fw-bold text-dark mb-0" th:text="${report.workshopValueScore}">90.0</h2>
+                                <span class="text-muted small">/ 100.0</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar bg-primary" th:style="'width: ' + ${report.workshopValueScore} + '%'"></div>
+                            </div>
+                            <div class="small text-muted">Composite index balancing pricing and workmanship quality.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendation Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-clipboard-check-fill text-primary me-2"></i>Procurement Assessment & Routing Advice</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-2 bg-light rounded-circle fs-4 text-primary"><i class="bi bi-info-circle"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark" th:text="${report.recommendation}">Recommendation text</div>
+                            <div class="small text-muted">Based on multi-tier deterministic precedence analysis.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subsystem Benchmarking Table -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-bar-chart-steps text-primary me-2"></i>Subsystem Cost Benchmarking & Variance</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light small text-muted text-uppercase">
+                                <tr>
+                                    <th class="ps-4">Subsystem Domain</th>
+                                    <th>Visits</th>
+                                    <th>Total Spend</th>
+                                    <th>Workshop Avg. Cost</th>
+                                    <th>Reference Benchmark</th>
+                                    <th class="text-end pe-4">Cost Variance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="sub : ${report.subsystemMetrics}">
+                                    <td class="ps-4 fw-bold text-dark" th:text="${sub.displayName}">Engine Oil & Filter</td>
+                                    <td th:text="${sub.serviceCount}">1</td>
+                                    <td class="fw-semibold text-dark" th:text="'$' + ${sub.totalSpend}">$0.00</td>
+                                    <td class="fw-bold text-primary" th:text="'$' + ${sub.averageCost}">$0.00</td>
+                                    <td class="text-muted" th:text="'$' + ${sub.referenceBenchmarkCost}">$95.00</td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge" th:classappend="${sub.costVariancePercentage.doubleValue() > 20.0 ? 'bg-danger-subtle text-danger' : (sub.costVariancePercentage.doubleValue() < -10.0 ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary')}"
+                                              th:text="${(sub.costVariancePercentage.doubleValue() > 0 ? '+' : '') + sub.costVariancePercentage + '%'}">0.0%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detected Rework Incidents Table -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history text-danger me-2"></i>Detected Analytical Rework Incidents (60-Day Window)</h6>
+                    <span class="badge bg-light text-dark border" th:text="${report.reworkEvents.size() + ' Incidents Logged'}">0</span>
+                </div>
+                <div class="card-body p-0">
+                    <div th:if="${#lists.isEmpty(report.reworkEvents)}" class="p-4 text-center text-muted">
+                        <i class="bi bi-shield-check text-success fs-2 d-block mb-2"></i>
+                        <span class="fw-semibold">Zero Rework Incidents Detected</span>
+                        <div class="small text-muted">No premature component failures or corrective repairs followed within 60 days.</div>
+                    </div>
+
+                    <div th:if="${not #lists.isEmpty(report.reworkEvents)}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light small text-muted text-uppercase">
+                                <tr>
+                                    <th class="ps-4">Vehicle</th>
+                                    <th>Original Service</th>
+                                    <th>Rework Service</th>
+                                    <th>Days Elapsed</th>
+                                    <th>Km Traveled</th>
+                                    <th class="text-end pe-4">Rework Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="evt : ${report.reworkEvents}">
+                                    <td class="ps-4 fw-bold text-dark" th:text="${evt.vehiclePlate}">Plate</td>
+                                    <td>
+                                        <div class="fw-semibold text-dark" th:text="${evt.originalServiceType}">Service Type</div>
+                                        <div class="small text-muted" th:text="${evt.originalServiceDate}">Date</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-danger" th:text="${evt.reworkServiceType}">Rework Type</div>
+                                        <div class="small text-muted" th:text="${evt.reworkServiceDate}">Date</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning-subtle text-dark" th:text="${evt.daysBetweenServices + ' days'}">0 days</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${evt.kmBetweenServices != null}" th:text="${evt.kmBetweenServices + ' km'}">0 km</span>
+                                        <span th:if="${evt.kmBetweenServices == null}" class="text-muted small">Bypassed / Rollback</span>
+                                    </td>
+                                    <td class="text-end pe-4 fw-bold text-dark" th:text="'$' + ${evt.reworkCost}">$0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicles Serviced Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-car-front-fill text-primary me-2"></i>Fleet Vehicles Serviced by This Workshop</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span th:each="plate : ${report.vehiclesServiced}" class="badge bg-light text-dark border px-3 py-2 fs-6">
+                            <i class="bi bi-car-front me-1 text-primary"></i>
+                            <span th:text="${plate}">Plate Number</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+</script>
+</body>
+</html>

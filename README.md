@@ -6,8 +6,8 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-471%2F471%20PASS-success.svg)]()
-[![Playwright QC](https://img.shields.io/badge/Playwright%20QC-55%2F55%20PASS-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-503%2F503%20PASS-success.svg)]()
+[![Playwright QC](https://img.shields.io/badge/Playwright%20QC-58%2F58%20PASS-brightgreen.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -19,13 +19,14 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, fuel efficiency intelligence & price analytics, vehicle reliability engineering (VRI, MDBF, subsystem failure taxonomy, chronic defect detection), vehicle operational readiness, journey risk simulation & fleet mission dispatch, vehicle maintenance deficit index (MDI), deferred backlog debt & compound neglect simulation, vehicle operational budgeting, predictive cash-flow forecasting & expense burn-rate modeling, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, fuel efficiency intelligence & price analytics, vehicle reliability engineering (VRI, MDBF, subsystem failure taxonomy, chronic defect detection), vehicle operational readiness, journey risk simulation & fleet mission dispatch, vehicle maintenance deficit index (MDI), deferred backlog debt & compound neglect simulation, vehicle operational budgeting, predictive cash-flow forecasting & expense burn-rate modeling, service center ecosystem benchmarking, vendor cost intelligence & rework proxy tracking, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
 ## 2. Key Architecture & Features
 
 ### 👤 Normal User Features
+- **Service Center Ecosystem, Workshop Benchmarking & Vendor Cost Intelligence Engine (`/workshops`, `/workshops/{encodedGarageName}`):** Location-preserving garage name normalizer, canonical display name resolution, authoritative shared eligible-cost policy (null/negative excluded, zero spend included), Workshop Price Index (WPI) benchmarking across peer services, Vendor Rework Probability (VRP %) analytical proxy ($\le 60$ calendar days and $\le 3,000$ km on same vehicle for corrective/same-subsystem repeat visits with planned-routine recurrence suppression and odometer rollback fallback), Workshop Value Score (WVS 0–100), deterministic 5-stage workshop tiering (`TIER_1_PREFERRED`, `TIER_2_APPROVED`, `TIER_3_EVALUATING`, `TIER_4_CAUTION_EXPENSIVE`, `TIER_5_CAUTION_HIGH_REWORK`), garage Herfindahl-Hirschman Index (HHI 0–10,000) vendor concentration metrics, and fleet ecosystem dashboard with interactive workshop inspection.
 - **Vehicle Operational Budgeting, Predictive Cash-Flow Forecast & Expense Burn-Rate Engine (`/vehicles/{id}/fiscal-budget`, `/vehicles/fiscal-budget`):** Discrete completed calendar window ($N = \min(12, \max(1, \text{monthsActive}))$, excluding partial current month), explicit zero-spend months materialization ($0.00), deterministic historical service/maintenance deduplication ($\le 2$ calendar days, same normalized subsystem, cost difference $< \$0.01$ or missing cost resolution), Expense Volatility & Risk Index (EVRI 0–100) with standard tiers (`STABLE`, `MODERATE`, `ELEVATED`, `VOLATILE`) and boundary guards ($\bar{B} == 0 \implies 0.0$, $N == 1 \implies 0.0$), evidence-based data confidence rating (`HIGH`, `MEDIUM`, `LOW`, `BASELINE_ONLY`), 12-month forward cash-flow forecasting combining 4-tier fuel fallback hierarchy and predictive wear intervals, recommended liquidity buffer advisory ($L_{\text{rec}} = \max(\$250, \max(\text{historicalPeakSingleSpend}, \bar{B} \times 1.5) \times (1 + \text{EVRI}/100) \times \text{AgeFactor})$), and fleet-wide budget matrix rollup.
 - **Vehicle Maintenance Deficit Index (MDI), Deferred Backlog Debt & Compound Neglect Engine (`/vehicles/{id}/maintenance-deficit`, `/vehicles/maintenance-deficit`):** Quantifies accrued deferred maintenance liabilities as an asset health ratio (MDI %), models compound cascade multipliers on neglected repairs (up to 5.5x for engine oil and 3.2x for brakes), calculates multi-factor Risk Mitigation Efficiency (RME) incorporating days overdue and subsystem criticality, prioritizes backlog recovery roadmaps via deterministic 4-stage tie-breaking, and aggregates garage-wide fleet debt matrices.
 - **Vehicle Operational Readiness, Journey Risk & Fleet Mission Dispatch Engine (`/vehicles/{id}/readiness`, `/vehicles/dispatch`):** Interactive road-trip simulator evaluating multi-factor Trip Readiness Index (TRI 0–100%), mid-journey maintenance interval breach detection, consumable reserve margins (Engine Oil: 10k km, Brakes: 20k km, Coolant: 40k km, Tires: 30k km), regime-adjusted fuel consumption (Highway, Mixed, City, Mountain/Severe), tank cruising range, fuel stop staging, dynamic pre-trip safety checklist, and garage fleet mission dispatch selection.
@@ -205,14 +206,15 @@ erDiagram
 
 ## 6. Comprehensive Verification Summary
  
-- **Total Automated Test Cases:** **338**
-- **Test Results:** **338 Passed, 0 Failed, 0 Errors, 0 Skipped**
+- **Total Automated Test Cases:** **503**
+- **Test Results:** **503 Passed, 0 Failed, 0 Errors, 0 Skipped**
 - **Full Regression Status:** **`BUILD SUCCESS`**
+- **End-to-End Browser QC:** **58 Scenarios Passed, 0 Failures, 0 Console Errors**
 
 ```
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 338, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 503, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -230,6 +232,7 @@ erDiagram
 - [`docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md`](docs/M13_VEHICLE_COMPARISON_ANALYTICS_DESIGN.md) — M13 Comparative Analytics & Fleet Efficiency Benchmarking Specification
 - [`docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md`](docs/M14_PREDICTIVE_MAINTENANCE_PLANNER_DESIGN.md) — M14 Predictive Maintenance Forecasting, Vehicle Health Scoring & Smart Service Planner Specification
 - [`docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md`](docs/M15_TCO_LIFECYCLE_VALUATION_DESIGN.md) — M15 Total Cost of Ownership (TCO) Lifecycle Modeling, Depreciation Valuation & Economic Replacement Advisory Specification
+- [`docs/M21_WORKSHOP_VENDOR_INTELLIGENCE_DESIGN.md`](docs/M21_WORKSHOP_VENDOR_INTELLIGENCE_DESIGN.md) — M21 Service Center Ecosystem, Workshop Benchmarking & Labor/Parts Cost Intelligence Engine Specification
 - [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md) — REST API Endpoints & Request/Response Contracts
 - [`docs/TESTING.md`](docs/TESTING.md) — Testing Strategy, Automated Test Suites & Regression Verification
 - [`docs/STUDENT_GUIDE_TANGLISH.md`](docs/STUDENT_GUIDE_TANGLISH.md) — Viva Preparation Guide in Tanglish

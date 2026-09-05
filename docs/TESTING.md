@@ -237,4 +237,30 @@ mvn clean test "-Dspring.profiles.active=test"
   - Chronological odometer anomaly handling (`ROLLBACK_DETECTED`, `ZERO_DELTA`).
   - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
 
+---
+
+## 11. Layer 18: Service Center Ecosystem, Workshop Benchmarking & Vendor Cost Intelligence Testing (M21)
+
+- **Dedicated Suite:** `WorkshopAnalyticsModuleTest` (32 Tests)
+- **Scope:**
+  - Location-preserving `GarageNameNormalizer` (collapsing spaces, stripping punctuation, pruning trailing corporate legal suffixes only, maintaining distinct geographic branches).
+  - Canonical display name generation with deterministic frequency, length, and lexicographical tie-breaking.
+  - Subsystem domain keyword classification into 6 automotive domains.
+  - Completed service visit definition with future date filtering.
+  - Authoritative Shared Eligible-Cost Policy (null/negative excluded, zero included as $0.00 spend, positive included).
+  - Workshop Price Index (WPI) calculation against MyGarage Reference Benchmark Costs with warranty-only baseline and zero-cost denominator exclusion.
+  - Vendor Rework Probability (VRP %) evaluation as an analytical rework proxy on the same vehicle within 60 calendar days and $\le 3000\text{ km}$.
+  - False-positive suppression for planned routine maintenance recurrence (routine scheduled PMS within 60 days is not flagged as rework).
+  - Odometer rollback ($O_B < O_A$) and missing odometer fallback to the 60-day calendar temporal window.
+  - Workshop Value Score (WVS 0–100) composite index balancing price and quality.
+  - Strict 5-stage deterministic quality tier precedence hierarchy (`TIER_3_EVALUATING` $\to$ `TIER_5_CAUTION_HIGH_REWORK` $\to$ `TIER_4_CAUTION_EXPENSIVE` $\to$ `TIER_1_PREFERRED` $\to$ `TIER_2_APPROVED`).
+  - Herfindahl-Hirschman Index (HHI) fleet spend concentration across 3 tiers (`HIGHLY_CONCENTRATED`, `MODERATELY_CONCENTRATED`, `HIGHLY_FRAGMENTED`).
+  - Deterministic empty-fleet, zero-spend fleet, and no-preferred-workshop handling.
+  - Deterministic multi-stage workshop ranking and tie-breaking.
+  - Two-tier security isolation: Web MVC flash redirect to `/workshops` or `/vehicles`, REST 401/403/404 handling, and `ROLE_ADMIN` 403 blocking.
+- **Cumulative Testing Status:**
+  - Total Maven Tests: **503 / 503 PASS** (0 failures, 0 errors, 0 skipped).
+  - Total Playwright QC Scenarios: **58 / 58 PASS** (S1–S58, 0 console errors, 0 network failures).
+
+
 

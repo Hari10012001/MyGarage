@@ -1127,3 +1127,94 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### Q. Milestone 21 — Service Center Ecosystem & Workshop Vendor Intelligence APIs
+
+*Accessible by: `ROLE_NORMAL_USER` (Blocked for `ROLE_ADMIN` with 403 Forbidden)*
+
+#### 1. Portfolio Workshop Ecosystem Matrix
+- **Method:** `GET /api/analytics/workshops`
+- **Response:** `200 OK`
+  ```json
+  {
+    "userId": 1,
+    "totalUniqueWorkshops": 2,
+    "totalFleetServiceVisits": 5,
+    "totalFleetServiceSpend": 750.00,
+    "topPreferredWorkshopName": "Toyota Authorized Service Center Anna Nagar",
+    "fleetHhiIndex": 5555.6,
+    "concentrationTier": "HIGHLY_CONCENTRATED",
+    "rankedWorkshops": [
+      {
+        "workshopKey": "TOYOTA_AUTHORIZED_SERVICE_CENTER_ANNA_NAGAR",
+        "workshopName": "Toyota Authorized Service Center Anna Nagar",
+        "totalVisits": 3,
+        "warrantyVisitCount": 0,
+        "totalSpend": 500.00,
+        "averageVisitCost": 166.67,
+        "workshopPriceIndex": 98.5,
+        "pricingCategory": "MARKET_PARITY",
+        "vendorReworkProbability": 0.0,
+        "reworkEventCount": 0,
+        "isPreliminaryData": false,
+        "workshopValueScore": 100.0,
+        "valueTier": "TIER_1_PREFERRED",
+        "subsystemMetrics": [],
+        "reworkEvents": [],
+        "vehiclesServiced": ["TN09AB1234"],
+        "firstVisitDate": "2025-01-10",
+        "mostRecentVisitDate": "2026-08-15",
+        "recommendation": "Highly Recommended: Demonstrates superior quality control and competitive market pricing.",
+        "disclaimer": "All workshop price indices, vendor ratings, rework probabilities, and quality tiers are model-derived analytical heuristics..."
+      }
+    ],
+    "ecosystemInsights": [
+      "Fleet maintenance distributed across 2 service centers with highly concentrated concentration (HHI: 5555.6).",
+      "Top preferred provider 'Toyota Authorized Service Center Anna Nagar' qualified under Tier-1 benchmark standards."
+    ],
+    "disclaimer": "All workshop price indices, vendor ratings, rework probabilities, and quality tiers are model-derived analytical heuristics..."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)
+
+#### 2. Workshop Deep-Dive Inspection Report
+- **Method:** `GET /api/analytics/workshops/{workshopKey}`
+- **Response:** `200 OK`
+  ```json
+  {
+    "workshopKey": "TOYOTA_AUTHORIZED_SERVICE_CENTER_ANNA_NAGAR",
+    "workshopName": "Toyota Authorized Service Center Anna Nagar",
+    "totalVisits": 3,
+    "warrantyVisitCount": 0,
+    "totalSpend": 500.00,
+    "averageVisitCost": 166.67,
+    "workshopPriceIndex": 98.5,
+    "pricingCategory": "MARKET_PARITY",
+    "vendorReworkProbability": 0.0,
+    "reworkEventCount": 0,
+    "isPreliminaryData": false,
+    "workshopValueScore": 100.0,
+    "valueTier": "TIER_1_PREFERRED",
+    "subsystemMetrics": [
+      {
+        "subsystem": "ENGINE_OIL_AND_FILTER",
+        "displayName": "Engine Oil & Filter",
+        "serviceCount": 2,
+        "totalSpend": 190.00,
+        "averageCost": 95.00,
+        "referenceBenchmarkCost": 95.00,
+        "costVariancePercentage": 0.0
+      }
+    ],
+    "reworkEvents": [],
+    "vehiclesServiced": ["TN09AB1234"],
+    "firstVisitDate": "2025-01-10",
+    "mostRecentVisitDate": "2026-08-15",
+    "recommendation": "Highly Recommended: Demonstrates superior quality control and competitive market pricing.",
+    "disclaimer": "All workshop price indices, vendor ratings, rework probabilities, and quality tiers are model-derived analytical heuristics..."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user workshop access or admin access), `404 Not Found` (workshop key does not exist anywhere in database)
+
