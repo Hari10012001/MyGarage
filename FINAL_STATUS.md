@@ -36,7 +36,8 @@
 | **M16** | Fuel Efficiency Intelligence & Historical Price Analytics Engine | 25 | Rolling Windows, StdDev & Badges | **ACCEPTED** |
 | **M17** | Vehicle Reliability Engineering, Failure Risk & Chronic Defect Engine | 25 | MDBF, Subsystems, CSR, VRI (0-100) & Lemon Engine | **ACCEPTED** |
 | **M18** | Vehicle Operational Readiness, Journey Risk Simulator & Fleet Mission Dispatch Engine | 25 | TRI (0-100), Consumable Margins, Fuel Staging & Dispatch | **ACCEPTED** |
-| **TOTAL** | **Full System Integration & Regression** | **413** | **100% PASS (413/413)** | **M18 ACCEPTED** |
+| **M19** | Vehicle Maintenance Deficit Index (MDI), Deferred Backlog Debt & Compound Neglect Engine | 26 | MDI (%), Deduplication, Cascade Multipliers & RME Triage | **ACCEPTED** |
+| **TOTAL** | **Full System Integration & Regression** | **439** | **100% PASS (439/439)** | **M19 ACCEPTED** |
 
 ---
 

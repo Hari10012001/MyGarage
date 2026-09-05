@@ -6,8 +6,8 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0.43-blue.svg)](https://www.mysql.com/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-green.svg)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)
-[![Tests](https://img.shields.io/badge/Automated%20Tests-413%2F413%20PASS-success.svg)]()
-[![Playwright QC](https://img.shields.io/badge/Playwright%20QC-49%2F49%20PASS-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Automated%20Tests-439%2F439%20PASS-success.svg)]()
+[![Playwright QC](https://img.shields.io/badge/Playwright%20QC-52%2F52%20PASS-brightgreen.svg)]()
 
 > **Final Year Main Project (2026–2027)**  
 > **System ID:** APPJFS19  
@@ -19,13 +19,14 @@
 
 **MyGarage** is an enterprise-grade vehicle lifecycle management platform designed to replace scattered paper bills, phone notes, and forgotten maintenance dates with a centralized digital logbook. 
 
-Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, fuel efficiency intelligence & price analytics, vehicle reliability engineering (VRI, MDBF, subsystem failure taxonomy, chronic defect detection), vehicle operational readiness, journey risk simulation & fleet mission dispatch, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
+Built using **Java 21 LTS**, **Spring Boot 3.3.5**, **Spring Data JPA / Hibernate ORM**, **Spring Security 6.x**, **MySQL 8.0**, and **Thymeleaf 3.1 + Bootstrap 5**, MyGarage provides individual vehicle owners with real-time operational analytics, fuel mileage calculations, scheduled maintenance urgency tracking, predictive maintenance forecasting, vehicle health scoring (VHI), smart service planning, official vehicle resale dossiers, multi-vehicle comparative analytics, total cost of ownership (TCO) lifecycle modeling, depreciation valuation, economic replacement advisory, carbon ESG footprint intelligence, fuel efficiency intelligence & price analytics, vehicle reliability engineering (VRI, MDBF, subsystem failure taxonomy, chronic defect detection), vehicle operational readiness, journey risk simulation & fleet mission dispatch, vehicle maintenance deficit index (MDI), deferred backlog debt & compound neglect simulation, and RFC 4180 CSV spreadsheet exports while enforcing two-tier ownership isolation and administrative governance.
 
 ---
 
 ## 2. Key Architecture & Features
 
 ### 👤 Normal User Features
+- **Vehicle Maintenance Deficit Index (MDI), Deferred Backlog Debt & Compound Neglect Engine (`/vehicles/{id}/maintenance-deficit`, `/vehicles/maintenance-deficit`):** Quantifies accrued deferred maintenance liabilities as an asset health ratio (MDI %), models compound cascade multipliers on neglected repairs (up to 5.5x for engine oil and 3.2x for brakes), calculates multi-factor Risk Mitigation Efficiency (RME) incorporating days overdue and subsystem criticality, prioritizes backlog recovery roadmaps via deterministic 4-stage tie-breaking, and aggregates garage-wide fleet debt matrices.
 - **Vehicle Operational Readiness, Journey Risk & Fleet Mission Dispatch Engine (`/vehicles/{id}/readiness`, `/vehicles/dispatch`):** Interactive road-trip simulator evaluating multi-factor Trip Readiness Index (TRI 0–100%), mid-journey maintenance interval breach detection, consumable reserve margins (Engine Oil: 10k km, Brakes: 20k km, Coolant: 40k km, Tires: 30k km), regime-adjusted fuel consumption (Highway, Mixed, City, Mountain/Severe), tank cruising range, fuel stop staging, dynamic pre-trip safety checklist, and garage fleet mission dispatch selection.
 - **Vehicle Reliability Engineering & Chronic Defect Engine (`/vehicles/{id}/reliability`, `/vehicles/reliability`):** Retrospective component reliability intelligence, computing Mean Distance Between Failures (MDBF), Mean Time Between Services (MTBS), Subsystem Failure Taxonomy across 6 domains, Corrective Service Ratio (CSR %), chronic recurrence defect clustering (<180d / <5,000 km), and composite 0–100 Vehicle Reliability Index (VRI).
 - **Workshop Quality & Mean Return Interval (MRI) Analytics:** Tracks service center visit frequencies, total expenditures, and average days elapsed before a vehicle requires another service visit after leaving each workshop.

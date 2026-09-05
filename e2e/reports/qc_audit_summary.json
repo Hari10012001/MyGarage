@@ -1,12 +1,12 @@
 {
-  "title": "MyGarage M1\u2013M18 Playwright Browser QC Audit Report",
+  "title": "MyGarage M1\u2013M19 Playwright Browser QC Audit Report",
   "system_id": "APPJFS19",
   "base_url": "http://localhost:8080",
-  "start_time": "2026-09-05T11:44:48.501854",
-  "end_time": "2026-09-05T11:45:20.345553",
-  "duration_seconds": 31.84,
-  "total_scenarios": 49,
-  "passed": 49,
+  "start_time": "2026-09-05T12:24:40.899702",
+  "end_time": "2026-09-05T12:25:09.539965",
+  "duration_seconds": 28.64,
+  "total_scenarios": 52,
+  "passed": 52,
   "failed": 0,
   "blocked": 0,
   "pass_rate_percentage": 100.0,
@@ -20,7 +20,7 @@
       "status": "PASS",
       "details": "Landing page rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\01_landing_page.png",
-      "duration_sec": 0.43
+      "duration_sec": 0.49
     },
     {
       "scenario": 2,
@@ -28,7 +28,7 @@
       "status": "PASS",
       "details": "Protected routes strictly redirect to /login",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\02_unauthenticated_protection.png",
-      "duration_sec": 0.37
+      "duration_sec": 0.35
     },
     {
       "scenario": 3,
@@ -42,9 +42,9 @@
       "scenario": 4,
       "name": "Normal User A Registration Happy Path",
       "status": "PASS",
-      "details": "User playwright_a_1788588888@example.com created",
+      "details": "User playwright_a_1788591280@example.com created",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\04_user_a_registered.png",
-      "duration_sec": 0.52
+      "duration_sec": 0.93
     },
     {
       "scenario": 5,
@@ -52,7 +52,7 @@
       "status": "PASS",
       "details": "Bad credentials properly rejected with alert",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\05_login_invalid_credentials.png",
-      "duration_sec": 0.59
+      "duration_sec": 0.8
     },
     {
       "scenario": 6,
@@ -60,7 +60,7 @@
       "status": "PASS",
       "details": "Successfully logged into dashboard",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\06_user_a_logged_in.png",
-      "duration_sec": 0.38
+      "duration_sec": 0.45
     },
     {
       "scenario": 7,
@@ -76,7 +76,7 @@
       "status": "PASS",
       "details": "All user navigation links load with HTTP 200",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\08_navigation_audit.png",
-      "duration_sec": 1.04
+      "duration_sec": 0.93
     },
     {
       "scenario": 9,
@@ -84,15 +84,15 @@
       "status": "PASS",
       "details": "Form requires plate, make, model, year",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\09_vehicle_create_validation.png",
-      "duration_sec": 0.54
+      "duration_sec": 0.55
     },
     {
       "scenario": 10,
       "name": "Vehicle Creation (Sedan Car) Happy Path",
       "status": "PASS",
-      "details": "Vehicle ID 743 created",
+      "details": "Vehicle ID 1063 created",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\10_vehicle_car_created.png",
-      "duration_sec": 0.36
+      "duration_sec": 0.35
     },
     {
       "scenario": 11,
@@ -100,13 +100,13 @@
       "status": "PASS",
       "details": "Duplicate plate correctly blocked with validation message",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\11_vehicle_duplicate_plate.png",
-      "duration_sec": 0.26
+      "duration_sec": 0.29
     },
     {
       "scenario": 12,
       "name": "Vehicle Creation (Motorcycle) Happy Path",
       "status": "PASS",
-      "details": "Second vehicle ID 744 created",
+      "details": "Second vehicle ID 1064 created",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\12_vehicle_bike_created.png",
       "duration_sec": 0.35
     },
@@ -116,7 +116,7 @@
       "status": "PASS",
       "details": "All vehicle action buttons and tabs present",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\13_vehicle_details.png",
-      "duration_sec": 0.18
+      "duration_sec": 0.16
     },
     {
       "scenario": 14,
@@ -124,7 +124,7 @@
       "status": "PASS",
       "details": "Color updated and verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\14_vehicle_edited.png",
-      "duration_sec": 0.61
+      "duration_sec": 0.3
     },
     {
       "scenario": 15,
@@ -132,7 +132,7 @@
       "status": "PASS",
       "details": "Service record \u20b93,500 recorded",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\15_service_record_created.png",
-      "duration_sec": 0.48
+      "duration_sec": 0.3
     },
     {
       "scenario": 16,
@@ -140,7 +140,7 @@
       "status": "PASS",
       "details": "Global services list rendered with financial tallies",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\16_global_services_list.png",
-      "duration_sec": 0.12
+      "duration_sec": 0.28
     },
     {
       "scenario": 17,
@@ -148,7 +148,7 @@
       "status": "PASS",
       "details": "15.0 km/L economy verified between consecutive fill-ups",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\17_fuel_mileage_verified.png",
-      "duration_sec": 0.65
+      "duration_sec": 0.62
     },
     {
       "scenario": 18,
@@ -156,7 +156,7 @@
       "status": "PASS",
       "details": "Fuel spend and volume tallies verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\18_global_fuel_feed.png",
-      "duration_sec": 0.1
+      "duration_sec": 0.12
     },
     {
       "scenario": 19,
@@ -164,7 +164,7 @@
       "status": "PASS",
       "details": "Upcoming task created with medium priority",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\19_maintenance_upcoming.png",
-      "duration_sec": 0.36
+      "duration_sec": 0.35
     },
     {
       "scenario": 20,
@@ -172,7 +172,7 @@
       "status": "PASS",
       "details": "Past date automatically triggers OVERDUE badge",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\20_maintenance_overdue.png",
-      "duration_sec": 1.05
+      "duration_sec": 0.46
     },
     {
       "scenario": 21,
@@ -180,7 +180,7 @@
       "status": "PASS",
       "details": "Task completed and status transitioned",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\21_maintenance_completed.png",
-      "duration_sec": 0.27
+      "duration_sec": 0.31
     },
     {
       "scenario": 22,
@@ -188,7 +188,7 @@
       "status": "PASS",
       "details": "Reports dashboard rendered with portfolio summaries",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\22_reports_dashboard.png",
-      "duration_sec": 0.16
+      "duration_sec": 0.15
     },
     {
       "scenario": 23,
@@ -196,7 +196,7 @@
       "status": "PASS",
       "details": "Print-ready dossier with verification seal verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\23_resale_dossier.png",
-      "duration_sec": 0.22
+      "duration_sec": 0.17
     },
     {
       "scenario": 24,
@@ -204,7 +204,7 @@
       "status": "PASS",
       "details": "All 5 CSV exports verified with RFC 4180 headers and browser download event",
       "screenshot": "",
-      "duration_sec": 0.32
+      "duration_sec": 0.25
     },
     {
       "scenario": 25,
@@ -212,7 +212,7 @@
       "status": "PASS",
       "details": "Side-by-side benchmark table rendered with efficiency badges",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\25_vehicle_compare.png",
-      "duration_sec": 0.47
+      "duration_sec": 0.36
     },
     {
       "scenario": 26,
@@ -220,7 +220,7 @@
       "status": "PASS",
       "details": "VHI scoring, PMS projection, and forward horizons verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\26_vehicle_forecast.png",
-      "duration_sec": 0.21
+      "duration_sec": 0.17
     },
     {
       "scenario": 27,
@@ -228,7 +228,7 @@
       "status": "PASS",
       "details": "Garage planner hub rendered with fleet overview",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\27_smart_service_planner.png",
-      "duration_sec": 0.19
+      "duration_sec": 0.17
     },
     {
       "scenario": 28,
@@ -236,7 +236,7 @@
       "status": "PASS",
       "details": "Milestone scheduling action handled safely",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\28_milestone_scheduled.png",
-      "duration_sec": 1.04
+      "duration_sec": 0.87
     },
     {
       "scenario": 29,
@@ -252,7 +252,7 @@
       "status": "PASS",
       "details": "Garage TCO route renders cleanly",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\30_garage_tco_overview.png",
-      "duration_sec": 0.14
+      "duration_sec": 0.13
     },
     {
       "scenario": 31,
@@ -268,7 +268,7 @@
       "status": "PASS",
       "details": "User B blocked from accessing User A vehicles, dossiers, forecasts, and TCO",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\32_tampering_blocked.png",
-      "duration_sec": 1.1
+      "duration_sec": 0.9
     },
     {
       "scenario": 33,
@@ -276,7 +276,7 @@
       "status": "PASS",
       "details": "Admin dashboard rendered with global system metrics",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\33_admin_dashboard.png",
-      "duration_sec": 0.64
+      "duration_sec": 0.57
     },
     {
       "scenario": 34,
@@ -284,7 +284,7 @@
       "status": "PASS",
       "details": "User management rendered; primary admin account safeguarded against deactivation",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\34_admin_users.png",
-      "duration_sec": 0.82
+      "duration_sec": 0.32
     },
     {
       "scenario": 35,
@@ -300,7 +300,7 @@
       "status": "PASS",
       "details": "High-level platform activity rendered without exposing private records",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\36_admin_monitoring.png",
-      "duration_sec": 0.13
+      "duration_sec": 0.12
     },
     {
       "scenario": 37,
@@ -308,7 +308,7 @@
       "status": "PASS",
       "details": "Admin strictly blocked with HTTP 403 Forbidden from all personal user routes",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\37_admin_isolation_403.png",
-      "duration_sec": 0.32
+      "duration_sec": 0.23
     },
     {
       "scenario": 38,
@@ -316,7 +316,7 @@
       "status": "PASS",
       "details": "Dashboard, Detail, Forecast, and TCO verified across 4 screen resolutions",
       "screenshot": "",
-      "duration_sec": 5.56
+      "duration_sec": 4.07
     },
     {
       "scenario": 39,
@@ -324,7 +324,7 @@
       "status": "PASS",
       "details": "404 route handled cleanly",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\39_404_page.png",
-      "duration_sec": 1.76
+      "duration_sec": 0.08
     },
     {
       "scenario": 40,
@@ -332,7 +332,7 @@
       "status": "PASS",
       "details": "Session terminated and protected routes blocked",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\40_logout_verified.png",
-      "duration_sec": 0.89
+      "duration_sec": 0.74
     },
     {
       "scenario": 41,
@@ -340,7 +340,7 @@
       "status": "PASS",
       "details": "Dashboard rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\41_garage_fuel_intelligence.png",
-      "duration_sec": 1.13
+      "duration_sec": 0.77
     },
     {
       "scenario": 42,
@@ -348,7 +348,7 @@
       "status": "PASS",
       "details": "Vehicle analytics rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\42_vehicle_fuel_analytics.png",
-      "duration_sec": 0.35
+      "duration_sec": 0.21
     },
     {
       "scenario": 43,
@@ -356,7 +356,7 @@
       "status": "PASS",
       "details": "Access blocked successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\43_fuel_analytics_tampering.png",
-      "duration_sec": 2.25
+      "duration_sec": 1.04
     },
     {
       "scenario": 44,
@@ -364,7 +364,7 @@
       "status": "PASS",
       "details": "Fleet reliability matrix rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\44_garage_reliability_matrix.png",
-      "duration_sec": 0.29
+      "duration_sec": 0.21
     },
     {
       "scenario": 45,
@@ -372,7 +372,7 @@
       "status": "PASS",
       "details": "Vehicle reliability dashboard rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\45_vehicle_reliability_dashboard.png",
-      "duration_sec": 0.25
+      "duration_sec": 0.18
     },
     {
       "scenario": 46,
@@ -380,7 +380,7 @@
       "status": "PASS",
       "details": "Tampering and admin isolation verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\46_reliability_tampering_isolation.png",
-      "duration_sec": 0.89
+      "duration_sec": 0.8
     },
     {
       "scenario": 47,
@@ -388,7 +388,7 @@
       "status": "PASS",
       "details": "Fleet dispatch matrix rendered successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\47_garage_fleet_dispatch.png",
-      "duration_sec": 0.33
+      "duration_sec": 0.32
     },
     {
       "scenario": 48,
@@ -396,7 +396,7 @@
       "status": "PASS",
       "details": "Journey simulator rendered and recalculated successfully",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\48_vehicle_trip_readiness.png",
-      "duration_sec": 0.34
+      "duration_sec": 0.32
     },
     {
       "scenario": 49,
@@ -404,7 +404,31 @@
       "status": "PASS",
       "details": "Two-tier ownership and admin isolation verified",
       "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\49_readiness_security_isolation.png",
-      "duration_sec": 0.87
+      "duration_sec": 0.77
+    },
+    {
+      "scenario": 50,
+      "name": "Vehicle Maintenance Deficit & Compound Neglect Audit (S50)",
+      "status": "PASS",
+      "details": "MDI %, financial liability cards, cascade exposure, and responsive views verified",
+      "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\50_vehicle_maintenance_deficit.png",
+      "duration_sec": 1.65
+    },
+    {
+      "scenario": 51,
+      "name": "Garage Maintenance Deficit Matrix & Multi-Vehicle Triage (S51)",
+      "status": "PASS",
+      "details": "Fleet MDI %, vehicle rankings, consolidated triage queue, and responsive views verified",
+      "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\51_garage_maintenance_deficit_matrix.png",
+      "duration_sec": 0.97
+    },
+    {
+      "scenario": 52,
+      "name": "Maintenance Deficit Security, Ownership Isolation & ADMIN Blocking (S52)",
+      "status": "PASS",
+      "details": "Two-tier ownership, cross-user Web redirect, REST 403, and ADMIN denial verified",
+      "screenshot": "D:\\HARIHARAN P\\000_JAVA FULL STACK - Final Year Main_Projects - 2026_2027\\019_MyGarage - A Vehicle Service History, Fuel Record and Maintenance Tracking Platform\\e2e\\screenshots\\52_deficit_security_isolation.png",
+      "duration_sec": 1.26
     }
   ],
   "console_errors": [],

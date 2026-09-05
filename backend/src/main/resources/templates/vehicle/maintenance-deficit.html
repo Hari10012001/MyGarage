@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${vehicle.make + ' ' + vehicle.model + ' - Maintenance Deficit Index (MDI)'}">Maintenance Deficit Index</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        .badge-pristine { background-color: #198754; color: white; }
+        .badge-optimal { background-color: #0dcaf0; color: #000; }
+        .badge-fair { background-color: #ffc107; color: #000; }
+        .badge-deficient { background-color: #fd7e14; color: white; }
+        .badge-critical { background-color: #dc3545; color: white; }
+        .card-metric { border-radius: 0.75rem; transition: transform 0.15s ease-in-out; }
+        .card-metric:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/maintenance-deficit}"><i class="bi bi-exclamation-triangle-fill"></i> Deficit Matrix</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/dispatch}"><i class="bi bi-geo-alt-fill"></i> Trip Dispatch</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+        </div>
+    </nav>
+
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+                <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back to Vehicle</a>
+                <span class="fw-semibold">Vehicle Maintenance Deficit Index & Compound Neglect Simulator</span>
+            </div>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+
+        <div class="page-content px-4 pb-4">
+
+            <!-- Disclaimer Alert -->
+            <div class="alert alert-warning border-0 shadow-sm mt-3 mb-4 d-flex align-items-start gap-3">
+                <i class="bi bi-shield-exclamation fs-4 text-warning flex-shrink-0 mt-1"></i>
+                <div class="small">
+                    <strong>Analytical Modeling Disclaimer:</strong>
+                    <span th:text="${report.analyticalDisclaimer}"></span>
+                </div>
+            </div>
+
+            <!-- Vehicle Header & MDI Hero Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-danger text-white rounded-3 fs-3"><i class="bi bi-activity"></i></div>
+                            <div>
+                                <h4 class="fw-bold mb-1" th:text="${vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model}">Vehicle Name</h4>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="badge bg-primary" th:text="${vehicle.plateNumber}">Plate</span>
+                                    <span class="badge bg-secondary" th:text="${(vehicle.currentOdometer ?: 0) + ' km'}">0 km</span>
+                                    <span class="badge bg-light text-dark" th:text="'RAV: $' + ${report.replacementAssetValue}">RAV: $10,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small text-muted mb-1">Maintenance Deficit Index (MDI)</div>
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <span class="display-6 fw-bold text-danger" th:text="${report.maintenanceDeficitIndex + '%'}">0.0%</span>
+                                <span class="badge px-3 py-2 fs-6"
+                                      th:classappend="${report.deficitStatus == 'PRISTINE' ? 'badge-pristine' : (report.deficitStatus == 'OPTIMAL' ? 'badge-optimal' : (report.deficitStatus == 'FAIR' ? 'badge-fair' : (report.deficitStatus == 'DEFICIENT' ? 'badge-deficient' : 'badge-critical')))}"
+                                      th:text="${report.deficitStatus}">PRISTINE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Executive Summary Banner -->
+                    <div class="alert alert-light border mt-4 mb-0">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-chat-left-quote-fill text-primary"></i>
+                            <span class="fw-semibold" th:text="${report.executiveSummary}">Executive summary text here.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Financial Metrics Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Deferred Maintenance Debt</span>
+                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-receipt"></i> Due Now</span>
+                            </div>
+                            <h3 class="fw-bold text-danger mb-1" th:text="'$' + ${report.deferredMaintenanceDebt}">$0.00</h3>
+                            <div class="small text-muted" th:text="${report.backlogItemCount + ' active backlog obligation(s)'}">0 items</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Compound Neglect Exposure</span>
+                                <span class="badge bg-warning-subtle text-dark" th:text="${report.inactionMultiplier + 'x Cascade'}">1.0x</span>
+                            </div>
+                            <h3 class="fw-bold text-warning mb-1" th:text="'$' + ${report.compoundNeglectCostExposure}">$0.00</h3>
+                            <div class="small text-muted">Projected consequential damage</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Near-Term 30-Day Exposure</span>
+                                <span class="badge bg-info-subtle text-info"><i class="bi bi-calendar3"></i> Scheduled</span>
+                            </div>
+                            <h3 class="fw-bold text-info mb-1" th:text="'$' + ${report.totalNearTermExposure}">$0.00</h3>
+                            <div class="small text-muted" th:text="${report.nearTermItemCount + ' planned task(s) within 30d'}">0 items</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Total 30-Day Liability</span>
+                                <span class="badge bg-dark-subtle text-dark"><i class="bi bi-cash-stack"></i> Total</span>
+                            </div>
+                            <h3 class="fw-bold text-dark mb-1" th:text="'$' + ${report.total30DayMaintenanceLiability}">$0.00</h3>
+                            <div class="small text-muted">Deferred debt + near-term commitments</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost-of-Inaction Comparison Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Cost of Inaction & Cascade Multiplier Analysis</h5>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-12 col-md-7">
+                            <p class="text-muted small mb-3">
+                                Deferring necessary mechanical maintenance triggers non-linear compound damage.
+                                Remediating backlog items immediately frees up asset liabilities and locks in risk prevention dividends:
+                            </p>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                    <span>Immediate Backlog Remediation Cost:</span>
+                                    <span class="text-success" th:text="'$' + ${report.deferredMaintenanceDebt}">$0.00</span>
+                                </div>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                    <span>Compound Inaction Failure Exposure:</span>
+                                    <span class="text-danger" th:text="'$' + ${report.compoundNeglectCostExposure}">$0.00</span>
+                                </div>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                            <div class="p-3 bg-light rounded-3 text-center border">
+                                <div class="small text-muted mb-1">Net Consequential Savings Potential</div>
+                                <div class="fs-2 fw-bold text-success"
+                                     th:text="'$' + ${report.compoundNeglectCostExposure.subtract(report.deferredMaintenanceDebt)}">$0.00</div>
+                                <div class="small text-muted mt-1">Prevented secondary breakdown damage via timely triage</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deferred Maintenance Backlog Table -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>Deferred Maintenance Backlog (Debt Items)</h5>
+                    <span class="badge bg-danger" th:text="${report.backlogItemCount + ' Overdue Item(s)'}">0 Overdue</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Subsystem</th>
+                                <th>Task Title</th>
+                                <th>Source Type</th>
+                                <th>Overdue</th>
+                                <th>Direct Cost</th>
+                                <th>Cascade Mult</th>
+                                <th>Consequence Exposure</th>
+                                <th>RME Score</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${report.backlogItems}">
+                                <td class="fw-semibold" th:text="${item.subsystem}">Subsystem</td>
+                                <td th:text="${item.taskTitle}">Task Title</td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary small" th:text="${item.originType}">ORIGIN</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger-subtle text-danger" th:text="${item.daysOverdue + ' days'}">0 days</span>
+                                </td>
+                                <td class="fw-semibold text-danger" th:text="'$' + ${item.directRemediationCost}">$0.00</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark" th:text="${item.neglectCascadeMultiplier + 'x'}">1.0x</span>
+                                </td>
+                                <td class="fw-semibold text-danger" th:text="'$' + ${item.compoundNeglectCostExposure}">$0.00</td>
+                                <td class="fw-bold text-primary" th:text="${item.riskMitigationEfficiency}">0.0</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${item.priority == 'URGENT_REMEDIATION' ? 'bg-danger' : (item.priority == 'HIGH_RISK' ? 'bg-warning text-dark' : 'bg-info text-dark')}"
+                                          th:text="${item.priority}">PRIORITY</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${report.backlogItems.isEmpty()}">
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i>
+                                    No deferred maintenance debt logged! All scheduled obligations and consumable intervals are fully up to date.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Near-Term 30-Day Scheduled Exposure -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-calendar-event text-info me-2"></i>Near-Term Maintenance Exposure (Upcoming 30 Days)</h5>
+                    <span class="badge bg-info text-dark" th:text="${report.nearTermItemCount + ' Upcoming Task(s)'}">0 Upcoming</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Subsystem</th>
+                                <th>Task Title</th>
+                                <th>Days Remaining</th>
+                                <th>Due Odometer</th>
+                                <th>Projected Cost</th>
+                                <th>Status</th>
+                                <th>Advisory Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="nt : ${report.nearTermItems}">
+                                <td class="fw-semibold" th:text="${nt.subsystem}">Subsystem</td>
+                                <td th:text="${nt.taskTitle}">Task Title</td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info" th:text="${nt.daysUntilDue + ' days'}">0 days</span>
+                                </td>
+                                <td th:text="${nt.dueOdometerKm != null ? nt.dueOdometerKm + ' km' : '—'}">—</td>
+                                <td class="fw-semibold text-info" th:text="'$' + ${nt.projectedCost}">$0.00</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${nt.status}">UPCOMING</span>
+                                </td>
+                                <td class="small text-muted" th:text="${nt.advisoryNote}">Advisory note</td>
+                            </tr>
+                            <tr th:if="${report.nearTermItems.isEmpty()}">
+                                <td colspan="7" class="text-center text-muted py-3">
+                                    No scheduled maintenance obligations falling due in the next 30 days.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Prioritized Backlog Recovery Roadmap -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-list-check text-primary me-2"></i>Prioritized Backlog Recovery Roadmap (RME Triage Queue)</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th style="width: 60px;">Rank</th>
+                                <th>Task & Subsystem</th>
+                                <th>Immediate Cost</th>
+                                <th>Prevented Risk</th>
+                                <th>Net Savings</th>
+                                <th>RME Score</th>
+                                <th>Recommended Triage Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="step : ${report.triageRoadmap}">
+                                <td>
+                                    <span class="badge bg-dark rounded-pill px-2 py-1" th:text="'#' + ${step.triageRank}">#1</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${step.taskTitle}">Task Title</div>
+                                    <span class="small text-muted" th:text="${step.subsystem}">Subsystem</span>
+                                </td>
+                                <td class="fw-semibold text-danger" th:text="'$' + ${step.immediateCost}">$0.00</td>
+                                <td class="text-warning fw-semibold" th:text="'$' + ${step.preventedExposure}">$0.00</td>
+                                <td class="text-success fw-bold" th:text="'$' + ${step.netSavings}">$0.00</td>
+                                <td>
+                                    <span class="badge bg-primary px-2 py-1" th:text="${step.rmeScore}">0.0</span>
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold text-dark" th:text="${step.triageAction}">Action</div>
+                                    <div class="small text-muted" th:text="${step.urgencyRationale}">Rationale</div>
+                                </td>
+                            </tr>
+                            <tr th:if="${report.triageRoadmap.isEmpty()}">
+                                <td colspan="7" class="text-center text-muted py-3">
+                                    No triage backlog actions required. Maintenance roadmap is pristine!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Benchmark Policy Reference Card -->
+            <div class="card border-0 shadow-sm mb-4 bg-light">
+                <div class="card-body p-3 small text-muted">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        <strong class="text-dark">Authoritative Benchmark Policy Note:</strong>
+                    </div>
+                    <span th:text="${report.benchmarkPolicyNote}"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+</script>
+</body>
+</html>

@@ -1049,3 +1049,131 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### T. Milestone 19 — Vehicle Maintenance Deficit Index & Deferred Backlog Debt Engine (`/api/vehicles/{id}/maintenance-deficit`, `/api/analytics/garage-maintenance-deficit`)
+*Accessible by: Authenticated Vehicle Owner (`ROLE_NORMAL_USER`)*  
+*Two-Tier Security: Cross-user access returns `403 Forbidden`; `ROLE_ADMIN` returns `403 Forbidden`*
+
+#### 1. Vehicle Maintenance Deficit Report
+- **Method:** `GET /api/vehicles/{id}/maintenance-deficit`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN09-MDI01",
+    "make": "Honda",
+    "model": "Civic",
+    "year": 2022,
+    "currentOdometer": 15000,
+    "replacementAssetValue": 19125.00,
+    "deferredMaintenanceDebt": 95.00,
+    "maintenanceDeficitIndex": 0.50,
+    "deficitStatus": "OPTIMAL",
+    "compoundNeglectCostExposure": 522.50,
+    "inactionMultiplier": 5.50,
+    "totalNearTermExposure": 110.00,
+    "total30DayMaintenanceLiability": 205.00,
+    "backlogItemCount": 1,
+    "nearTermItemCount": 1,
+    "backlogItems": [
+      {
+        "id": "BREACH-ENGINE_OIL_AND_FILTER",
+        "subsystem": "Engine Oil & Filter",
+        "taskTitle": "Engine Oil & Filter Interval Exhausted",
+        "originType": "BREACHED_INTERVAL",
+        "daysOverdue": 20,
+        "mileageOverdueKm": 5000.0,
+        "directRemediationCost": 95.00,
+        "neglectCascadeMultiplier": 5.5,
+        "compoundNeglectCostExposure": 522.50,
+        "primaryConsequence": "Severe oil sludge, camshaft scoring, turbocharger bearing failure, or catastrophic engine seizure",
+        "secondaryConsequences": [
+          "Turbocharger bearing oil starvation",
+          "Timing chain tensioner failure",
+          "Piston ring carbon packing and blow-by"
+        ],
+        "riskMitigationEfficiency": 7.37,
+        "priority": "URGENT_REMEDIATION",
+        "sourceDescription": "Historical logbook confirms interval exhaustion without scheduled remediation."
+      }
+    ],
+    "nearTermItems": [
+      {
+        "id": "NEAR-1",
+        "subsystem": "General Maintenance & Inspection",
+        "taskTitle": "Spark Plug Replacement",
+        "daysUntilDue": 15,
+        "dueOdometerKm": null,
+        "projectedCost": 110.00,
+        "status": "UPCOMING_SCHEDULED",
+        "advisoryNote": "Scheduled on 2026-09-20 (15 days remaining). Budgetary projection."
+      }
+    ],
+    "triageRoadmap": [
+      {
+        "triageRank": 1,
+        "id": "BREACH-ENGINE_OIL_AND_FILTER",
+        "taskTitle": "Engine Oil & Filter Interval Exhausted",
+        "subsystem": "Engine Oil & Filter",
+        "immediateCost": 95.00,
+        "preventedExposure": 522.50,
+        "netSavings": 427.50,
+        "rmeScore": 7.37,
+        "triageAction": "Immediate Remediation Required: Book technician service for Engine Oil & Filter",
+        "urgencyRationale": "Immediate action avoids 5.5x cascade exposure; net savings of $427.50."
+      }
+    ],
+    "executiveSummary": "Honda Civic (TN09-MDI01) operates within OPTIMAL MDI limits (0.5%) with $95.00 in deferred maintenance debt.",
+    "analyticalDisclaimer": "The Maintenance Deficit Index (MDI) and Compound Cascade Multipliers are MyGarage analytical modeling heuristics derived from historical vehicle logs and configurable benchmark cost assumptions. They do not represent official ISO 55000 / NASA metrics or manufacturer-certified engineering warranties, nor do they guarantee that secondary mechanical damage will occur within a specific timeline. Always consult a certified mechanic.",
+    "benchmarkPolicyNote": "Benchmark maintenance costs and intervals are authoritative configurable model assumptions (Engine Oil: $95.00, 10,000 km / 180 days; Brakes: $180.00, 20,000 km / 365 days; Coolant: $140.00, 40,000 km / 730 days; Tires/Suspension: $160.00, 30,000 km / 540 days; Major PMS: $320.00, 40,000 km / 730 days; General Maintenance fallback: $110.00, 15,000 km / 365 days). Recorded costs take precedence when present and positive; unpriced or negative costs strictly fallback to these domain benchmarks."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage Fleet Maintenance Deficit Matrix
+- **Method:** `GET /api/analytics/garage-maintenance-deficit`
+- **Access:** `ROLE_NORMAL_USER` (Admin blocked with 403 Forbidden)
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalFleetRAV": 38250.00,
+    "totalFleetDeferredDebt": 95.00,
+    "garageFleetMDI": 0.25,
+    "fleetDeficitStatus": "OPTIMAL",
+    "totalCompoundExposure": 522.50,
+    "totalNearTermExposure": 110.00,
+    "totalFleet30DayLiability": 205.00,
+    "totalVehicles": 2,
+    "criticalVehiclesCount": 0,
+    "deficientVehiclesCount": 0,
+    "fairVehiclesCount": 0,
+    "optimalVehiclesCount": 2,
+    "vehicleSummaries": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN09-MDI01",
+        "make": "Honda",
+        "model": "Civic",
+        "year": 2022,
+        "currentOdometer": 15000,
+        "rav": 19125.00,
+        "deferredDebt": 95.00,
+        "mdi": 0.50,
+        "deficitStatus": "OPTIMAL",
+        "compoundExposure": 522.50,
+        "nearTermExposure": 110.00,
+        "total30DayLiability": 205.00,
+        "backlogCount": 1,
+        "topTriageAction": "Immediate Remediation Required: Book technician service for Engine Oil & Filter"
+      }
+    ],
+    "priorityTriageQueue": [],
+    "fleetExecutiveAdvisory": "Fleet maintenance posture is OPTIMAL. Backlog liabilities and compound risks are under active control.",
+    "analyticalDisclaimer": "The Maintenance Deficit Index (MDI) and Compound Cascade Multipliers are MyGarage analytical modeling heuristics...",
+    "benchmarkPolicyNote": "Benchmark maintenance costs and intervals are authoritative configurable model assumptions..."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)

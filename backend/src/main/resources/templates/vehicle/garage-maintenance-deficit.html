@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garage Maintenance Deficit Matrix - MyGarage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/mygarage.css}">
+    <style>
+        .badge-pristine { background-color: #198754; color: white; }
+        .badge-optimal { background-color: #0dcaf0; color: #000; }
+        .badge-fair { background-color: #ffc107; color: #000; }
+        .badge-deficient { background-color: #fd7e14; color: white; }
+        .badge-critical { background-color: #dc3545; color: white; }
+        .card-metric { border-radius: 0.75rem; transition: transform 0.15s ease-in-out; }
+        .card-metric:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar" class="sidebar d-flex flex-column">
+        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
+        <ul class="nav flex-column sidebar-nav flex-grow-1">
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles/maintenance-deficit}"><i class="bi bi-exclamation-triangle-fill"></i> Deficit Matrix</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/dispatch}"><i class="bi bi-geo-alt-fill"></i> Trip Dispatch</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
+            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /><button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
+        </div>
+    </nav>
+
+    <div class="main-content flex-grow-1">
+        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
+                <a th:href="@{/vehicles}" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i> Back to Garage</a>
+                <span class="fw-semibold">Garage Fleet Maintenance Deficit & Asset Debt Matrix</span>
+            </div>
+            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
+        </nav>
+
+        <div class="page-content px-4 pb-4">
+
+            <!-- Disclaimer Alert -->
+            <div class="alert alert-warning border-0 shadow-sm mt-3 mb-4 d-flex align-items-start gap-3">
+                <i class="bi bi-shield-exclamation fs-4 text-warning flex-shrink-0 mt-1"></i>
+                <div class="small">
+                    <strong>Analytical Modeling Disclaimer:</strong>
+                    <span th:text="${matrix.analyticalDisclaimer}"></span>
+                </div>
+            </div>
+
+            <!-- Fleet Deficit Summary Hero Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 bg-danger text-white rounded-3 fs-3"><i class="bi bi-pie-chart-fill"></i></div>
+                            <div>
+                                <h4 class="fw-bold mb-1">Garage Fleet Maintenance Deficit Matrix</h4>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="badge bg-primary" th:text="${matrix.totalVehicles + ' Total Vehicles'}">0 Vehicles</span>
+                                    <span class="badge bg-light text-dark border" th:text="'Total Fleet RAV: $' + ${matrix.totalFleetRAV}">RAV: $0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="small text-muted mb-1">Fleet Maintenance Deficit Index</div>
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <span class="display-6 fw-bold text-danger" th:text="${matrix.garageFleetMDI + '%'}">0.0%</span>
+                                <span class="badge px-3 py-2 fs-6"
+                                      th:classappend="${matrix.fleetDeficitStatus == 'PRISTINE' ? 'badge-pristine' : (matrix.fleetDeficitStatus == 'OPTIMAL' ? 'badge-optimal' : (matrix.fleetDeficitStatus == 'FAIR' ? 'badge-fair' : (matrix.fleetDeficitStatus == 'DEFICIENT' ? 'badge-deficient' : 'badge-critical')))}"
+                                      th:text="${matrix.fleetDeficitStatus}">PRISTINE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fleet Advisory Banner -->
+                    <div class="alert alert-light border mt-4 mb-0">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-info-circle-fill text-primary"></i>
+                            <span class="fw-semibold" th:text="${matrix.fleetExecutiveAdvisory}">Advisory here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fleet Financial Totals -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Fleet Deferred Debt</span>
+                                <span class="badge bg-danger-subtle text-danger"><i class="bi bi-receipt"></i> Overdue</span>
+                            </div>
+                            <h3 class="fw-bold text-danger mb-1" th:text="'$' + ${matrix.totalFleetDeferredDebt}">$0.00</h3>
+                            <div class="small text-muted">Immediate backlog liability</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Total Compound Exposure</span>
+                                <span class="badge bg-warning-subtle text-dark"><i class="bi bi-exclamation-triangle"></i> Consequence</span>
+                            </div>
+                            <h3 class="fw-bold text-warning mb-1" th:text="'$' + ${matrix.totalCompoundExposure}">$0.00</h3>
+                            <div class="small text-muted">Projected cascade exposure</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Near-Term 30-Day Exposure</span>
+                                <span class="badge bg-info-subtle text-info"><i class="bi bi-calendar3"></i> Scheduled</span>
+                            </div>
+                            <h3 class="fw-bold text-info mb-1" th:text="'$' + ${matrix.totalNearTermExposure}">$0.00</h3>
+                            <div class="small text-muted">Upcoming commitments</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card border-0 shadow-sm card-metric h-100 bg-white">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small">Total Fleet 30-Day Liability</span>
+                                <span class="badge bg-dark-subtle text-dark"><i class="bi bi-cash-stack"></i> 30d Total</span>
+                            </div>
+                            <h3 class="fw-bold text-dark mb-1" th:text="'$' + ${matrix.totalFleet30DayLiability}">$0.00</h3>
+                            <div class="small text-muted">Deferred debt + near-term</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Deficit Breakdown Table -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-speedometer text-primary me-2"></i>Garage Vehicles Maintenance Deficit Breakdown</h5>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-danger" th:text="${matrix.criticalVehiclesCount + ' Critical'}">0 Critical</span>
+                        <span class="badge bg-warning text-dark" th:text="${matrix.deficientVehiclesCount + ' Deficient'}">0 Deficient</span>
+                        <span class="badge bg-info text-dark" th:text="${matrix.fairVehiclesCount + ' Fair'}">0 Fair</span>
+                        <span class="badge bg-success" th:text="${matrix.optimalVehiclesCount + ' Optimal'}">0 Optimal</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Plate</th>
+                                <th>Odometer</th>
+                                <th>RAV</th>
+                                <th>Deferred Debt</th>
+                                <th>MDI (%)</th>
+                                <th>Status</th>
+                                <th>Cascade Exposure</th>
+                                <th>Backlog Count</th>
+                                <th>Top Triage Action</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="v : ${matrix.vehicleSummaries}">
+                                <td class="fw-semibold" th:text="${v.year + ' ' + v.make + ' ' + v.model}">Vehicle</td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-dark" th:text="${v.plateNumber}">Plate</span>
+                                </td>
+                                <td th:text="${(v.currentOdometer ?: 0) + ' km'}">0 km</td>
+                                <td th:text="'$' + ${v.rav}">$0.00</td>
+                                <td class="fw-semibold text-danger" th:text="'$' + ${v.deferredDebt}">$0.00</td>
+                                <td class="fw-bold text-danger" th:text="${v.mdi + '%'}">0.0%</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${v.deficitStatus == 'PRISTINE' ? 'badge-pristine' : (v.deficitStatus == 'OPTIMAL' ? 'badge-optimal' : (v.deficitStatus == 'FAIR' ? 'badge-fair' : (v.deficitStatus == 'DEFICIENT' ? 'badge-deficient' : 'badge-critical')))}"
+                                          th:text="${v.deficitStatus}">STATUS</span>
+                                </td>
+                                <td class="fw-semibold text-warning" th:text="'$' + ${v.compoundExposure}">$0.00</td>
+                                <td>
+                                    <span class="badge bg-danger-subtle text-danger" th:text="${v.backlogCount}">0</span>
+                                </td>
+                                <td>
+                                    <span class="small text-muted" th:text="${v.topTriageAction}">Top Action</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/vehicles/{id}/maintenance-deficit(id=${v.vehicleId})}" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-search me-1"></i>Deficit Audit
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${matrix.vehicleSummaries.isEmpty()}">
+                                <td colspan="11" class="text-center text-muted py-4">
+                                    No vehicles found in your garage. Add a vehicle to begin tracking maintenance deficit.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Garage-Wide Consolidated Priority Triage Queue -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-sort-numeric-down text-danger me-2"></i>Consolidated Garage Priority Triage Queue</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th style="width: 60px;">Rank</th>
+                                <th>Task & Subsystem</th>
+                                <th>Immediate Cost</th>
+                                <th>Prevented Risk</th>
+                                <th>Net Savings</th>
+                                <th>RME Score</th>
+                                <th>Recommended Action & Rationale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="step : ${matrix.priorityTriageQueue}">
+                                <td>
+                                    <span class="badge bg-dark rounded-pill px-2 py-1" th:text="'#' + ${step.triageRank}">#1</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${step.taskTitle}">Task Title</div>
+                                    <span class="small text-muted" th:text="${step.subsystem}">Subsystem</span>
+                                </td>
+                                <td class="fw-semibold text-danger" th:text="'$' + ${step.immediateCost}">$0.00</td>
+                                <td class="text-warning fw-semibold" th:text="'$' + ${step.preventedExposure}">$0.00</td>
+                                <td class="text-success fw-bold" th:text="'$' + ${step.netSavings}">$0.00</td>
+                                <td>
+                                    <span class="badge bg-primary px-2 py-1" th:text="${step.rmeScore}">0.0</span>
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold text-dark" th:text="${step.triageAction}">Action</div>
+                                    <div class="small text-muted" th:text="${step.urgencyRationale}">Rationale</div>
+                                </td>
+                            </tr>
+                            <tr th:if="${matrix.priorityTriageQueue.isEmpty()}">
+                                <td colspan="7" class="text-center text-muted py-3">
+                                    No overdue maintenance tasks in your garage fleet. Everything is up to date!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Benchmark Policy Note -->
+            <div class="card border-0 shadow-sm mb-4 bg-light">
+                <div class="card-body p-3 small text-muted">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        <strong class="text-dark">Benchmark Policy Note:</strong>
+                    </div>
+                    <span th:text="${matrix.benchmarkPolicyNote}"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('show');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+</script>
+</body>
+</html>

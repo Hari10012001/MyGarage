@@ -1,8 +1,8 @@
 # TESTING & VERIFICATION REPORT — MyGarage (APPJFS19)
 
 **System ID:** APPJFS19  
-**Total Automated Tests:** **338**  
-**Pass Rate:** **100% (338/338 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
+**Total Automated Tests:** **439**  
+**Pass Rate:** **100% (439/439 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
 **Regression Status:** **`BUILD SUCCESS`**
 
 ---
@@ -43,6 +43,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 
 | Test Suite | Class Name | Tests | Failures | Errors | Skipped | Status |
 |---|---|---|---|---|---|---|
+| **Maintenance Deficit & Backlog Debt** | `VehicleMaintenanceDeficitModuleTest` | 26 | 0 | 0 | 0 | **PASS** |
 | **Operational Readiness & Dispatch** | `VehicleReadinessEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Reliability & Defect Intelligence** | `VehicleReliabilityEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Fuel Efficiency & Price Analytics** | `FuelAnalyticsModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
@@ -63,7 +64,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 | **Maintenance Service** | `MaintenanceServiceTest` | 5 | 0 | 0 | 0 | **PASS** |
 | **Password Encoder** | `PasswordEncoderTest` | 1 | 0 | 0 | 0 | **PASS** |
 | **Application Context** | `MyGarageApplicationTests` | 1 | 0 | 0 | 0 | **PASS** |
-| **TOTAL** | | **413** | **0** | **0** | **0** | **PASS** |
+| **TOTAL** | | **439** | **0** | **0** | **0** | **PASS** |
 
 ---
 
