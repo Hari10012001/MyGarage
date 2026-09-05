@@ -1283,13 +1283,103 @@ class QCAuditRunner:
                 page.screenshot(path=ss)
                 self.record_scenario(46, "Reliability Tampering & Admin 403 Isolation (S46)", "FAIL", str(e), ss, time.time() - t0)
 
+            # --- M18: Vehicle Operational Readiness, Journey Risk Simulator & Fleet Mission Dispatch Engine ---
+            # --- S47: Garage Fleet Mission Dispatch Audit (S47) ---
+            t0 = time.time()
+            try:
+                page.goto(BASE_URL + "/vehicles/dispatch")
+                page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Garage Fleet Mission Dispatch")).to_be_visible()
+                expect(page.locator("text=Mission Journey Parameters")).to_be_visible()
+                expect(page.locator("text=Garage Fleet Journey Suitability Ranking")).to_be_visible()
+
+                # Adjust distance to 1200 km and submit form
+                page.fill("input[name='tripDistanceKm']", "1200")
+                page.click("button:has-text('Evaluate Fleet')")
+                page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Garage Fleet Journey Suitability Ranking")).to_be_visible()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "47_garage_fleet_dispatch.png")
+                page.screenshot(path=ss)
+                self.record_scenario(47, "Garage Fleet Mission Dispatch Audit (S47)", "PASS", "Fleet dispatch matrix rendered successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "47_garage_fleet_dispatch_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(47, "Garage Fleet Mission Dispatch Audit (S47)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S48: Vehicle Trip Readiness Simulator Audit (S48) ---
+            t0 = time.time()
+            try:
+                if getattr(self, 'user_a_vehicle_id', None):
+                    page.goto(f"{BASE_URL}/vehicles/{self.user_a_vehicle_id}/readiness")
+                else:
+                    page.click("a.btn-outline-info:has-text('Readiness')")
+                page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Operational Journey Readiness")).to_be_visible()
+                expect(page.locator("text=Trip Readiness Index (TRI)").first).to_be_visible()
+                expect(page.locator("text=Consumable Reserve Margins")).to_be_visible()
+                expect(page.locator("text=Trip Fuel & Range Staging")).to_be_visible()
+                expect(page.locator("text=Pre-Trip Inspection Checklist")).to_be_visible()
+
+                # Simulate a longer trip of 1500 km
+                page.fill("input[name='tripDistanceKm']", "1500")
+                page.click("button:has-text('Simulate')")
+                page.wait_for_load_state("domcontentloaded")
+
+                expect(page.locator("text=Trip Readiness Index (TRI)").first).to_be_visible()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "48_vehicle_trip_readiness.png")
+                page.screenshot(path=ss)
+                self.record_scenario(48, "Vehicle Trip Readiness Simulator Audit (S48)", "PASS", "Journey simulator rendered and recalculated successfully", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "48_vehicle_trip_readiness_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(48, "Vehicle Trip Readiness Simulator Audit (S48)", "FAIL", str(e), ss, time.time() - t0)
+
+            # --- S49: Readiness Security Isolation & Admin Blocking (S49) ---
+            t0 = time.time()
+            try:
+                # User A session attempts to access User B's vehicle readiness
+                if getattr(self, 'user_b_vehicle_id', None):
+                    tamper_url = f"{BASE_URL}/vehicles/{self.user_b_vehicle_id}/readiness"
+                    page.goto(tamper_url)
+                    # Must be redirected to /vehicles
+                    expect(page).to_have_url(f"{BASE_URL}/vehicles")
+
+                # Admin blocked from readiness view
+                admin_context = browser.new_context()
+                ap = admin_context.new_page()
+                ap.goto(BASE_URL + "/login")
+                ap.fill("input[name='email']", "admin@mygarage.com")
+                ap.fill("input[name='password']", "Admin@123")
+                ap.click("button[type='submit']")
+                ap.wait_for_url("**/admin/dashboard")
+
+                # Admin tries to access User A's vehicle readiness
+                if getattr(self, 'user_a_vehicle_id', None):
+                    r = ap.goto(f"{BASE_URL}/vehicles/{self.user_a_vehicle_id}/readiness")
+                    assert r.status in [403, 302], f"Expected 403 or redirect for admin accessing user readiness, got {r.status}"
+
+                admin_context.close()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "49_readiness_security_isolation.png")
+                page.screenshot(path=ss)
+                self.record_scenario(49, "Readiness Security Isolation & Admin Blocking (S49)", "PASS", "Two-tier ownership and admin isolation verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "49_readiness_security_isolation_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(49, "Readiness Security Isolation & Admin Blocking (S49)", "FAIL", str(e), ss, time.time() - t0)
+
             browser.close()
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()
 
         summary = {
-            "title": "MyGarage M1–M17 Playwright Browser QC Audit Report",
+            "title": "MyGarage M1–M18 Playwright Browser QC Audit Report",
             "system_id": "APPJFS19",
             "base_url": BASE_URL,
             "start_time": self.start_time.isoformat(),

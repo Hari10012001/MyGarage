@@ -774,6 +774,160 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
       "vriScore": 65,
       "reliabilityGrade": "MODERATE",
       "totalVisits": 4,
+- **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### L. Fuel Efficiency Intelligence & Historical Price Analytics APIs (M16)
+
+#### 1. Vehicle Fuel Analytics Report
+- **Method:** `GET /api/vehicles/{id}/fuel-analytics`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN01-AB-1234",
+    "make": "Honda",
+    "model": "City",
+    "fuelType": "PETROL",
+    "currentOdometer": 15000,
+    "lifetimeFuelCost": 12500.00,
+    "lifetimeLiters": 125.00,
+    "lifetimeAvgMileageKmpl": 14.8,
+    "bestMileageKmpl": 17.5,
+    "worstMileageKmpl": 12.2,
+    "mileageStdDev": 1.45,
+    "rolling30DayAvgKmpl": 15.2,
+    "rolling90DayAvgKmpl": 14.9,
+    "monthlyBreakdowns": [
+      {
+        "yearMonth": "2025-08",
+        "totalVolumeLiters": 45.00,
+        "totalCost": 4500.00,
+        "fillUpCount": 2,
+        "averagePricePerLiter": 100.00
+      }
+    ]
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage-Wide Fleet Fuel Intelligence
+- **Method:** `GET /api/analytics/garage-fuel`
+- **Access:** `ROLE_NORMAL_USER`
+- **Response:** `200 OK`
+  ```json
+  {
+    "garageTotalFuelCost": 25000.00,
+    "garageTotalLiters": 250.00,
+    "garageAverageKmpl": 15.1,
+    "vehicles": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN01-AB-1234",
+        "make": "Honda",
+        "model": "City",
+        "averageKmpl": 14.8,
+        "efficiencyBadge": "ECO_CHAMPION"
+      }
+    ]
+  }
+  ```
+
+---
+
+### M. Vehicle Reliability Engineering, Component Failure Risk & Chronic Defect APIs (M17)
+
+#### 1. Vehicle Reliability Engineering Report
+- **Method:** `GET /api/vehicles/{id}/reliability`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN07-RELIAB01",
+    "make": "Toyota",
+    "model": "Innova",
+    "year": 2020,
+    "currentOdometer": 45000,
+    "vriScore": 92,
+    "reliabilityGrade": "EXCELLENT",
+    "totalServiceVisits": 4,
+    "totalServiceSpend": 18500.00,
+    "mdbfKm": 11250.0,
+    "mtbsDays": 120.5,
+    "unscheduledBreakdownCount": 1,
+    "unscheduledBreakdownSpend": 4500.00,
+    "correctiveServiceRatio": 24.3,
+    "routineMaintenanceCount": 3,
+    "routineMaintenanceSpend": 14000.00,
+    "subsystemBreakdowns": [
+      {
+        "subsystem": "BRAKING_TIRES",
+        "displayName": "Braking & Tires",
+        "recordCount": 1,
+        "totalCost": 4500.00,
+        "spendPercentage": 24.3,
+        "lastRepairDate": "2025-08-15"
+      },
+      {
+        "subsystem": "POWERTRAIN_ENGINE",
+        "displayName": "Powertrain & Engine",
+        "recordCount": 3,
+        "totalCost": 14000.00,
+        "spendPercentage": 75.7,
+        "lastRepairDate": "2025-06-10"
+      }
+    ],
+    "chronicDefectAlerts": [],
+    "workshops": [
+      {
+        "workshopName": "Toyota Authorized Dealership",
+        "visitCount": 3,
+        "totalSpend": 14000.00,
+        "averageCostPerVisit": 4666.67,
+        "meanReturnIntervalDays": 130.0
+      }
+    ],
+    "serviceAccelerationStatus": "STABLE",
+    "disclaimer": "Reliability classification, subsystem identification, chronic-defect detection, and VRI are deterministic rule-based analytical models derived from existing service and maintenance records, not OEM diagnostic or sensor-confirmed failure data."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage-Wide Fleet Reliability Matrix
+- **Method:** `GET /api/analytics/garage-reliability`
+- **Access:** `ROLE_NORMAL_USER`
+- **Response:** `200 OK`
+  ```json
+  {
+    "averageGarageVri": 88,
+    "fleetReliabilityGrade": "GOOD",
+    "fleetMdbfKm": 9800.5,
+    "fleetTotalBreakdownSpend": 12000.00,
+    "fleetTotalServiceVisits": 8,
+    "mostReliableVehicle": {
+      "vehicleId": 1,
+      "plateNumber": "TN07-RELIAB01",
+      "make": "Toyota",
+      "model": "Innova",
+      "year": 2020,
+      "vriScore": 92,
+      "reliabilityGrade": "EXCELLENT",
+      "totalVisits": 4,
+      "mdbfKm": 11250.0,
+      "breakdownRisk": "LOW"
+    },
+    "highestRiskVehicle": {
+      "vehicleId": 2,
+      "plateNumber": "TN07-OTHER99",
+      "make": "Hyundai",
+      "model": "Verna",
+      "year": 2021,
+      "vriScore": 65,
+      "reliabilityGrade": "MODERATE",
+      "totalVisits": 4,
       "mdbfKm": 6200.0,
       "breakdownRisk": "MODERATE"
     },
@@ -783,6 +937,115 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
       "Overall fleet reliability is in a healthy operating window. Continue scheduled preventive servicing."
     ],
     "disclaimer": "Reliability classification, subsystem identification, chronic-defect detection, and VRI are deterministic rule-based analytical models derived from existing service and maintenance records, not OEM diagnostic or sensor-confirmed failure data."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### N. Vehicle Operational Readiness, Journey Risk & Fleet Mission Dispatch APIs (M18)
+
+#### 1. Vehicle Trip Readiness & Journey Simulation Report
+- **Method:** `GET /api/vehicles/{id}/readiness?tripDistanceKm={distance}&tripDays={days}&drivingRegime={regime}`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only; Admin blocked with 403 Forbidden)
+- **Parameters:**
+  - `tripDistanceKm` (optional, default: `500.0`, range: `10.0` to `10000.0`)
+  - `tripDays` (optional, default: `2`, range: `1` to `30`)
+  - `drivingRegime` (optional, default: `HIGHWAY_CRUISE`, values: `HIGHWAY_CRUISE`, `MIXED_BALANCED`, `CITY_CONGESTED`, `MOUNTAIN_SEVERE`)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "vehicleName": "2021 Toyota Camry",
+    "licensePlate": "TN09-READY01",
+    "categoryName": "Sedan",
+    "currentMileage": 30000,
+    "tripDistanceKm": 600.0,
+    "tripDays": 2,
+    "drivingRegime": "HIGHWAY_CRUISE",
+    "postTripProjectedMileage": 30600.0,
+    "tripReadinessIndex": 92,
+    "readinessBand": "MISSION_READY",
+    "readinessSummary": "Vehicle demonstrates high operational readiness for the planned journey. Consumable margins are healthy.",
+    "hasMidTripBreach": false,
+    "midTripBreachAlerts": [],
+    "consumableMargins": [
+      {
+        "subsystemName": "Engine Oil & Filter",
+        "benchmarkIntervalKm": 10000,
+        "benchmarkIntervalDays": 180,
+        "kmSinceLastService": 2000,
+        "daysSinceLastService": 30,
+        "remainingMarginKm": 8000,
+        "remainingMarginPercent": 80.0,
+        "postTripMarginKm": 7400,
+        "willBreachMidTrip": false,
+        "breachAtTripKm": null,
+        "statusBand": "OPTIMAL"
+      }
+    ],
+    "fuelStaging": {
+      "tripDistanceKm": 600.0,
+      "estimatedConsumptionPer100Km": 7.0,
+      "estimatedFuelNeededLiters": 42.0,
+      "estimatedFuelCost": 63.00,
+      "estimatedCruisingRangeKm": 714.0,
+      "estimatedFuelStopsRequired": 0,
+      "fuelType": "PETROL",
+      "regimeAdjustmentDescription": "Highway Cruise (0.90x consumption factor)",
+      "isHistoricalDataAvailable": true
+    },
+    "checklist": [
+      {
+        "category": "CONSUMABLE",
+        "title": "Engine Oil & Filter Verified",
+        "description": "Sufficient reserve margin (8000 km available; 7400 km after trip).",
+        "severity": "PASSED",
+        "isActionRequired": false
+      }
+    ],
+    "criticalActionCount": 0,
+    "advisoryCount": 0,
+    "passedCount": 4,
+    "analyticalDisclaimer": "The Trip Readiness Index (TRI) is an analytical readiness estimate based on recorded vehicle history, deterministic software rules, and benchmark model assumptions. It is NOT an engineering or mechanical safety guarantee, and does not guarantee that the vehicle will safely complete any journey. Always conduct a thorough physical pre-trip inspection.",
+    "benchmarkAssumptionsNote": "Benchmark maintenance intervals are configurable model assumptions (Engine Oil: 10,000 km / 180 days; Brakes: 20,000 km / 365 days; Coolant: 40,000 km / 730 days; Tires/Suspension: 30,000 km / 540 days), not universal OEM manufacturer specifications. Missing historical records produce conservative estimates.",
+    "hasHistoricalRecords": true
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage-Wide Fleet Mission Dispatch Report
+- **Method:** `GET /api/analytics/garage-dispatch?tripDistanceKm={distance}&tripDays={days}&drivingRegime={regime}`
+- **Access:** `ROLE_NORMAL_USER` (Admin blocked with 403 Forbidden)
+- **Response:** `200 OK`
+  ```json
+  {
+    "tripDistanceKm": 600.0,
+    "tripDays": 2,
+    "drivingRegime": "HIGHWAY_CRUISE",
+    "optimalVehicleId": 1,
+    "optimalVehicleName": "2021 Toyota Camry",
+    "dispatchRecommendationSummary": "Optimal vehicle selected: 2021 Toyota Camry with 92% readiness index.",
+    "candidates": [
+      {
+        "vehicleId": 1,
+        "vehicleName": "2021 Toyota Camry",
+        "licensePlate": "TN09-READY01",
+        "categoryName": "Sedan",
+        "currentMileage": 30000,
+        "tripReadinessIndex": 92,
+        "readinessBand": "MISSION_READY",
+        "estimatedTripFuelCost": 63.00,
+        "estimatedFuelNeededLiters": 42.0,
+        "criticalIssuesCount": 0,
+        "hasMidTripBreach": false,
+        "dispatchRecommendation": "OPTIMAL_CHOICE",
+        "recommendationRationale": "Recommended dispatch vehicle: Highest readiness index (92%) with $63.00 projected fuel cost."
+      }
+    ],
+    "totalActiveVehiclesEvaluated": 1,
+    "missionReadyVehiclesCount": 1,
+    "analyticalDisclaimer": "The Trip Readiness Index (TRI) is an analytical readiness estimate based on recorded vehicle history, deterministic software rules, and benchmark model assumptions. It is NOT an engineering or mechanical safety guarantee, and does not guarantee that the vehicle will safely complete any journey. Always conduct a thorough physical pre-trip inspection."
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)

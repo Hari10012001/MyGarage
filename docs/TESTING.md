@@ -43,6 +43,9 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 
 | Test Suite | Class Name | Tests | Failures | Errors | Skipped | Status |
 |---|---|---|---|---|---|---|
+| **Operational Readiness & Dispatch** | `VehicleReadinessEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
+| **Reliability & Defect Intelligence** | `VehicleReliabilityEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
+| **Fuel Efficiency & Price Analytics** | `FuelAnalyticsModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **TCO Lifecycle & Asset Advisory** | `VehicleTcoLifecycleModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Predictive Maintenance & Health Scoring** | `PredictiveMaintenanceModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Comparative Analytics & Fleet Benchmarking** | `VehicleComparisonModuleTest` | 24 | 0 | 0 | 0 | **PASS** |
@@ -60,7 +63,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 | **Maintenance Service** | `MaintenanceServiceTest` | 5 | 0 | 0 | 0 | **PASS** |
 | **Password Encoder** | `PasswordEncoderTest` | 1 | 0 | 0 | 0 | **PASS** |
 | **Application Context** | `MyGarageApplicationTests` | 1 | 0 | 0 | 0 | **PASS** |
-| **TOTAL** | | **338** | **0** | **0** | **0** | **PASS** |
+| **TOTAL** | | **413** | **0** | **0** | **0** | **PASS** |
 
 ---
 
@@ -123,8 +126,8 @@ mvn clean test "-Dspring.profiles.active=test"
 
 | Metric | Result |
 |---|---|
-| Total Scenarios | 46 |
-| Passed | **46** |
+| Total Scenarios | 49 |
+| Passed | **49** |
 | Failed | **0** |
 | Console Errors | **0** |
 | Network Failures (unexpected) | **0** |
@@ -134,25 +137,25 @@ mvn clean test "-Dspring.profiles.active=test"
 
 | Group | Scenarios | Coverage |
 |---|---|---|
-| Application Shell | S01S02 | Startup, unauthenticated redirect |
-| Authentication | S03S06, S40 | Registration, login, invalid creds, logout + session invalidation |
-| Dashboard & Navigation | S07S08 | Empty state, sidebar/header all links |
-| Vehicle CRUD | S09S14 | Form validation, creation, uniqueness, detail, edit |
-| Service Records | S15S16 | Create service record, global feed |
-| Fuel Records | S17S18 | Create two fill-ups, dynamic km/L, global feed |
-| Maintenance | S19S21 | Create upcoming/overdue, urgency badge, one-click complete |
-| Reports & Exports | S22S24 | Reports hub, resale dossier, RFC 4180 CSV (5 endpoints) |
+| Application Shell | S01-S02 | Startup, unauthenticated redirect |
+| Authentication | S03-S06, S40 | Registration, login, invalid creds, logout + session invalidation |
+| Dashboard & Navigation | S07-S08 | Empty state, sidebar/header all links |
+| Vehicle CRUD | S09-S14 | Form validation, creation, uniqueness, detail, edit |
+| Service Records | S15-S16 | Create service record, global feed |
+| Fuel Records | S17-S18 | Create two fill-ups, dynamic km/L, global feed |
+| Maintenance | S19-S21 | Create upcoming/overdue, urgency badge, one-click complete |
+| Reports & Exports | S22-S24 | Reports hub, resale dossier, RFC 4180 CSV (5 endpoints) |
 | Comparative Analytics (M13) | S25 | Side-by-side comparison matrix |
-| Predictive Maintenance (M14) | S26S28 | VHI forecast, service planner, milestone conversion + duplicate guard |
-| TCO & Asset Advisory (M15) | S29S30 | TCO dashboard, garage TCO overview |
+| Predictive Maintenance (M14) | S26-S28 | VHI forecast, service planner, milestone conversion + duplicate guard |
+| TCO & Asset Advisory (M15) | S29-S30 | TCO dashboard, garage TCO overview |
 | Profile | S31 | Profile view + update |
-| Security  Cross-User | S32 | URL tampering for vehicles, dossiers, forecasts, TCO ? 400/403/404 |
-| Admin Governance | S33S37 | Admin auth, user mgmt + inviolability, categories, monitoring, privacy |
-| Responsive Layout | S38 | 4 viewports (Mobile?Desktop) across 4 pages |
+| Security & Cross-User | S32 | URL tampering for vehicles, dossiers, forecasts, TCO -> 400/403/404 |
+| Admin Governance | S33-S37 | Admin auth, user mgmt + inviolability, categories, monitoring, privacy |
+| Responsive Layout | S38 | 4 viewports (Mobile-Desktop) across 4 pages |
 | Boundary/404 | S39 | Unknown routes handled cleanly |
 | Fuel Efficiency Intelligence (M16) | S41-S43 | Garage fuel summary, vehicle rolling trends and tampering guard |
 | Vehicle Reliability Engineering (M17) | S44-S46 | Fleet reliability matrix, vehicle VRI dashboard and admin/cross-user isolation |
-
+| Vehicle Operational Readiness & Dispatch (M18) | S47-S49 | Fleet dispatch, trip readiness simulator, and cross-user/admin isolation |
 
 ---
 
@@ -177,3 +180,22 @@ mvn clean test "-Dspring.profiles.active=test"
   - Defensive edge cases (0 records, 1 record, null descriptions/costs/odometers, non-monotonic odometers).
   - Cross-user tampering safe redirection and REST 403 Forbidden enforcement.
   - ROLE_ADMIN access blocking with 403 Forbidden.
+
+---
+
+## 8. Layer 15: Vehicle Operational Readiness, Journey Risk & Fleet Mission Dispatch Testing (M18)
+
+- **Dedicated Suite:** `VehicleReadinessEngineModuleTest` (25 Tests)
+- **Scope:**
+  - Trip Readiness Index (TRI 0-100 clamped) composite scoring across 4 readiness bands (`MISSION_READY`, `GOOD_CONDITION`, `CAUTION_REQUIRED`, `HIGH_RISK`).
+  - Consumable reserve margin tracking across 4 subsystems (Engine Oil: 10k km / 180d, Brakes: 20k km / 365d, Coolant: 40k km / 730d, Tires/Suspension: 30k km / 540d).
+  - Mid-journey interval breach detection and exact breach kilometer calculation.
+  - Driving regime fuel consumption adjustment (0.90x Highway, 1.00x Mixed, 1.15x City, 1.25x Mountain/Severe).
+  - Cruising range per full tank and minimum fuel stop estimation with 15% safety buffer.
+  - Multi-factor pre-trip inspection checklist generation (`CRITICAL`, `ADVISORY`, `PASSED`).
+  - High-mileage and vintage vehicle stress penalty evaluations.
+  - Garage-wide fleet mission dispatch candidate ranking and `OPTIMAL_CHOICE` designation.
+  - Boundary input clamping (negative distance -> 10 km, excessive distance -> 10,000 km, days 1 to 30).
+  - Empty garage and zero historical record graceful defaults.
+  - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
+
