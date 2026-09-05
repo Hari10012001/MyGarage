@@ -1,8 +1,8 @@
 # TESTING & VERIFICATION REPORT — MyGarage (APPJFS19)
 
 **System ID:** APPJFS19  
-**Total Automated Tests:** **439**  
-**Pass Rate:** **100% (439/439 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
+**Total Automated Tests:** **471**  
+**Pass Rate:** **100% (471/471 PASS, 0 Failures, 0 Errors, 0 Skipped)**  
 **Regression Status:** **`BUILD SUCCESS`**
 
 ---
@@ -43,6 +43,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 
 | Test Suite | Class Name | Tests | Failures | Errors | Skipped | Status |
 |---|---|---|---|---|---|---|
+| **Operational Budget & Cash-Flow Forecast** | `VehicleFiscalBudgetModuleTest` | 32 | 0 | 0 | 0 | **PASS** |
 | **Maintenance Deficit & Backlog Debt** | `VehicleMaintenanceDeficitModuleTest` | 26 | 0 | 0 | 0 | **PASS** |
 | **Operational Readiness & Dispatch** | `VehicleReadinessEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
 | **Reliability & Defect Intelligence** | `VehicleReliabilityEngineModuleTest` | 25 | 0 | 0 | 0 | **PASS** |
@@ -64,7 +65,7 @@ The MyGarage testing harness combines automated JUnit 5 / Spring Boot MockMvc in
 | **Maintenance Service** | `MaintenanceServiceTest` | 5 | 0 | 0 | 0 | **PASS** |
 | **Password Encoder** | `PasswordEncoderTest` | 1 | 0 | 0 | 0 | **PASS** |
 | **Application Context** | `MyGarageApplicationTests` | 1 | 0 | 0 | 0 | **PASS** |
-| **TOTAL** | | **439** | **0** | **0** | **0** | **PASS** |
+| **TOTAL** | | **471** | **0** | **0** | **0** | **PASS** |
 
 ---
 
@@ -157,6 +158,8 @@ mvn clean test "-Dspring.profiles.active=test"
 | Fuel Efficiency Intelligence (M16) | S41-S43 | Garage fuel summary, vehicle rolling trends and tampering guard |
 | Vehicle Reliability Engineering (M17) | S44-S46 | Fleet reliability matrix, vehicle VRI dashboard and admin/cross-user isolation |
 | Vehicle Operational Readiness & Dispatch (M18) | S47-S49 | Fleet dispatch, trip readiness simulator, and cross-user/admin isolation |
+| Vehicle Maintenance Deficit & Backlog Debt (M19) | S50-S52 | Single-vehicle MDI dashboard, compound cascade risk, fleet triage matrix, admin/cross-user isolation |
+| Operational Budgeting & Cash-Flow Forecast (M20) | S53-S55 | Single-vehicle 12-month cash-flow forecast, EVRI volatility gauge, garage budget matrix, admin/cross-user isolation |
 
 ---
 
@@ -199,4 +202,38 @@ mvn clean test "-Dspring.profiles.active=test"
   - Boundary input clamping (negative distance -> 10 km, excessive distance -> 10,000 km, days 1 to 30).
   - Empty garage and zero historical record graceful defaults.
   - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
+
+---
+
+## 9. Layer 16: Vehicle Maintenance Deficit Index & Deferred Backlog Debt Testing (M19)
+
+- **Dedicated Suite:** `VehicleMaintenanceDeficitModuleTest` (26 Tests)
+- **Scope:**
+  - Maintenance Deficit Index (MDI %) percentage of residual asset value ($D_{\text{deferred}} / \text{RAV} \times 100\%$).
+  - Strict bifurcation of Deferred Maintenance Debt ($D_{\text{deferred}}$) vs Near-Term Maintenance Exposure ($E_{\text{nearTerm}}$).
+  - Single immutable benchmark cost and interval policy ($95 Oil, $180 Brakes, $140 Coolant, $160 Tires, $320 PMS, $110 General).
+  - Deterministic deduplication between active maintenance records and exhausted consumable obligations.
+  - Multi-factor RME scoring with urgency weighting and subsystem criticality weighting.
+  - Garage-wide fleet deficit matrix, vehicle ranking, and priority recovery queue.
+  - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
+
+---
+
+## 10. Layer 17: Vehicle Operational Budgeting & Predictive Cash-Flow Forecast Testing (M20)
+
+- **Dedicated Suite:** `VehicleFiscalBudgetModuleTest` (32 Tests)
+- **Scope:**
+  - Discrete completed calendar months window $N = \min(12, \max(1, \text{monthsActive}))$, excluding partial current month.
+  - Explicit zero-spend months materialization with $0.00.
+  - Deterministic historical deduplication (same vehicle, $\le 2$ calendar days, same normalized subsystem, $|m.\text{cost} - s.\text{cost}| < 0.01$ or missing cost resolution).
+  - Expense Volatility & Risk Index (EVRI 0–100) coefficient of variation scaling and mathematical boundary guards ($\bar{B} == 0 \implies 0.0$, $N == 1 \implies 0.0$).
+  - 12-month forward cash-flow forecasting combining 4-tier fuel fallback hierarchy and predictive wear intervals.
+  - Direct reuse of M14 `PredictiveMaintenanceService` without duplicate wear engines.
+  - Future obligation identity deduplication via `NormalizedSubsystem + NormalizedScopeCode`.
+  - Authoritative maintenance benchmark costs and category fuel benchmark assumptions.
+  - Recommended Liquidity Reserve advisory buffer formula.
+  - Garage fleet fiscal matrix rollup, fleet vehicle rankings, and consolidated cash-flow calendar.
+  - Chronological odometer anomaly handling (`ROLLBACK_DETECTED`, `STATIONARY_USAGE`).
+  - Two-tier security isolation: Web MVC flash redirect, REST API 403 Forbidden, and ROLE_ADMIN 403 blocking.
+
 

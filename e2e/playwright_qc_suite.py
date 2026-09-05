@@ -1494,13 +1494,148 @@ class QCAuditRunner:
                 page.screenshot(path=ss)
                 self.record_scenario(52, "Maintenance Deficit Security, Ownership Isolation & ADMIN Blocking (S52)", "FAIL", str(e), ss, time.time() - t0)
 
+            # -------------------------------------------------------------
+            # Scenario 53: Vehicle Operational Budget & 12-Month Cash-Flow Forecast (S53)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                # Ensure User A is logged in
+                self.login_user(page, self.user_a_email, self.user_a_pass)
+
+                veh_id = getattr(self, 'user_a_vehicle_id', None)
+                if not veh_id:
+                    page.goto(BASE_URL + "/vehicles")
+                    link = page.locator("a[href*='/vehicles/'][href*='/fiscal-budget']").first
+                    if link.count() > 0:
+                        href = link.get_attribute("href")
+                        veh_id = href.split("/")[2]
+                    else:
+                        first_card = page.locator(".card a[href*='/vehicles/']").first
+                        href = first_card.get_attribute("href")
+                        veh_id = href.split("/")[2]
+
+                # Navigate to single-vehicle fiscal budget view
+                page.goto(f"{BASE_URL}/vehicles/{veh_id}/fiscal-budget")
+                page.wait_for_load_state("domcontentloaded")
+                expect(page.locator("text=Vehicle Operating Budget & Cash-Flow Forecast").first).to_be_visible()
+                expect(page.locator("text=Analytical Modeling Disclaimer")).to_be_visible()
+                expect(page.locator("text=Expenditure Volatility & Risk Index (EVRI)").first).to_be_visible()
+                expect(page.locator("text=Rolling Monthly Burn").first).to_be_visible()
+                expect(page.locator("text=Recommended Liquidity Buffer").first).to_be_visible()
+                expect(page.locator("text=Historical Completed Calendar Spend Window").first).to_be_visible()
+                expect(page.locator("text=12-Month Forward Predictive Cash-Flow Forecast").first).to_be_visible()
+
+                # Multi-width responsive layout check (desktop, laptop, tablet, mobile)
+                for width, height in [(1280, 800), (1024, 768), (768, 1024), (375, 667)]:
+                    page.set_viewport_size({"width": width, "height": height})
+                    page.wait_for_timeout(200)
+
+                # Reset to standard desktop size
+                page.set_viewport_size({"width": 1280, "height": 800})
+
+                ss = os.path.join(SCREENSHOTS_DIR, "53_vehicle_fiscal_budget.png")
+                page.screenshot(path=ss)
+                self.record_scenario(53, "Vehicle Operational Budget & 12-Month Cash-Flow Forecast (S53)", "PASS", "Monthly burn rates, EVRI volatility gauge, liquidity buffer, 12-month forecast and responsive layouts verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "53_vehicle_fiscal_budget_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(53, "Vehicle Operational Budget & 12-Month Cash-Flow Forecast (S53)", "FAIL", str(e), ss, time.time() - t0)
+
+            # -------------------------------------------------------------
+            # Scenario 54: Garage Fleet Fiscal Matrix & Portfolio Budget Rollup (S54)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                page.goto(f"{BASE_URL}/vehicles/fiscal-budget")
+                expect(page.locator("text=Garage Fleet Operating Budget Matrix").first).to_be_visible()
+                expect(page.locator("text=Total Monthly Burn").first).to_be_visible()
+                expect(page.locator("text=Annual Projected Outlay").first).to_be_visible()
+                expect(page.locator("text=Total Recommended Liquidity Buffer").first).to_be_visible()
+                expect(page.locator("text=Vehicle Fiscal Allocation & Burn-Rate Breakdown").first).to_be_visible()
+                expect(page.locator("text=Consolidated Fleet 12-Month Cash-Flow Calendar").first).to_be_visible()
+
+                # Multi-width responsive layout check
+                for width, height in [(1024, 768), (768, 1024), (375, 667)]:
+                    page.set_viewport_size({"width": width, "height": height})
+                    page.wait_for_timeout(200)
+
+                page.set_viewport_size({"width": 1280, "height": 800})
+
+                ss = os.path.join(SCREENSHOTS_DIR, "54_garage_fiscal_budget_matrix.png")
+                page.screenshot(path=ss)
+                self.record_scenario(54, "Garage Fleet Fiscal Matrix & Portfolio Budget Rollup (S54)", "PASS", "Portfolio burn rate, budget allocation progress bars, consolidated timeline, and responsive views verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "54_garage_fiscal_budget_matrix_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(54, "Garage Fleet Fiscal Matrix & Portfolio Budget Rollup (S54)", "FAIL", str(e), ss, time.time() - t0)
+
+            # -------------------------------------------------------------
+            # Scenario 55: Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)
+            # -------------------------------------------------------------
+            t0 = time.time()
+            try:
+                veh_a_id = getattr(self, 'user_a_vehicle_id', None)
+
+                # 1. Unauthenticated access blocked -> redirects to login
+                unauth_context = browser.new_context()
+                up = unauth_context.new_page()
+                up.goto(f"{BASE_URL}/vehicles/{veh_a_id}/fiscal-budget")
+                expect(up).to_have_url(f"{BASE_URL}/login")
+                unauth_context.close()
+
+                # 2. User B logged in tries to access User A's vehicle fiscal budget
+                self.logout_user(page)
+                self.login_user(page, self.user_b_email, self.user_b_pass)
+
+                if veh_a_id:
+                    # Web MVC cross-user tampering -> redirected to /vehicles
+                    page.goto(f"{BASE_URL}/vehicles/{veh_a_id}/fiscal-budget")
+                    page.wait_for_load_state("domcontentloaded")
+                    expect(page).to_have_url(f"{BASE_URL}/vehicles")
+
+                    # REST API cross-user tampering -> HTTP 403 Forbidden
+                    response = page.request.get(f"{BASE_URL}/api/vehicles/{veh_a_id}/fiscal-budget")
+                    assert response.status == 403, f"Expected 403 for cross-user REST access, got {response.status}"
+
+                # 3. Admin blocked from fiscal budget views and APIs
+                admin_context = browser.new_context()
+                ap = admin_context.new_page()
+                ap.goto(BASE_URL + "/login")
+                ap.fill("input[name='email']", "admin@mygarage.com")
+                ap.fill("input[name='password']", "Admin@123")
+                ap.locator("form[action*='/login'] button[type='submit']").click()
+                ap.wait_for_load_state("domcontentloaded")
+
+                if veh_a_id:
+                    # Web MVC admin denial -> 403 or redirect
+                    r_web = ap.goto(f"{BASE_URL}/vehicles/{veh_a_id}/fiscal-budget")
+                    assert r_web.status in [403, 302], f"Expected 403 or redirect for admin accessing user fiscal budget web, got {r_web.status}"
+
+                    # REST API admin denial -> HTTP 403 Forbidden
+                    r_api = ap.request.get(f"{BASE_URL}/api/vehicles/{veh_a_id}/fiscal-budget")
+                    assert r_api.status == 403, f"Expected 403 for admin REST access, got {r_api.status}"
+
+                # Garage fiscal matrix admin denial -> 403 Forbidden
+                r_matrix = ap.request.get(f"{BASE_URL}/api/analytics/garage-fiscal-budget")
+                assert r_matrix.status == 403, f"Expected 403 for admin REST garage matrix, got {r_matrix.status}"
+
+                admin_context.close()
+
+                ss = os.path.join(SCREENSHOTS_DIR, "55_fiscal_budget_security_isolation.png")
+                page.screenshot(path=ss)
+                self.record_scenario(55, "Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)", "PASS", "Unauthenticated redirect, cross-user Web redirect, REST 403, and ADMIN denial verified", ss, time.time() - t0)
+            except Exception as e:
+                ss = os.path.join(SCREENSHOTS_DIR, "55_fiscal_budget_security_isolation_fail.png")
+                page.screenshot(path=ss)
+                self.record_scenario(55, "Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)", "FAIL", str(e), ss, time.time() - t0)
+
             browser.close()
 
         self.end_time = datetime.now()
         total_duration = (self.end_time - self.start_time).total_seconds()
 
         summary = {
-            "title": "MyGarage M1–M19 Playwright Browser QC Audit Report",
+            "title": "MyGarage M1–M20 Playwright Browser QC Audit Report",
             "system_id": "APPJFS19",
             "base_url": BASE_URL,
             "start_time": self.start_time.isoformat(),

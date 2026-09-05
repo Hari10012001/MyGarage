@@ -1177,3 +1177,123 @@ All error responses from `/api/**` return a structured JSON body with HTTP statu
   }
   ```
 - **Error Responses:** `403 Forbidden` (admin access)
+
+---
+
+### U. Milestone 20 — Vehicle Operational Budgeting, Predictive Cash-Flow Forecast & Maintenance Expense Burn-Rate Engine (`/api/vehicles/{id}/fiscal-budget`, `/api/analytics/garage-fiscal-budget`)
+*Accessible by: Authenticated Vehicle Owner (`ROLE_NORMAL_USER`)*  
+*Two-Tier Security: Cross-user access returns `403 Forbidden`; `ROLE_ADMIN` returns `403 Forbidden`*
+
+#### 1. Vehicle Operational Budget & Cash-Flow Forecast Report
+- **Method:** `GET /api/vehicles/{id}/fiscal-budget`
+- **Access:** `ROLE_NORMAL_USER` (Vehicle Owner only)
+- **Response:** `200 OK`
+  ```json
+  {
+    "vehicleId": 1,
+    "plateNumber": "TN09-FISCAL01",
+    "make": "Toyota",
+    "model": "Camry",
+    "year": 2021,
+    "currentOdometer": 30000,
+    "categoryName": "Car",
+    "averageMonthlyBurn": 250.00,
+    "peakMonthlySpend": 450.00,
+    "lowestMonthlySpend": 100.00,
+    "expenseVolatilityIndex": 42.50,
+    "volatilityTier": "MODERATE",
+    "recommendedLiquidityReserve": 620.00,
+    "projected12MonthTotalBudget": 2800.00,
+    "projected12MonthFuelBudget": 1200.00,
+    "projected12MonthMaintenanceBudget": 1600.00,
+    "cashFlowProjections": [
+      {
+        "monthIndex": 1,
+        "yearMonth": "2026-10",
+        "monthName": "October 2026",
+        "projectedFuelSpend": 100.00,
+        "projectedMaintenanceSpend": 95.00,
+        "totalProjectedSpend": 195.00,
+        "isPeakSpendMonth": false,
+        "scheduledEvents": [
+          {
+            "eventKey": "ENGINE_OIL_AND_FILTER:ROUTINE",
+            "title": "Engine Oil & Filter Scheduled Service",
+            "subsystem": "ENGINE_OIL_AND_FILTER",
+            "projectedCost": 95.00,
+            "originType": "EXPLICIT_MAINTENANCE"
+          }
+        ]
+      }
+    ],
+    "historicalSpends": [
+      {
+        "yearMonth": "2026-08",
+        "fuelSpend": 120.00,
+        "maintenanceSpend": 0.00,
+        "serviceSpend": 0.00,
+        "totalSpend": 120.00
+      }
+    ],
+    "dataConfidence": {
+      "confidenceTier": "HIGH",
+      "completedMonthsEvaluated": 12,
+      "fuelRecordsCount": 15,
+      "maintenanceRecordsCount": 4,
+      "serviceRecordsCount": 3,
+      "distanceIntensityTier": "NORMAL_COMMUTE",
+      "hasOdometerAnomaly": false
+    },
+    "budgetaryAdvisory": "Operational burn rate is moderate. Maintain liquidity reserve of $620.00 to buffer against scheduled maintenance peaks.",
+    "analyticalDisclaimer": "Operational cash-flow forecasts, expense volatility indices, and liquidity reserve recommendations are MyGarage analytical modeling heuristics...",
+    "benchmarkAssumptionsNote": "Benchmark maintenance costs and fuel rates are authoritative configurable model assumptions..."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (cross-user tampering or admin access)
+
+#### 2. Garage Fleet Fiscal Budget & Cash-Flow Matrix
+- **Method:** `GET /api/analytics/garage-fiscal-budget`
+- **Access:** `ROLE_NORMAL_USER` (Admin blocked with 403 Forbidden)
+- **Response:** `200 OK`
+  ```json
+  {
+    "totalFleetProjected12MonthBudget": 5600.00,
+    "fleetAverageMonthlyBurn": 466.67,
+    "fleetRecommendedLiquidityReserve": 1240.00,
+    "totalVehiclesEvaluated": 2,
+    "lowVolatilityVehiclesCount": 1,
+    "moderateVolatilityVehiclesCount": 1,
+    "highVolatilityVehiclesCount": 0,
+    "criticalVolatilityVehiclesCount": 0,
+    "vehicleBudgets": [
+      {
+        "vehicleId": 1,
+        "plateNumber": "TN09-FISCAL01",
+        "make": "Toyota",
+        "model": "Camry",
+        "categoryName": "Car",
+        "averageMonthlyBurn": 250.00,
+        "evriScore": 42.50,
+        "volatilityTier": "MODERATE",
+        "recommendedLiquidityReserve": 620.00,
+        "projected12MonthTotal": 2800.00,
+        "confidenceTier": "HIGH"
+      }
+    ],
+    "consolidatedFleetCashFlow": [
+      {
+        "monthIndex": 1,
+        "yearMonth": "2026-10",
+        "monthName": "October 2026",
+        "totalFleetFuelSpend": 200.00,
+        "totalFleetMaintenanceSpend": 190.00,
+        "totalFleetProjectedSpend": 390.00
+      }
+    ],
+    "portfolioAdvisory": "Fleet cash flows exhibit moderate predictable variance. Consolidated recommended liquidity reserve is $1,240.00 across 2 active assets.",
+    "analyticalDisclaimer": "Operational cash-flow forecasts, expense volatility indices, and liquidity reserve recommendations are MyGarage analytical modeling heuristics...",
+    "benchmarkAssumptionsNote": "Benchmark maintenance costs and fuel rates are authoritative configurable model assumptions..."
+  }
+  ```
+- **Error Responses:** `403 Forbidden` (admin access)
+
