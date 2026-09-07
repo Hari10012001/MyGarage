@@ -79,10 +79,10 @@ $$\text{WPI} = \left(\frac{\sum_{i=1}^{M} C_i}{\sum_{i=1}^{M} B_{k(i)}}\right) \
 
 ### 3.6 Workshop Value Score (WVS) & 5-Stage Deterministic Tier Precedence
 $$\text{WVS} = \max\left(0.0, \min\left(100.0, 100.0 - (\text{WPI} - 100.0) \times 0.35 - (\text{VRP} \times 0.65)\right)\right)$$
-1. **Rule 1 (Statistical Significance):** $\text{totalVisits} < 3 \implies \mathbf{TIER\_3\_EVALUATING}$.
-2. **Rule 2 (Safety & Quality Failure):** $\text{totalVisits} \ge 3 \land \text{VRP} > 25.0\% \implies \mathbf{TIER\_5\_CAUTION\_HIGH\_REWORK}$.
-3. **Rule 3 (Commercial Cost Outlier):** $\text{totalVisits} \ge 3 \land \text{VRP} \le 25.0\% \land \text{WPI} > 125.0 \implies \mathbf{TIER\_4\_CAUTION\_EXPENSIVE}$.
-4. **Rule 4 (Preferred Value Partner):** $\text{totalVisits} \ge 3 \land \text{WPI} \le 105.0 \land \text{VRP} \le 10.0\% \implies \mathbf{TIER\_1\_PREFERRED}$.
+1. **Rule 1 (Statistical Significance):** $\text{totalVisits} < 2 \implies \mathbf{TIER\_3\_EVALUATING}$.
+2. **Rule 2 (Safety & Quality Failure):** $\text{totalVisits} \ge 2 \land \text{VRP} > 25.0\% \implies \mathbf{TIER\_5\_CAUTION\_HIGH\_REWORK}$.
+3. **Rule 3 (Commercial Cost Outlier):** $\text{totalVisits} \ge 2 \land \text{VRP} \le 25.0\% \land \text{WPI} > 135.0 \implies \mathbf{TIER\_4\_CAUTION\_EXPENSIVE}$.
+4. **Rule 4 (Preferred Value Partner):** $\text{totalVisits} \ge 2 \land \text{WPI} \le 105.0 \land \text{VRP} \le 10.0\% \implies \mathbf{TIER\_1\_PREFERRED}$.
 5. **Rule 5 (Standard Market Provider):** All other multi-visit workshops $\implies \mathbf{TIER\_2\_APPROVED}$.
 
 ### 3.7 Fleet Vendor Spend Concentration (HHI Index)

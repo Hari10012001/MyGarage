@@ -458,17 +458,16 @@ public class WorkshopAnalyticsModuleTest {
         assertThat(report.reworkEvents().get(0).kmBetweenServices()).isNull();
     }
 
-    // 23. Tier Precedence Rule 1: Visits < 3 assigns TIER_3_EVALUATING
+    // 23. Tier Precedence Rule 1: Single visit assigns TIER_3_EVALUATING
     @Test
-    @DisplayName("23. Rule 1: Visits < 3 assigns TIER_3_EVALUATING even with high WPI")
+    @DisplayName("23. Rule 1: Single visit assigns TIER_3_EVALUATING even with high WPI")
     void testTierPrecedence_Rule1_SingleVisitEvaluating() {
         LocalDate today = LocalDate.now();
-        // 2 visits with high cost: 190 on 95 benchmark -> WPI = 200.0%
-        createService(userVehicle, "Short History", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(10), 10000);
-        createService(userVehicle, "Short History", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(5), 11000);
+        // High cost oil change: 190 on 95 benchmark -> WPI = 200.0%
+        createService(userVehicle, "Single Shot", "Oil Change", "Expensive oil", new BigDecimal("190.00"), today.minusDays(5), 10000);
 
-        WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "SHORT_HISTORY");
-        assertThat(report.totalVisits()).isEqualTo(2);
+        WorkshopAnalyticsReportDTO report = workshopAnalyticsService.getWorkshopDetail(testUser, "SINGLE_SHOT");
+        assertThat(report.totalVisits()).isEqualTo(1);
         assertThat(report.valueTier()).isEqualTo("TIER_3_EVALUATING");
         assertThat(report.isPreliminaryData()).isTrue();
     }
@@ -492,7 +491,7 @@ public class WorkshopAnalyticsModuleTest {
 
     // 25. Tier Precedence Rule 3: Expensive tier
     @Test
-    @DisplayName("25. Rule 3: WPI > 125 with low rework assigns TIER_4_CAUTION_EXPENSIVE")
+    @DisplayName("25. Rule 3: WPI > 135 with low rework assigns TIER_4_CAUTION_EXPENSIVE")
     void testTierPrecedence_Rule3_ExpensiveTier() {
         LocalDate today = LocalDate.now();
         // 3 oil changes at $142.50 on $95 benchmark -> WPI = 150.0%, 0 rework
