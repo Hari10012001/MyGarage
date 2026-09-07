@@ -8,7 +8,9 @@ echo  Project: APPJFS19
 echo ============================================================
 echo.
 
-if "%DB_PASSWORD%"=="" set DB_PASSWORD=Hari2025@
+if "%DB_PASSWORD%"=="" (
+    set /p DB_PASSWORD="Enter MySQL Root Password (press Enter if none): "
+)
 if "%DB_USERNAME%"=="" set DB_USERNAME=root
 
 REM Check MySQL is accessible
