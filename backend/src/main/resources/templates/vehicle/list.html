@@ -9,33 +9,10 @@
 </head>
 <body>
 <div class="d-flex">
-    <div class="sidebar-overlay d-lg-none" id="sidebarOverlay" onclick="closeSidebar()"></div>
-    <nav id="sidebar" class="sidebar d-flex flex-column">
-        <div class="sidebar-brand"><i class="bi bi-car-front-fill me-2"></i>MyGarage</div>
-        <ul class="nav flex-column sidebar-nav flex-grow-1">
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link active" th:href="@{/vehicles}"><i class="bi bi-car-front"></i> My Vehicles</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/dispatch}"><i class="bi bi-geo-alt-fill"></i> Trip Dispatch</a></li>
-
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/fuel-analytics}"><i class="bi bi-fuel-pump"></i> Fuel Intelligence</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/reliability}"><i class="bi bi-shield-check"></i> Reliability Index</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/dispatch}"><i class="bi bi-geo-alt-fill"></i> Trip Dispatch</a></li>
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/vehicles/maintenance-deficit}"><i class="bi bi-exclamation-triangle-fill"></i> Deficit Matrix</a></li>
-
-            <li class="nav-item"><a class="nav-link sidebar-link" th:href="@{/profile}"><i class="bi bi-person-circle"></i> My Profile</a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <form th:action="@{/logout}" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left"></i> Logout</button></form>
-        </div>
-    </nav>
+    <!-- Canonical Sidebar Fragment -->
+    <div th:replace="~{fragments/sidebar :: userSidebar('vehicles')}"></div>
     <div class="main-content flex-grow-1">
-        <nav class="topbar navbar navbar-light bg-white border-bottom px-3">
-            <button class="btn btn-sm btn-outline-secondary d-lg-none me-3" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
-            <span class="fw-semibold">My Vehicles</span>
-            <div class="ms-auto"><i class="bi bi-person-circle me-2 text-primary"></i><span class="small text-muted" th:text="${user?.fullName}"></span></div>
-        </nav>
+        <div th:replace="~{fragments/topbar :: topbar('My Vehicles')}"></div>
         <div class="page-content px-4 pb-4">
             <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show mt-3"><i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
             <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>

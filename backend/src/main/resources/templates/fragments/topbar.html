@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<nav th:fragment="topbar(pageTitle)" class="topbar navbar navbar-light bg-white border-bottom px-3 d-flex align-items-center">
+    <!-- Hamburger button for mobile -->
+    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none me-3" type="button" onclick="toggleSidebar()" aria-label="Toggle navigation">
+        <i class="bi bi-list fs-5"></i>
+    </button>
+    <!-- Page Title -->
+    <span class="fw-semibold text-dark fs-6" th:text="${pageTitle != null ? pageTitle : 'MyGarage'}">Dashboard</span>
+    <!-- User Info & Role Badge -->
+    <div class="ms-auto d-flex align-items-center">
+        <span th:if="${user != null and user.role != null and user.role.name() == 'ADMIN'}" class="badge bg-danger me-2" style="font-size: 0.7rem;">ADMIN</span>
+        <i class="bi bi-person-circle me-2 text-primary fs-5"></i>
+        <span class="small text-muted fw-medium" th:text="${user != null ? user.fullName : ''}"></span>
+    </div>
+</nav>
+
+</body>
+</html>
