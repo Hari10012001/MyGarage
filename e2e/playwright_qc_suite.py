@@ -52,7 +52,8 @@ class QCAuditRunner:
             print(f"[PASS] Scenario {number:02d}: {name} ({round(duration, 2)}s)", flush=True)
         elif status == "FAIL":
             self.failed += 1
-            print(f"[FAIL] Scenario {number:02d}: {name} - Error: {details}", flush=True)
+            safe_details = str(details).encode('ascii', 'replace').decode('ascii')
+            print(f"[FAIL] Scenario {number:02d}: {name} - Error: {safe_details}", flush=True)
         else:
             self.blocked += 1
             print(f"[BLOCKED] Scenario {number:02d}: {name} - Details: {details}", flush=True)
