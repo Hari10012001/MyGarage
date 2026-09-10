@@ -44,6 +44,7 @@ public class VehicleReadinessWebController {
             );
 
             model.addAttribute("vehicle", vehicle);
+            model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(currentUser.getUserId()));
             model.addAttribute("report", report);
             model.addAttribute("tripDistanceKm", tripDistanceKm);
             model.addAttribute("tripDays", tripDays);

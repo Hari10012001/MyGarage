@@ -34,6 +34,7 @@ public class VehicleReliabilityWebController {
             VehicleReliabilityReportDTO report = vehicleReliabilityService.getVehicleReliability(id, currentUser.getUserId());
 
             model.addAttribute("vehicle", vehicle);
+            model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(currentUser.getUserId()));
             model.addAttribute("report", report);
             model.addAttribute("user", currentUser);
 

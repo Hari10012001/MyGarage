@@ -85,7 +85,7 @@
                                     <span class="small text-muted" th:text="${s.nextServiceDueDate != null ? s.nextServiceDueDate : '—'}"></span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/vehicles/{vid}(vid=${s.vehicle.vehicleId})}" class="btn btn-sm btn-outline-primary">
+                                    <a th:href="@{/vehicles/{vid}(vid=${s.vehicle.vehicleId}, from='services')}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> View
                                     </a>
                                 </td>

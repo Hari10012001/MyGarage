@@ -18,6 +18,9 @@
 
         <div class="page-content px-4 pb-4">
 
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'readiness')}"></div>
+
             <!-- Disclaimer Alert -->
             <div class="alert alert-info border-0 shadow-sm mt-3 mb-4 d-flex align-items-start gap-3">
                 <i class="bi bi-info-circle-fill fs-4 text-primary flex-shrink-0 mt-1"></i>

@@ -163,11 +163,11 @@ class QCAuditRunner:
                 assert "MyGarage" in page.title() or "Login" in page.title(), f"Unexpected title: {page.title()}"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "01_landing_page.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(1, "Application Startup & Landing Page", "PASS", "Landing page rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "01_landing_page_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(1, "Application Startup & Landing Page", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -186,11 +186,11 @@ class QCAuditRunner:
                 assert "/login" in page.url, f"Expected redirect to /login, got {page.url}"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "02_unauthenticated_protection.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(2, "Unauthenticated Route Redirection to /login", "PASS", "Protected routes strictly redirect to /login", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "02_unauthenticated_protection_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(2, "Unauthenticated Route Redirection to /login", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -204,11 +204,11 @@ class QCAuditRunner:
                 page.wait_for_timeout(300)
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "03_register_validation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(3, "User Registration Form Validation", "PASS", "Registration form renders with validation attributes", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "03_register_validation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(3, "User Registration Form Validation", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -228,11 +228,11 @@ class QCAuditRunner:
 
                 assert "/login" in page.url or "/dashboard" in page.url, f"Expected /login or /dashboard, got {page.url}"
                 ss = os.path.join(SCREENSHOTS_DIR, "04_user_a_registered.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(4, "Normal User A Registration Happy Path", "PASS", f"User {self.user_a_email} created", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "04_user_a_registered_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(4, "Normal User A Registration Happy Path", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -249,11 +249,11 @@ class QCAuditRunner:
 
                 assert "error" in page.url or page.locator(".alert-danger, .alert").count() > 0, "Expected error alert or ?error parameter"
                 ss = os.path.join(SCREENSHOTS_DIR, "05_login_invalid_credentials.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(5, "Login Authentication with Invalid Credentials", "PASS", "Bad credentials properly rejected with alert", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "05_login_invalid_credentials_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(5, "Login Authentication with Invalid Credentials", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -266,11 +266,11 @@ class QCAuditRunner:
 
                 assert "/dashboard" in page.url, f"Expected redirect to /dashboard, got {page.url}"
                 ss = os.path.join(SCREENSHOTS_DIR, "06_user_a_logged_in.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(6, "Normal User A Authentication & Session Creation", "PASS", "Successfully logged into dashboard", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "06_user_a_logged_in_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(6, "Normal User A Authentication & Session Creation", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -284,11 +284,11 @@ class QCAuditRunner:
                 assert "0" in content, "Dashboard should show 0 vehicles initially"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "07_dashboard_empty_state.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(7, "Dashboard Initial Empty State Rendering", "PASS", "Dashboard correctly handles new user with zero vehicles", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "07_dashboard_empty_state_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(7, "Dashboard Initial Empty State Rendering", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -313,11 +313,11 @@ class QCAuditRunner:
                     page.wait_for_timeout(50)
 
                 ss = os.path.join(SCREENSHOTS_DIR, "08_navigation_audit.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(8, "Global Sidebar & Header Navigation Routes Audit", "PASS", "All user navigation links load with HTTP 200", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "08_navigation_audit_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(8, "Global Sidebar & Header Navigation Routes Audit", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -332,11 +332,11 @@ class QCAuditRunner:
                 page.wait_for_timeout(300)
 
                 ss = os.path.join(SCREENSHOTS_DIR, "09_vehicle_create_validation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(9, "Vehicle Creation Form Client/Server Validation", "PASS", "Form requires plate, make, model, year", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "09_vehicle_create_validation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(9, "Vehicle Creation Form Client/Server Validation", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -368,11 +368,11 @@ class QCAuditRunner:
 
                 assert self.user_a_vehicle_id is not None, "Failed to capture created vehicle ID"
                 ss = os.path.join(SCREENSHOTS_DIR, "10_vehicle_car_created.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(10, "Vehicle Creation (Sedan Car) Happy Path", "PASS", f"Vehicle ID {self.user_a_vehicle_id} created", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "10_vehicle_car_created_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(10, "Vehicle Creation (Sedan Car) Happy Path", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -395,11 +395,11 @@ class QCAuditRunner:
 
                 assert "already exists" in page.content() or "duplicate" in page.content() or page.locator(".alert-danger, .is-invalid, .text-danger").count() > 0, "Expected duplicate plate warning"
                 ss = os.path.join(SCREENSHOTS_DIR, "11_vehicle_duplicate_plate.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(11, "Vehicle Plate Number Uniqueness Guard", "PASS", "Duplicate plate correctly blocked with validation message", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "11_vehicle_duplicate_plate_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(11, "Vehicle Plate Number Uniqueness Guard", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -433,11 +433,11 @@ class QCAuditRunner:
                             break
 
                 ss = os.path.join(SCREENSHOTS_DIR, "12_vehicle_bike_created.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(12, "Vehicle Creation (Motorcycle) Happy Path", "PASS", f"Second vehicle ID {self.user_a_vehicle_id_2} created", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "12_vehicle_bike_created_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(12, "Vehicle Creation (Motorcycle) Happy Path", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -456,11 +456,11 @@ class QCAuditRunner:
                 assert page.locator("a[href*='/tco']").count() > 0, "TCO Advisory button missing"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "13_vehicle_details.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(13, "Vehicle Detail Dashboard & Action Buttons Audit", "PASS", "All vehicle action buttons and tabs present", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "13_vehicle_details_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(13, "Vehicle Detail Dashboard & Action Buttons Audit", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -478,11 +478,11 @@ class QCAuditRunner:
                 assert "Platinum Pearl White" in page.content(), "Updated color not visible on detail page"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "14_vehicle_edited.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(14, "Vehicle Modification & Attribute Update Flow", "PASS", "Color updated and verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "14_vehicle_edited_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(14, "Vehicle Modification & Attribute Update Flow", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -503,11 +503,11 @@ class QCAuditRunner:
 
                 assert "3,500" in page.content() or "3500" in page.content(), "Service record not visible after creation"
                 ss = os.path.join(SCREENSHOTS_DIR, "15_service_record_created.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(15, "Service Record Logging & Timeline Integration", "PASS", "Service record ₹3,500 recorded", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "15_service_record_created_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(15, "Service Record Logging & Timeline Integration", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -520,11 +520,11 @@ class QCAuditRunner:
                 assert "Honda Authorized Workshop" in page.content(), "Service not listed in global feed"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "16_global_services_list.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(16, "Global Cross-Vehicle Service Records Feed", "PASS", "Global services list rendered with financial tallies", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "16_global_services_list_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(16, "Global Cross-Vehicle Service Records Feed", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -557,11 +557,11 @@ class QCAuditRunner:
                 assert "15.0" in page.content() or "15" in page.content(), "Dynamic fuel mileage 15.0 km/L not computed"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "17_fuel_mileage_verified.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(17, "Fuel Logging & Dynamic Mileage Economy Engine", "PASS", "15.0 km/L economy verified between consecutive fill-ups", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "17_fuel_mileage_verified_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(17, "Fuel Logging & Dynamic Mileage Economy Engine", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -574,11 +574,11 @@ class QCAuditRunner:
                 assert "4,000" in page.content() or "4000" in page.content(), "Total fuel cost tally missing"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "18_global_fuel_feed.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(18, "Global Fuel Logs Central Monitoring Feed", "PASS", "Fuel spend and volume tallies verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "18_global_fuel_feed_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(18, "Global Fuel Logs Central Monitoring Feed", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -599,11 +599,11 @@ class QCAuditRunner:
                 assert "Tyre Rotation" in page.content(), "Scheduled task not found in maintenance list"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "19_maintenance_upcoming.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(19, "Maintenance Task Creation (Upcoming Status)", "PASS", "Upcoming task created with medium priority", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "19_maintenance_upcoming_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(19, "Maintenance Task Creation (Upcoming Status)", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -624,11 +624,11 @@ class QCAuditRunner:
                 assert "OVERDUE" in page.content(), "OVERDUE badge missing for past scheduled date"
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "20_maintenance_overdue.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(20, "Maintenance Automated Urgency Engine (Overdue Badge)", "PASS", "Past date automatically triggers OVERDUE badge", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "20_maintenance_overdue_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(20, "Maintenance Automated Urgency Engine (Overdue Badge)", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -644,11 +644,11 @@ class QCAuditRunner:
                     page.wait_for_load_state("domcontentloaded")
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "21_maintenance_completed.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(21, "Maintenance Task One-Click Lifecycle Completion", "PASS", "Task completed and status transitioned", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "21_maintenance_completed_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(21, "Maintenance Task One-Click Lifecycle Completion", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -662,11 +662,11 @@ class QCAuditRunner:
                 assert "Download" in page.content() or "CSV" in page.content(), "Export buttons missing on reports page"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "22_reports_dashboard.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(22, "Reports & Resale Analytics Hub Rendering", "PASS", "Reports dashboard rendered with portfolio summaries", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "22_reports_dashboard_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(22, "Reports & Resale Analytics Hub Rendering", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -681,11 +681,11 @@ class QCAuditRunner:
                 assert page.locator("button:has-text('Print'), a:has-text('Print')").count() > 0, "Print button missing on dossier"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "23_resale_dossier.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(23, "Certified Vehicle Resale Dossier & Verification Seal", "PASS", "Print-ready dossier with verification seal verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "23_resale_dossier_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(23, "Certified Vehicle Resale Dossier & Verification Seal", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -738,11 +738,11 @@ class QCAuditRunner:
                 assert "Running Cost" in page.content(), "Running cost metrics missing in comparison"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "25_vehicle_compare.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(25, "Multi-Vehicle Comparative Analytics & Benchmarking Matrix", "PASS", "Side-by-side benchmark table rendered with efficiency badges", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "25_vehicle_compare_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(25, "Multi-Vehicle Comparative Analytics & Benchmarking Matrix", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -757,11 +757,11 @@ class QCAuditRunner:
                 assert "30 Days" in page.content() or "Horizon" in page.content(), "Horizon expense budgeting missing"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "26_vehicle_forecast.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(26, "Predictive Maintenance Forecasting & Vehicle Health Index", "PASS", "VHI scoring, PMS projection, and forward horizons verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "26_vehicle_forecast_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(26, "Predictive Maintenance Forecasting & Vehicle Health Index", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -774,11 +774,11 @@ class QCAuditRunner:
                 assert "Planner" in page.title() or "Predictive" in page.content() or "Health" in page.content(), "Smart planner hub failed"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "27_smart_service_planner.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(27, "Smart Service Planner Fleet Health Matrix Hub", "PASS", "Garage planner hub rendered with fleet overview", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "27_smart_service_planner_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(27, "Smart Service Planner Fleet Health Matrix Hub", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -797,11 +797,11 @@ class QCAuditRunner:
                     page.goto(f"{BASE_URL}/vehicles/{self.user_a_vehicle_id}/forecast")
                     
                 ss = os.path.join(SCREENSHOTS_DIR, "28_milestone_scheduled.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(28, "Forecast Milestone Conversion & Duplicate Guard", "PASS", "Milestone scheduling action handled safely", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "28_milestone_scheduled_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(28, "Forecast Milestone Conversion & Duplicate Guard", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -819,11 +819,11 @@ class QCAuditRunner:
                 assert "estimate" in page.content() or "IPCC" in page.content() or "benchmark" in page.content(), "Mandatory disclaimers missing"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "29_tco_advisory_dashboard.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(29, "TCO Lifecycle Modeling & Economic Replacement Advisory Dashboard", "PASS", "TCO dashboard, RRVR gauge, advisory banner, and carbon ESG verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "29_tco_advisory_dashboard_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(29, "TCO Lifecycle Modeling & Economic Replacement Advisory Dashboard", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -836,11 +836,11 @@ class QCAuditRunner:
                 assert r.status == 200 or "/vehicles/" in page.url, f"Expected 200 or redirect to vehicle TCO, got {r.status} {page.url}"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "30_garage_tco_overview.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(30, "Garage TCO Overview & Navigation Gateway", "PASS", "Garage TCO route renders cleanly", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "30_garage_tco_overview_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(30, "Garage TCO Overview & Navigation Gateway", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -856,11 +856,11 @@ class QCAuditRunner:
                 page.wait_for_load_state("domcontentloaded")
 
                 ss = os.path.join(SCREENSHOTS_DIR, "31_user_profile.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(31, "User Profile Inspection & Profile Update", "PASS", "Profile updated successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "31_user_profile_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(31, "User Profile Inspection & Profile Update", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -894,11 +894,11 @@ class QCAuditRunner:
                 assert "/vehicles" in page.url or r_tco.status in (403, 404), "Cross-user TCO advisory was not blocked"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "32_tampering_blocked.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(32, "Cross-User Direct URL & Record ID Tampering Guard", "PASS", "User B blocked from accessing User A vehicles, dossiers, forecasts, and TCO", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "32_tampering_blocked_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(32, "Cross-User Direct URL & Record ID Tampering Guard", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -915,11 +915,11 @@ class QCAuditRunner:
                 assert "Total Users" in page.content() or "Users" in page.content(), "Platform user count metric missing"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "33_admin_dashboard.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(33, "System Administrator Authentication & Platform Governance Dashboard", "PASS", "Admin dashboard rendered with global system metrics", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "33_admin_dashboard_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(33, "System Administrator Authentication & Platform Governance Dashboard", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -953,12 +953,12 @@ class QCAuditRunner:
                 assert "Cannot deactivate" in page.content() or "primary administrator" in page.content(), "Primary admin protection message not displayed"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "34_admin_users.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(34, "Admin User Management & Primary Admin Inviolability Guard", "PASS", "User management rendered; primary admin account safeguarded against deactivation", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "34_admin_users_fail.png")
                 try:
-                    page.screenshot(path=ss)
+                    self.safe_screenshot(page, ss)
                 except Exception:
                     pass
                 self.record_scenario(34, "Admin User Management & Primary Admin Inviolability Guard", "FAIL", str(e), ss, time.time() - t0)
@@ -973,11 +973,11 @@ class QCAuditRunner:
                 assert "Categories" in page.content(), "Category management title missing"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "35_admin_categories.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(35, "Admin Vehicle Category Management & Referential Integrity", "PASS", "Vehicle category management verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "35_admin_categories_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(35, "Admin Vehicle Category Management & Referential Integrity", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -990,11 +990,11 @@ class QCAuditRunner:
                 assert "Monitoring" in page.content() or "Record" in page.content(), "Admin monitoring page failed"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "36_admin_monitoring.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(36, "Admin High-Level Platform Record Monitoring Feed", "PASS", "High-level platform activity rendered without exposing private records", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "36_admin_monitoring_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(36, "Admin High-Level Platform Record Monitoring Feed", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -1016,11 +1016,11 @@ class QCAuditRunner:
                     assert resp.status == 403 or "Access Denied" in page.content() or "Forbidden" in page.content(), f"Admin was not blocked from {route} (status: {resp.status})"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "37_admin_isolation_403.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(37, "Admin Privacy & Personal Garage Backdoor Isolation", "PASS", "Admin strictly blocked with HTTP 403 Forbidden from all personal user routes", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "37_admin_isolation_403_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(37, "Admin Privacy & Personal Garage Backdoor Isolation", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -1054,7 +1054,7 @@ class QCAuditRunner:
                         page.goto(f"{BASE_URL}{path}")
                         page.wait_for_timeout(50)
                         ss_vp = os.path.join(SCREENSHOTS_DIR, f"38_responsive_{p_label}_{vp_name}.png")
-                        page.screenshot(path=ss_vp)
+                        self.safe_screenshot(page, ss_vp)
 
                 page.set_viewport_size({"width": 1280, "height": 800})
                 self.record_scenario(38, "Multi-Device Responsive Viewport Layout Audit (375px to 1920px)", "PASS", "Dashboard, Detail, Forecast, and TCO verified across 4 screen resolutions", None, time.time() - t0)
@@ -1071,11 +1071,11 @@ class QCAuditRunner:
                 assert resp.status == 404 or "Page Not Found" in page.content() or "404" in page.content(), "Expected 404 response or friendly error page"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "39_404_page.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(39, "Boundary & 404 Not Found Handling", "PASS", "404 route handled cleanly", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "39_404_page_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(39, "Boundary & 404 Not Found Handling", "FAIL", str(e), ss, time.time() - t0)
 
             # -----------------------------------------------------------------
@@ -1098,11 +1098,11 @@ class QCAuditRunner:
                 assert "/login" in page.url, "Session was not invalidated after logout"
 
                 ss = os.path.join(SCREENSHOTS_DIR, "40_logout_verified.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(40, "User Logout & Security Session Invalidation", "PASS", "Session terminated and protected routes blocked", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "40_logout_verified_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(40, "User Logout & Security Session Invalidation", "FAIL", str(e), ss, time.time() - t0)
 
             # ==========================================
@@ -1129,11 +1129,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Fleet Efficiency Breakdown")).to_be_visible()
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "41_garage_fuel_intelligence.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(41, "Garage-level Fuel Intelligence (S41)", "PASS", "Dashboard rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "41_garage_fuel_intelligence_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(41, "Garage-level Fuel Intelligence (S41)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S42: Navigate to Per-Vehicle Fuel Analytics ---
@@ -1148,11 +1148,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Lifetime Fuel Cost")).to_be_visible()
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "42_vehicle_fuel_analytics.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(42, "Per-Vehicle Fuel Analytics (S42)", "PASS", "Vehicle analytics rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "42_vehicle_fuel_analytics_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(42, "Per-Vehicle Fuel Analytics (S42)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S43: Cross-user Tampering for Fuel Analytics ---
@@ -1203,11 +1203,11 @@ class QCAuditRunner:
                 expect(page).to_have_url(f"{BASE_URL}/vehicles")
                 
                 ss = os.path.join(SCREENSHOTS_DIR, "43_fuel_analytics_tampering.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(43, "Cross-user Tampering for Fuel Analytics (S43)", "PASS", "Access blocked successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "43_fuel_analytics_tampering_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(43, "Cross-user Tampering for Fuel Analytics (S43)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- M17: Vehicle Reliability Engineering ---
@@ -1221,11 +1221,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Average Garage VRI")).to_be_visible()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "44_garage_reliability_matrix.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(44, "Garage-level Reliability Matrix (S44)", "PASS", "Fleet reliability matrix rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "44_garage_reliability_matrix_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(44, "Garage-level Reliability Matrix (S44)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S45: Per-Vehicle Reliability Dashboard (S45) ---
@@ -1243,11 +1243,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Subsystem Failure & Cost Distribution")).to_be_visible()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "45_vehicle_reliability_dashboard.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(45, "Per-Vehicle Reliability Dashboard (S45)", "PASS", "Vehicle reliability dashboard rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "45_vehicle_reliability_dashboard_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(45, "Per-Vehicle Reliability Dashboard (S45)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S46: Cross-User Tampering & Admin Blocking for Reliability ---
@@ -1277,11 +1277,11 @@ class QCAuditRunner:
                 admin_context.close()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "46_reliability_tampering_isolation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(46, "Reliability Tampering & Admin 403 Isolation (S46)", "PASS", "Tampering and admin isolation verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "46_reliability_tampering_isolation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(46, "Reliability Tampering & Admin 403 Isolation (S46)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- M18: Vehicle Operational Readiness, Journey Risk Simulator & Fleet Mission Dispatch Engine ---
@@ -1303,11 +1303,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Garage Fleet Journey Suitability Ranking")).to_be_visible()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "47_garage_fleet_dispatch.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(47, "Garage Fleet Mission Dispatch Audit (S47)", "PASS", "Fleet dispatch matrix rendered successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "47_garage_fleet_dispatch_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(47, "Garage Fleet Mission Dispatch Audit (S47)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S48: Vehicle Trip Readiness Simulator Audit (S48) ---
@@ -1333,11 +1333,11 @@ class QCAuditRunner:
                 expect(page.locator("text=Trip Readiness Index (TRI)").first).to_be_visible()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "48_vehicle_trip_readiness.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(48, "Vehicle Trip Readiness Simulator Audit (S48)", "PASS", "Journey simulator rendered and recalculated successfully", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "48_vehicle_trip_readiness_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(48, "Vehicle Trip Readiness Simulator Audit (S48)", "FAIL", str(e), ss, time.time() - t0)
 
             # --- S49: Readiness Security Isolation & Admin Blocking (S49) ---
@@ -1367,11 +1367,11 @@ class QCAuditRunner:
                 admin_context.close()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "49_readiness_security_isolation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(49, "Readiness Security Isolation & Admin Blocking (S49)", "PASS", "Two-tier ownership and admin isolation verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "49_readiness_security_isolation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(49, "Readiness Security Isolation & Admin Blocking (S49)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1413,11 +1413,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "50_vehicle_maintenance_deficit.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(50, "Vehicle Maintenance Deficit & Compound Neglect Audit (S50)", "PASS", "MDI %, financial liability cards, cascade exposure, and responsive views verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "50_vehicle_maintenance_deficit_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(50, "Vehicle Maintenance Deficit & Compound Neglect Audit (S50)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1439,11 +1439,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "51_garage_maintenance_deficit_matrix.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(51, "Garage Maintenance Deficit Matrix & Multi-Vehicle Triage (S51)", "PASS", "Fleet MDI %, vehicle rankings, consolidated triage queue, and responsive views verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "51_garage_maintenance_deficit_matrix_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(51, "Garage Maintenance Deficit Matrix & Multi-Vehicle Triage (S51)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1488,11 +1488,11 @@ class QCAuditRunner:
                 admin_context.close()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "52_deficit_security_isolation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(52, "Maintenance Deficit Security, Ownership Isolation & ADMIN Blocking (S52)", "PASS", "Two-tier ownership, cross-user Web redirect, REST 403, and ADMIN denial verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "52_deficit_security_isolation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(52, "Maintenance Deficit Security, Ownership Isolation & ADMIN Blocking (S52)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1535,11 +1535,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "53_vehicle_fiscal_budget.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(53, "Vehicle Operational Budget & 12-Month Cash-Flow Forecast (S53)", "PASS", "Monthly burn rates, EVRI volatility gauge, liquidity buffer, 12-month forecast and responsive layouts verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "53_vehicle_fiscal_budget_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(53, "Vehicle Operational Budget & 12-Month Cash-Flow Forecast (S53)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1563,11 +1563,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "54_garage_fiscal_budget_matrix.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(54, "Garage Fleet Fiscal Matrix & Portfolio Budget Rollup (S54)", "PASS", "Portfolio burn rate, budget allocation progress bars, consolidated timeline, and responsive views verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "54_garage_fiscal_budget_matrix_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(54, "Garage Fleet Fiscal Matrix & Portfolio Budget Rollup (S54)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1623,11 +1623,11 @@ class QCAuditRunner:
                 admin_context.close()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "55_fiscal_budget_security_isolation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(55, "Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)", "PASS", "Unauthenticated redirect, cross-user Web redirect, REST 403, and ADMIN denial verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "55_fiscal_budget_security_isolation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(55, "Fiscal Budget Security, Ownership Isolation & ADMIN Blocking (S55)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1655,11 +1655,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "56_workshop_ecosystem_leaderboard.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(56, "Garage Workshop Ecosystem Leaderboard & Vendor Concentration Matrix (S56)", "PASS", "Ecosystem metrics, HHI concentration, workshop ranking table, and responsive layouts verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "56_workshop_ecosystem_leaderboard_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(56, "Garage Workshop Ecosystem Leaderboard & Vendor Concentration Matrix (S56)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1695,11 +1695,11 @@ class QCAuditRunner:
                 page.set_viewport_size({"width": 1280, "height": 800})
 
                 ss = os.path.join(SCREENSHOTS_DIR, "57_workshop_detail_inspection.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(57, "Workshop Deep-Dive Inspection & Subsystem Benchmark Variance (S57)", "PASS", "WPI gauge, VRP %, WVS score, subsystem variance table, rework incidents log, and responsive views verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "57_workshop_detail_inspection_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(57, "Workshop Deep-Dive Inspection & Subsystem Benchmark Variance (S57)", "FAIL", str(e), ss, time.time() - t0)
 
             # -------------------------------------------------------------
@@ -1747,11 +1747,11 @@ class QCAuditRunner:
                 admin_context.close()
 
                 ss = os.path.join(SCREENSHOTS_DIR, "58_workshop_security_isolation.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(58, "Workshop Security Isolation, Cross-User Guard & Admin 403 Blocking (S58)", "PASS", "Unauthenticated redirect, cross-user Web redirect, REST 403/404, and ADMIN denial verified", ss, time.time() - t0)
             except Exception as e:
                 ss = os.path.join(SCREENSHOTS_DIR, "58_workshop_security_isolation_fail.png")
-                page.screenshot(path=ss)
+                self.safe_screenshot(page, ss)
                 self.record_scenario(58, "Workshop Security Isolation, Cross-User Guard & Admin 403 Blocking (S58)", "FAIL", str(e), ss, time.time() - t0)
 
             browser.close()

@@ -16,8 +16,11 @@
         <div th:replace="~{fragments/topbar :: topbar('Vehicle Reliability Engineering')}"></div>
         <div class="page-content px-4 pb-4">
 
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'reliability')}"></div>
+
             <!-- Vehicle Header Banner -->
-            <div class="card border-0 shadow-sm mt-4 mb-4">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div class="d-flex align-items-center gap-3">

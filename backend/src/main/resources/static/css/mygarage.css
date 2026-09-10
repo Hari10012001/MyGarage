@@ -761,3 +761,167 @@ body {
     padding: 1rem;
   }
 }
+
+/* ============================================================
+   15. VEHICLE CONTEXTUAL NAVIGATION ARCHITECTURE
+   ============================================================ */
+.vehicle-context-header {
+  background: var(--mg-surface);
+  border: 1px solid var(--mg-border);
+  border-radius: var(--mg-radius-lg);
+  padding: 1.25rem 1.5rem 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--mg-shadow-sm);
+  transition: box-shadow var(--mg-transition-fast);
+}
+
+.vehicle-context-header:hover {
+  box-shadow: var(--mg-shadow-md);
+}
+
+.vehicle-context-breadcrumb {
+  font-size: 0.8125rem;
+  margin-bottom: 0.625rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  color: var(--mg-text-muted);
+}
+
+.vehicle-context-breadcrumb a {
+  color: var(--mg-text-muted);
+  text-decoration: none;
+  transition: color var(--mg-transition-fast);
+}
+
+.vehicle-context-breadcrumb a:hover {
+  color: var(--mg-brand-blue);
+  text-decoration: underline;
+}
+
+.vehicle-context-breadcrumb .separator {
+  color: var(--mg-text-subtle);
+  user-select: none;
+}
+
+.vehicle-context-breadcrumb .current {
+  color: var(--mg-text-main);
+  font-weight: 600;
+}
+
+.vehicle-context-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vehicle-context-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.vehicle-context-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mg-radius-md);
+  background: var(--mg-surface-secondary);
+  border: 1px solid var(--mg-border-subtle);
+  flex-shrink: 0;
+}
+
+.vehicle-context-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vehicle-nav-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding: 0.75rem 0.25rem 0.25rem 0.25rem;
+  margin-top: 0.875rem;
+  border-top: 1px solid var(--mg-border-subtle);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vehicle-nav-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.vehicle-subnav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--mg-text-muted);
+  background: var(--mg-surface-secondary);
+  border: 1px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all var(--mg-transition-fast);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.vehicle-subnav-link:hover {
+  background: var(--mg-surface-tertiary);
+  color: var(--mg-text-main);
+  border-color: var(--mg-border);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.vehicle-subnav-link.active {
+  background: var(--mg-primary);
+  color: #ffffff !important;
+  border-color: var(--mg-primary);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(30, 62, 98, 0.28);
+}
+
+.vehicle-subnav-link.active i {
+  color: #ffffff;
+}
+
+@media (max-width: 767.98px) {
+  .vehicle-context-header {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .vehicle-context-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
+  }
+  .vehicle-context-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .vehicle-context-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .vehicle-subnav-link {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+}
+

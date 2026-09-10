@@ -40,6 +40,8 @@ public class ReportWebController {
         User user = authHelper.getCurrentUser();
         VehicleDossierDTO dossier = reportService.getVehicleDossier(vehicleId, user.getUserId());
         model.addAttribute("dossier", dossier);
+        model.addAttribute("vehicle", vehicleService.getVehicleForUser(vehicleId, user.getUserId()));
+        model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(user.getUserId()));
         model.addAttribute("user", user);
         return "report/dossier";
     }

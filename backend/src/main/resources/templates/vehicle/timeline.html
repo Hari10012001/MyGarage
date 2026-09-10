@@ -14,14 +14,8 @@
     <div class="main-content flex-grow-1">
         <div th:replace="~{fragments/topbar :: topbar('Vehicle Timeline')}"></div>
         <div class="page-content px-4 pb-4">
-            <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
-                <div>
-                    <h4 class="fw-bold mb-1"><span th:text="${vehicle.category?.icon}">🚗</span> <span th:text="${vehicle.displayName}">Vehicle</span></h4>
-                    <span class="badge bg-primary me-2" th:text="${vehicle.plateNumber}">Plate</span>
-                    <span class="text-muted small" th:text="${vehicle.currentOdometer != null ? vehicle.currentOdometer + ' km' : ''}"></span>
-                </div>
-                <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
-            </div>
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'timeline')}"></div>
 
             <div class="timeline-container">
                 <!-- Check if any records exist -->

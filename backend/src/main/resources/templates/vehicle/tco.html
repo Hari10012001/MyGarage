@@ -47,50 +47,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
-            <!-- Vehicle Header & Quick Selector -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle fs-3">
-                                <i class="bi bi-pie-chart-fill"></i>
-                            </div>
-                            <div>
-                                <div class="d-flex align-items-center gap-2">
-                                    <h4 class="mb-0 fw-bold" th:text="${report.make + ' ' + report.model}">Vehicle Make & Model</h4>
-                                    <span class="badge bg-secondary" th:text="${report.plateNumber}">TN14A1001</span>
-                                    <span class="badge bg-info text-dark" th:text="${report.categoryName}">Sedan</span>
-                                </div>
-                                <div class="text-muted small mt-1">
-                                    <span class="me-3"><i class="bi bi-calendar3 me-1"></i> Year: <strong th:text="${report.year}">2022</strong> (<span th:text="${report.vehicleAgeYears}">2</span> yrs old)</span>
-                                    <span class="me-3"><i class="bi bi-speedometer2 me-1"></i> Odometer: <strong th:text="${#numbers.formatDecimal(report.currentOdometer, 0, 'COMMA', 0, 'POINT')} + ' km'">15,000 km</strong></span>
-                                    <span><i class="bi bi-fuel-pump me-1"></i> Fuel: <strong th:text="${report.fuelType}">PETROL</strong></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Vehicle Switcher Dropdown -->
-                            <div class="dropdown" th:if="${userVehicles != null and userVehicles.size() > 1}">
-                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-arrow-repeat me-1"></i> Switch Vehicle
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                    <li th:each="v : ${userVehicles}">
-                                        <a class="dropdown-item" th:href="@{/vehicles/{id}/tco(id=${v.vehicleId})}"
-                                           th:classappend="${v.vehicleId == report.vehicleId} ? 'active' : ''">
-                                            <span th:text="${v.make + ' ' + v.model + ' (' + v.plateNumber + ')'}">Vehicle</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <a th:href="@{/vehicles/{id}/forecast(id=${report.vehicleId})}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-graph-up-arrow me-1"></i> Service Planner
-                            </a>
-                            <a th:href="@{/vehicles/{id}/report(id=${report.vehicleId})}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-file-earmark-text me-1"></i> Resale Dossier
-                            </a>
-                        </div>
-                    </div>
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'tco')}"></div>
+
+            <!-- Page Title Area -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h4 class="fw-bold mb-1">
+                        <i class="bi bi-cash-coin text-warning me-2"></i>Total Cost of Ownership &amp; Replacement Advisory
+                    </h4>
+                    <p class="text-muted small mb-0">
+                        Comprehensive financial modeling, residual value forecasting, and asset replacement advisories.
+                    </p>
                 </div>
             </div>
 

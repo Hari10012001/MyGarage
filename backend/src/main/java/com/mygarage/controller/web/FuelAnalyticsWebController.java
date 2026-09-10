@@ -36,6 +36,7 @@ public class FuelAnalyticsWebController {
             
             model.addAttribute("report", report);
             model.addAttribute("vehicle", vehicle);
+            model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(currentUser.getUserId()));
             model.addAttribute("user", currentUser);
             
             return "fuel/analytics";

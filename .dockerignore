@@ -1,0 +1,14 @@
+.git
+.git/**
+target
+**/target
+e2e
+scratch
+docs
+*.md
+*.log
+.idea
+.vscode
+*.iml
+*.class
+*.jar

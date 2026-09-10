@@ -68,6 +68,7 @@ public class VehicleWebController {
         Long userId = authHelper.getCurrentUserId();
         Vehicle vehicle = vehicleService.getVehicleForUser(id, userId);
         model.addAttribute("vehicle", vehicle);
+        model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(userId));
         model.addAttribute("serviceRecords", serviceRecordService.getServiceRecordsForVehicle(id, userId));
         model.addAttribute("fuelRecords", fuelRecordService.getFuelRecordsForVehicle(id, userId));
         model.addAttribute("maintenanceRecords", maintenanceService.getMaintenanceForVehicle(id, userId));
@@ -89,6 +90,8 @@ public class VehicleWebController {
         req.setFuelType(vehicle.getFuelType());
         req.setCurrentOdometer(vehicle.getCurrentOdometer());
         req.setNotes(vehicle.getNotes());
+        model.addAttribute("vehicle", vehicle);
+        model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(userId));
         model.addAttribute("vehicleRequest", req);
         model.addAttribute("vehicleId", id);
         model.addAttribute("categories", categoryService.findAll());
@@ -137,6 +140,7 @@ public class VehicleWebController {
         Long userId = authHelper.getCurrentUserId();
         Vehicle vehicle = vehicleService.getVehicleForUser(id, userId);
         model.addAttribute("vehicle", vehicle);
+        model.addAttribute("userVehicles", vehicleService.getVehiclesForUser(userId));
         model.addAttribute("serviceRecords", serviceRecordService.getServiceRecordsForVehicle(id, userId));
         model.addAttribute("fuelRecords", fuelRecordService.getFuelRecordsForVehicle(id, userId));
         model.addAttribute("maintenanceRecords", maintenanceService.getMaintenanceForVehicle(id, userId));

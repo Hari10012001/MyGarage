@@ -9,3 +9,15 @@ target/
 *.log
 .DS_Store
 Thumbs.db
+
+# Environment & Secret Configurations
+.env
+*.env
+.env.*
+
+# Scratch Directory
+scratch/
+
+# Python cache
+__pycache__/
+*.pyc

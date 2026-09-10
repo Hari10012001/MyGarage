@@ -53,37 +53,18 @@
         <div th:replace="~{fragments/topbar :: topbar('Smart Service Planner')}"></div>
 
         <div class="page-content px-4 py-4">
-            <!-- Header with Vehicle Selector -->
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'planner')}"></div>
+
+            <!-- Page Title Area -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
                 <div>
-                    <h4 class="fw-bold mb-0">
+                    <h4 class="fw-bold mb-1">
                         <i class="bi bi-magic text-primary me-2"></i>Predictive Maintenance & Smart Service Planner
                     </h4>
                     <p class="text-muted small mb-0">
-                        Intelligent periodic service forecasting, mileage velocity modeling, and budget projection for
-                        <strong class="text-dark" th:text="${report.year + ' ' + report.make + ' ' + report.model}">Vehicle</strong>
-                        (<span class="font-monospace text-primary fw-bold" th:text="${report.plateNumber}">PLATE</span>)
+                        Intelligent periodic service forecasting, mileage velocity modeling, and budget projection.
                     </p>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Vehicle Switcher Dropdown -->
-                    <div class="dropdown" th:if="${userVehicles != null and userVehicles.size() > 1}">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-car-front me-1"></i> Switch Vehicle
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                            <li th:each="v : ${userVehicles}">
-                                <a class="dropdown-item small" th:href="@{/vehicles/{id}/forecast(id=${v.vehicleId})}"
-                                   th:classappend="${v.vehicleId == report.vehicleId} ? 'active fw-bold' : ''">
-                                    <span th:text="${v.year + ' ' + v.make + ' ' + v.model}">Vehicle</span>
-                                    <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a th:href="@{/vehicles/{id}(id=${report.vehicleId})}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Vehicle
-                    </a>
                 </div>
             </div>
 

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<!-- ============================================================
+     CANONICAL VEHICLE CONTEXTUAL NAVIGATION FRAGMENT
+     Project ID: APPJFS19
+     Provides unified vehicle identity, breadcrumbs, return context,
+     and seamless cross-module navigation across all vehicle views.
+     ============================================================ -->
+<div th:fragment="vehicleContextNav(vehicle, activeTab)" class="vehicle-context-header">
+    <!-- Breadcrumb Row -->
+    <div class="vehicle-context-breadcrumb">
+        <a th:href="@{/vehicles}"><i class="bi bi-car-front me-1"></i>My Vehicles</a>
+        <span class="separator">/</span>
+        <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}"
+           th:text="${(vehicle.displayName != null ? vehicle.displayName : (vehicle.make + ' ' + vehicle.model)) + ' (' + vehicle.plateNumber + ')'}">
+            Vehicle
+        </a>
+        <th:block th:if="${activeTab != 'overview'}">
+            <span class="separator">/</span>
+            <span class="current" th:switch="${activeTab}">
+                <span th:case="'planner'">Smart Service Planner</span>
+                <span th:case="'reliability'">Reliability Engineering</span>
+                <span th:case="'tco'">TCO Advisory</span>
+                <span th:case="'readiness'">Trip Readiness</span>
+                <span th:case="'deficit'">Maintenance Deficit Index</span>
+                <span th:case="'fiscal'">Fiscal Budget &amp; Cash-Flow</span>
+                <span th:case="'fuel-analytics'">Fuel Intelligence &amp; Economy</span>
+                <span th:case="'timeline'">Activity Timeline</span>
+                <span th:case="'dossier'">Resale Dossier</span>
+                <span th:case="*">Vehicle Module</span>
+            </span>
+        </th:block>
+    </div>
+
+    <!-- Identity & Actions Row -->
+    <div class="vehicle-context-main">
+        <div class="vehicle-context-identity">
+            <div class="vehicle-context-icon" th:text="${vehicle.category != null and vehicle.category.icon != null ? vehicle.category.icon : '🚗'}">🚗</div>
+            <div>
+                <h5 class="fw-bold mb-1 text-dark" th:text="${vehicle.displayName != null ? vehicle.displayName : (vehicle.make + ' ' + vehicle.model)}">Vehicle Name</h5>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="badge bg-primary font-monospace" th:text="${vehicle.plateNumber}">PLATE</span>
+                    <span class="badge bg-secondary-subtle text-secondary"
+                          th:if="${vehicle.category != null and vehicle.category.name != null}"
+                          th:text="${vehicle.category.name}">Category</span>
+                    <span class="badge bg-light text-dark"
+                          th:if="${vehicle.currentOdometer != null}"
+                          th:text="${#numbers.formatDecimal(vehicle.currentOdometer, 0, 'COMMA', 0, 'POINT') + ' km'}">0 km</span>
+                    <span class="badge bg-light text-muted"
+                          th:if="${vehicle.fuelType != null}"
+                          th:text="${vehicle.fuelType}">PETROL</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="vehicle-context-actions">
+            <!-- Contextual Return Action (e.g. if arrived from Service Records, Fuel Logs, or Maintenance Tasks) -->
+            <a th:if="${param.from != null and param.from[0] == 'services'}"
+               th:href="@{/services}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Service Records
+            </a>
+            <a th:if="${param.from != null and param.from[0] == 'fuel'}"
+               th:href="@{/fuel}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Fuel Logs
+            </a>
+            <a th:if="${param.from != null and param.from[0] == 'maintenance'}"
+               th:href="@{/maintenance}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Maintenance Tasks
+            </a>
+
+            <!-- Return to Vehicle Hub button (shown when in sub-module) -->
+            <a th:if="${activeTab != 'overview' and (param.from == null or (param.from[0] != 'services' and param.from[0] != 'fuel' and param.from[0] != 'maintenance'))}"
+               th:href="@{/vehicles/{id}(id=${vehicle.vehicleId})}"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Vehicle Overview
+            </a>
+
+            <!-- Switch Vehicle Dropdown -->
+            <div class="dropdown" th:if="${userVehicles != null and userVehicles.size() > 1}">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-arrow-repeat me-1"></i>Switch Vehicle
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li th:each="v : ${userVehicles}">
+                        <!-- Link to current active tab for the target vehicle -->
+                        <a th:if="${activeTab == 'planner'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/forecast(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'reliability'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/reliability(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'tco'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/tco(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'readiness'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/readiness(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'deficit'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/maintenance-deficit(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'fiscal'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/fiscal-budget(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'fuel-analytics'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/fuel-analytics(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'timeline'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/timeline(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'dossier'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}/report(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                        <a th:if="${activeTab == 'overview'}"
+                           class="dropdown-item small"
+                           th:classappend="${v.vehicleId == vehicle.vehicleId} ? 'active fw-bold' : ''"
+                           th:href="@{/vehicles/{id}(id=${v.vehicleId}, from=${param.from != null ? param.from[0] : null})}">
+                            <span th:text="${v.displayName != null ? v.displayName : (v.make + ' ' + v.model)}">Car</span>
+                            <span class="badge bg-secondary font-monospace ms-1" th:text="${v.plateNumber}">PLATE</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cross-Module Sub-Navbar Pills Bar -->
+    <nav class="vehicle-nav-pills-bar" aria-label="Vehicle Modules">
+        <!-- Overview / Hub -->
+        <a th:href="@{/vehicles/{id}(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'overview'} ? 'active' : ''">
+            <i class="bi bi-car-front"></i> Overview
+        </a>
+        <!-- Predictive Maintenance & Planner -->
+        <a th:href="@{/vehicles/{id}/forecast(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'planner'} ? 'active' : ''">
+            <i class="bi bi-graph-up-arrow"></i> Planner
+        </a>
+        <!-- Reliability Engineering -->
+        <a th:href="@{/vehicles/{id}/reliability(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'reliability'} ? 'active' : ''">
+            <i class="bi bi-shield-check"></i> Reliability
+        </a>
+        <!-- Total Cost of Ownership -->
+        <a th:href="@{/vehicles/{id}/tco(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'tco'} ? 'active' : ''">
+            <i class="bi bi-cash-coin"></i> TCO Advisory
+        </a>
+        <!-- Trip Readiness Index -->
+        <a th:href="@{/vehicles/{id}/readiness(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'readiness'} ? 'active' : ''">
+            <i class="bi bi-geo-alt-fill"></i> Trip Readiness
+        </a>
+        <!-- Maintenance Deficit Index -->
+        <a th:href="@{/vehicles/{id}/maintenance-deficit(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'deficit'} ? 'active' : ''">
+            <i class="bi bi-activity"></i> Deficit Index
+        </a>
+        <!-- Fiscal Operating Budget -->
+        <a th:href="@{/vehicles/{id}/fiscal-budget(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'fiscal'} ? 'active' : ''">
+            <i class="bi bi-wallet2"></i> Fiscal Budget
+        </a>
+        <!-- Fuel Intelligence Analytics -->
+        <a th:href="@{/vehicles/{id}/fuel-analytics(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'fuel-analytics'} ? 'active' : ''">
+            <i class="bi bi-fuel-pump"></i> Fuel Economy
+        </a>
+        <!-- Timeline -->
+        <a th:href="@{/vehicles/{id}/timeline(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'timeline'} ? 'active' : ''">
+            <i class="bi bi-clock-history"></i> Timeline
+        </a>
+        <!-- Resale Dossier -->
+        <a th:href="@{/vehicles/{id}/report(id=${vehicle.vehicleId}, from=${param.from != null ? param.from[0] : null})}"
+           class="vehicle-subnav-link"
+           th:classappend="${activeTab == 'dossier'} ? 'active' : ''">
+            <i class="bi bi-file-earmark-text"></i> Resale Dossier
+        </a>
+    </nav>
+</div>
+
+</body>
+</html>

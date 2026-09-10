@@ -41,6 +41,11 @@
         <div th:replace="~{fragments/topbar :: topbar('Vehicle Resale Dossier')}"></div>
 
         <div class="page-content px-4 py-4">
+            <!-- Canonical Vehicle Context Navigation (Hidden in Print) -->
+            <div class="no-print">
+                <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'dossier')}"></div>
+            </div>
+
             <!-- Action Toolbar (Hidden in Print) -->
             <div class="d-flex justify-content-between align-items-center mb-4 no-print">
                 <a th:href="@{/reports}" class="btn btn-outline-secondary btn-sm">

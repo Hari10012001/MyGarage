@@ -17,8 +17,11 @@
             <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show mt-3"><i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
             <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMsg}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 
-            <!-- Vehicle Header -->
-            <div class="vehicle-header card border-0 shadow-sm mt-4 mb-4">
+            <!-- Canonical Vehicle Context Navigation -->
+            <div th:replace="~{fragments/vehicle-nav :: vehicleContextNav(${vehicle}, 'overview')}"></div>
+
+            <!-- Vehicle Header & Quick Management -->
+            <div class="vehicle-header card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                         <div class="d-flex align-items-center gap-3">

@@ -95,7 +95,7 @@
                                     <span th:unless="${f.estimatedMileageKmpl != null}" class="text-muted">—</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/vehicles/{vid}(vid=${f.vehicle.vehicleId})}" class="btn btn-sm btn-outline-primary">
+                                    <a th:href="@{/vehicles/{vid}(vid=${f.vehicle.vehicleId}, from='fuel')}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i> View
                                     </a>
                                 </td>
